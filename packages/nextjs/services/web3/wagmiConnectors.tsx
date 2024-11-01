@@ -1,43 +1,24 @@
-import { connectorsForWallets } from "@rainbow-me/rainbowkit";
-import {
-  coinbaseWallet,
-  ledgerWallet,
-  metaMaskWallet,
-  rainbowWallet,
-  safeWallet,
-  walletConnectWallet,
-} from "@rainbow-me/rainbowkit/wallets";
-import { rainbowkitBurnerWallet } from "burner-connector";
-import * as chains from "viem/chains";
-import scaffoldConfig from "~~/scaffold.config";
+import { mock } from "@wagmi/core";
+import { Hex } from "viem";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
-const { onlyLocalBurnerWallet, targetNetworks } = scaffoldConfig;
+const getBurnerPrivateKey = (accountName: "hunter" | "company"): Hex => {
+  const keys = {
+    hunter: "0x4cd845aa34dd31890f2be6e79768a98aa92920942111d20ce09f86fe5699ac36" as Hex,
+    company: "0x49c92ca9a5b7c93846612115e270ca4c576eb9c3078510e5ca707343b0779618" as Hex,
+  };
+  return keys[accountName] || generatePrivateKey();
+};
 
-const wallets = [
-  metaMaskWallet,
-  walletConnectWallet,
-  ledgerWallet,
-  coinbaseWallet,
-  rainbowWallet,
-  safeWallet,
-  ...(!targetNetworks.some(network => network.id !== (chains.hardhat as chains.Chain).id) || !onlyLocalBurnerWallet
-    ? [rainbowkitBurnerWallet]
-    : []),
-];
+const hunterAccount = privateKeyToAccount(getBurnerPrivateKey("hunter"));
+const companyAccount = privateKeyToAccount(getBurnerPrivateKey("company"));
 
-/**
- * wagmi connectors for the wagmi context
- */
-export const wagmiConnectors = connectorsForWallets(
-  [
-    {
-      groupName: "Supported Wallets",
-      wallets,
-    },
-  ],
+const hunterConnector = mock({
+  accounts: [hunterAccount.address],
+});
 
-  {
-    appName: "scaffold-eth-2",
-    projectId: scaffoldConfig.walletConnectProjectId,
-  },
-);
+const companyConnector = mock({
+  accounts: [companyAccount.address],
+});
+
+export const wagmiConnectors = [hunterConnector, companyConnector];
