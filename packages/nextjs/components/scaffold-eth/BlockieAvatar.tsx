@@ -1,15 +1,10 @@
 "use client";
 
-import { GetEnsAvatarData } from "@wagmi/core/query";
+import { AvatarComponent } from "@rainbow-me/rainbowkit";
 import { blo } from "blo";
 
-interface BlockieAvatarProps {
-  address: string;
-  ensImage?: GetEnsAvatarData;
-  size: number;
-}
 // Custom Avatar for RainbowKit
-export const BlockieAvatar = ({ address, ensImage, size }: BlockieAvatarProps) => (
+export const BlockieAvatar: AvatarComponent = ({ address, ensImage, size }) => (
   // Don't want to use nextJS Image here (and adding remote patterns for the URL)
   // eslint-disable-next-line @next/next/no-img-element
   <img
