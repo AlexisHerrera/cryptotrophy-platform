@@ -11,6 +11,7 @@ contract RewardSystem {
     }
 
     mapping(string => Campaign) public campaigns;
+    string[] public campaignNames;
 
     // Event emitted when a reward is created
     event RewardCreated(
@@ -43,6 +44,8 @@ contract RewardSystem {
         campaign.ethPerClaim = ethPerClaimInWei;
         campaign.secretNumber = secretNumber;
         campaign.totalFund = msg.value;
+
+        campaignNames.push(campaignName);
 
         emit RewardCreated(
             campaignName,
@@ -90,5 +93,9 @@ contract RewardSystem {
 
         campaign.totalFund = 0;
         payable(msg.sender).transfer(remainingFunds);
+    }
+
+    function getAllCampaignNames() public view returns (string[] memory) {
+        return campaignNames;
     }
 }

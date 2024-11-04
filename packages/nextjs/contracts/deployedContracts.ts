@@ -74,6 +74,25 @@ const deployedContracts = {
         {
           inputs: [
             {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "campaignNames",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
               internalType: "string",
               name: "",
               type: "string",
@@ -144,6 +163,19 @@ const deployedContracts = {
           name: "createReward",
           outputs: [],
           stateMutability: "payable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getAllCampaignNames",
+          outputs: [
+            {
+              internalType: "string[]",
+              name: "",
+              type: "string[]",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
