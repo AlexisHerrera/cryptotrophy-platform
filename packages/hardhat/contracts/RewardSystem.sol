@@ -40,7 +40,6 @@ contract RewardSystem {
         uint campaignId = nextCampaignId++;
         Campaign storage campaign = campaigns[campaignId];
 
-        // campaign.id = campaignId; // Eliminado por redundancia
         campaign.exists = true;
         campaign.owner = msg.sender;
         campaign.name = name;
