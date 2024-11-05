@@ -11,9 +11,15 @@ const PanelPage: FC = () => {
     functionName: "getAllCampaignDetails",
   });
 
-  const { writeContractAsync } = useScaffoldWriteContract("RewardSystem");
+  const { writeContractAsync: createRewardContract } = useScaffoldWriteContract("RewardSystem");
+  const { writeContractAsync: claimRewardContract } = useScaffoldWriteContract("RewardSystem");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
+  const [claimData, setClaimData] = useState<{ campaignId: bigint; secret: string }>({
+    campaignId: BigInt(0),
+    secret: "",
+  });
   const [formData, setFormData] = useState({
     name: "",
     ethPerClaim: "",
@@ -25,13 +31,16 @@ const PanelPage: FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleClaimInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setClaimData({ ...claimData, [e.target.name]: e.target.value });
+  };
+
   const handleCreateReward = async () => {
     try {
       const { name, ethPerClaim, secret, fundAmount } = formData;
-
       const secretHash = keccak256(toUtf8Bytes(secret)) as `0x${string}`;
 
-      await writeContractAsync({
+      await createRewardContract({
         functionName: "createReward",
         args: [name, parseEther(ethPerClaim), secretHash],
         value: parseEther(fundAmount),
@@ -41,6 +50,24 @@ const PanelPage: FC = () => {
       setFormData({ name: "", ethPerClaim: "", secret: "", fundAmount: "" });
     } catch (error) {
       console.error("Error creating reward:", error);
+    }
+  };
+
+  const handleClaimReward = async () => {
+    try {
+      const { campaignId, secret } = claimData;
+      const secretHash = keccak256(toUtf8Bytes(secret)) as `0x${string}`;
+
+      await claimRewardContract({
+        functionName: "claimReward",
+        args: [campaignId, secretHash],
+      });
+
+      // Cerrar el modal en caso de éxito al reclamar la recompensa
+      setIsClaimModalOpen(false);
+      setClaimData({ campaignId: BigInt(0), secret: "" });
+    } catch (error) {
+      console.error("Error claiming reward:", error);
     }
   };
 
@@ -73,6 +100,7 @@ const PanelPage: FC = () => {
               <th>Name</th>
               <th>Reward (ETH)</th>
               <th>Total Remaining (ETH)</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -82,6 +110,21 @@ const PanelPage: FC = () => {
                 <td>{names[index]}</td>
                 <td>{Number(ethPerClaims[index]) / 1e18} ETH</td>
                 <td>{Number(totalFunds[index]) / 1e18} ETH</td>
+                <td>
+                  {Number(totalFunds[index]) > 0 ? (
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => {
+                        setClaimData({ campaignId: ids[index], secret: "" });
+                        setIsClaimModalOpen(true);
+                      }}
+                    >
+                      Claim Reward
+                    </button>
+                  ) : (
+                    <span className="text-gray-400">No Funds Available</span>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -90,7 +133,7 @@ const PanelPage: FC = () => {
 
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}>
-          <h2 className="text-xl font-bold mb-4">Create New Reward</h2>
+          <h2 className="text-xl font-bold mb-4 text-center">Create New Reward</h2>
           <div className="flex flex-col gap-4">
             <input
               type="text"
@@ -126,6 +169,25 @@ const PanelPage: FC = () => {
             />
             <button className="btn btn-primary" onClick={handleCreateReward}>
               Submit
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {isClaimModalOpen && (
+        <Modal onClose={() => setIsClaimModalOpen(false)}>
+          <h2 className="text-xl font-bold mb-4 text-center">Claim Reward</h2>
+          <div className="flex flex-col gap-4">
+            <input
+              type="text"
+              name="secret"
+              placeholder="Enter Secret Number"
+              value={claimData.secret}
+              onChange={handleClaimInputChange}
+              className="input input-bordered w-full"
+            />
+            <button className="btn btn-primary" onClick={handleClaimReward}>
+              Claim
             </button>
           </div>
         </Modal>

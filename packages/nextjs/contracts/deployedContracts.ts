@@ -79,9 +79,9 @@ const deployedContracts = {
               type: "uint256",
             },
             {
-              internalType: "string",
-              name: "secret",
-              type: "string",
+              internalType: "bytes32",
+              name: "secretHash",
+              type: "bytes32",
             },
           ],
           name: "claimReward",

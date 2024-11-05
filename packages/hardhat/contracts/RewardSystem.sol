@@ -59,12 +59,12 @@ contract RewardSystem {
     }
 
     // Reclamar una recompensa para una campaña específica
-    function claimReward(uint campaignId, string memory secret) public {
+    function claimReward(uint campaignId, bytes32 secretHash) public {
         Campaign storage campaign = campaigns[campaignId];
 
         require(campaign.exists, "Campaign does not exist");
         require(
-            campaign.secretHash == keccak256(abi.encodePacked(secret)),
+            campaign.secretHash == secretHash,
             "Incorrect secret"
         );
         require(!campaign.hasClaimed[msg.sender], "Reward already claimed");
