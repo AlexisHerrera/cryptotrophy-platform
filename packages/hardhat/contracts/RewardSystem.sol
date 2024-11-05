@@ -3,86 +3,90 @@ pragma solidity ^0.8.0;
 
 contract RewardSystem {
     struct Campaign {
+        string name;
         address owner;
         uint ethPerClaim; // Amount in wei
-        uint secretNumber;
+        bytes32 secretHash; // Almacena el hash del número secreto
         uint totalFund;
+        bool exists; // Indica si la campaña existe
         mapping(address => bool) hasClaimed;
     }
 
-    mapping(string => Campaign) public campaigns;
-    string[] public campaignNames;
+    mapping(uint => Campaign) private campaigns;
+    uint[] private campaignIds;
+    uint private nextCampaignId = 1;
 
-    // Event emitted when a reward is created
+    // Evento emitido cuando se crea una recompensa
     event RewardCreated(
-        string campaignName,
+        uint campaignId,
+        string name,
         address owner,
         uint ethPerClaim,
-        uint secretNumber,
         uint totalFund
     );
 
-    // Event emitted when a reward is claimed
-    event RewardClaimed(string campaignName, address claimer, uint amount);
+    // Evento emitido cuando se reclama una recompensa
+    event RewardClaimed(uint campaignId, address claimer, uint amount);
 
-    // Create a new reward campaign
+    // Crear una nueva campaña de recompensas
     function createReward(
-        string memory campaignName,
+        string memory name,
         uint ethPerClaimInWei,
-        uint secretNumber
+        bytes32 secretHash
     ) public payable {
         require(msg.value > 0, "Must fund campaign with ETH");
-        require(
-            ethPerClaimInWei > 0,
-            "ETH per claim must be greater than zero"
-        );
+        require(ethPerClaimInWei > 0, "ETH per claim must be greater than zero");
 
-        Campaign storage campaign = campaigns[campaignName];
-        require(campaign.totalFund == 0, "Campaign already exists");
+        uint campaignId = nextCampaignId++;
+        Campaign storage campaign = campaigns[campaignId];
 
+        // campaign.id = campaignId; // Eliminado por redundancia
+        campaign.exists = true;
         campaign.owner = msg.sender;
+        campaign.name = name;
         campaign.ethPerClaim = ethPerClaimInWei;
-        campaign.secretNumber = secretNumber;
+        campaign.secretHash = secretHash;
         campaign.totalFund = msg.value;
 
-        campaignNames.push(campaignName);
+        campaignIds.push(campaignId);
 
         emit RewardCreated(
-            campaignName,
+            campaignId,
+            name,
             msg.sender,
             ethPerClaimInWei,
-            secretNumber,
             msg.value
         );
     }
 
-    // Claim a reward for a specific campaign
-    function claimReward(string memory campaignName, uint secretNumber) public {
-        Campaign storage campaign = campaigns[campaignName];
+    // Reclamar una recompensa para una campaña específica
+    function claimReward(uint campaignId, string memory secret) public {
+        Campaign storage campaign = campaigns[campaignId];
 
-        require(campaign.totalFund > 0, "Campaign does not exist");
+        require(campaign.exists, "Campaign does not exist");
         require(
-            campaign.secretNumber == secretNumber,
-            "Incorrect secret number"
+            campaign.secretHash == keccak256(abi.encodePacked(secret)),
+            "Incorrect secret"
         );
         require(!campaign.hasClaimed[msg.sender], "Reward already claimed");
-
         require(
             campaign.totalFund >= campaign.ethPerClaim,
             "Insufficient campaign funds"
         );
 
+        // Actualizar estado antes de transferir
         campaign.hasClaimed[msg.sender] = true;
         campaign.totalFund -= campaign.ethPerClaim;
 
         payable(msg.sender).transfer(campaign.ethPerClaim);
 
-        emit RewardClaimed(campaignName, msg.sender, campaign.ethPerClaim);
+        emit RewardClaimed(campaignId, msg.sender, campaign.ethPerClaim);
     }
 
-    // Only the campaign owner can withdraw remaining funds
-    function withdrawCampaignFunds(string memory campaignName) public {
-        Campaign storage campaign = campaigns[campaignName];
+    // Solo el propietario de la campaña puede retirar los fondos restantes
+    function withdrawCampaignFunds(uint campaignId) public {
+        Campaign storage campaign = campaigns[campaignId];
+        require(campaign.exists, "Campaign does not exist");
         require(
             msg.sender == campaign.owner,
             "Only the campaign owner can withdraw funds"
@@ -91,11 +95,33 @@ contract RewardSystem {
         uint remainingFunds = campaign.totalFund;
         require(remainingFunds > 0, "No funds to withdraw");
 
+        // Actualizar estado antes de transferir
         campaign.totalFund = 0;
+
         payable(msg.sender).transfer(remainingFunds);
     }
 
-    function getAllCampaignNames() public view returns (string[] memory) {
-        return campaignNames;
+    // Listar todas las campañas con detalles básicos
+    function getAllCampaignDetails() public view returns (
+        uint[] memory,
+        string[] memory,
+        uint[] memory,
+        uint[] memory
+    ) {
+        uint[] memory ids = new uint[](campaignIds.length);
+        string[] memory names = new string[](campaignIds.length);
+        uint[] memory ethPerClaims = new uint[](campaignIds.length);
+        uint[] memory totalFunds = new uint[](campaignIds.length);
+
+        for (uint i = 0; i < campaignIds.length; i++) {
+            uint id = campaignIds[i];
+            Campaign storage campaign = campaigns[id];
+            ids[i] = id;
+            names[i] = campaign.name;
+            ethPerClaims[i] = campaign.ethPerClaim;
+            totalFunds[i] = campaign.totalFund;
+        }
+
+        return (ids, names, ethPerClaims, totalFunds);
     }
 }

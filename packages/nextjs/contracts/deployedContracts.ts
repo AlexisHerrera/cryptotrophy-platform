@@ -14,9 +14,9 @@ const deployedContracts = {
           inputs: [
             {
               indexed: false,
-              internalType: "string",
-              name: "campaignName",
-              type: "string",
+              internalType: "uint256",
+              name: "campaignId",
+              type: "uint256",
             },
             {
               indexed: false,
@@ -39,8 +39,14 @@ const deployedContracts = {
           inputs: [
             {
               indexed: false,
+              internalType: "uint256",
+              name: "campaignId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
               internalType: "string",
-              name: "campaignName",
+              name: "name",
               type: "string",
             },
             {
@@ -53,12 +59,6 @@ const deployedContracts = {
               indexed: false,
               internalType: "uint256",
               name: "ethPerClaim",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "secretNumber",
               type: "uint256",
             },
             {
@@ -75,66 +75,13 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "",
+              name: "campaignId",
               type: "uint256",
             },
-          ],
-          name: "campaignNames",
-          outputs: [
             {
               internalType: "string",
-              name: "",
+              name: "secret",
               type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          name: "campaigns",
-          outputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "ethPerClaim",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "secretNumber",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "totalFund",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "string",
-              name: "campaignName",
-              type: "string",
-            },
-            {
-              internalType: "uint256",
-              name: "secretNumber",
-              type: "uint256",
             },
           ],
           name: "claimReward",
@@ -146,7 +93,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "string",
-              name: "campaignName",
+              name: "name",
               type: "string",
             },
             {
@@ -155,9 +102,9 @@ const deployedContracts = {
               type: "uint256",
             },
             {
-              internalType: "uint256",
-              name: "secretNumber",
-              type: "uint256",
+              internalType: "bytes32",
+              name: "secretHash",
+              type: "bytes32",
             },
           ],
           name: "createReward",
@@ -167,12 +114,27 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "getAllCampaignNames",
+          name: "getAllCampaignDetails",
           outputs: [
+            {
+              internalType: "uint256[]",
+              name: "",
+              type: "uint256[]",
+            },
             {
               internalType: "string[]",
               name: "",
               type: "string[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "",
+              type: "uint256[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "",
+              type: "uint256[]",
             },
           ],
           stateMutability: "view",
@@ -181,9 +143,9 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "string",
-              name: "campaignName",
-              type: "string",
+              internalType: "uint256",
+              name: "campaignId",
+              type: "uint256",
             },
           ],
           name: "withdrawCampaignFunds",
