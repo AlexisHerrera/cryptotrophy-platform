@@ -221,6 +221,11 @@ const deployedContracts = {
               name: "orgId",
               type: "uint256",
             },
+            {
+              internalType: "bool",
+              name: "exists",
+              type: "bool",
+            },
           ],
           stateMutability: "view",
           type: "function",
@@ -466,6 +471,11 @@ const deployedContracts = {
               internalType: "address",
               name: "token",
               type: "address",
+            },
+            {
+              internalType: "bool",
+              name: "exists",
+              type: "bool",
             },
           ],
           stateMutability: "view",
