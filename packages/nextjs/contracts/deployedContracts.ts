@@ -182,11 +182,6 @@ const deployedContracts = {
               type: "string",
             },
             {
-              internalType: "address",
-              name: "validator",
-              type: "address",
-            },
-            {
               internalType: "uint256",
               name: "prizeAmount",
               type: "uint256",
@@ -259,11 +254,6 @@ const deployedContracts = {
               internalType: "string",
               name: "_description",
               type: "string",
-            },
-            {
-              internalType: "address",
-              name: "_validator",
-              type: "address",
             },
             {
               internalType: "uint256",
@@ -345,35 +335,6 @@ const deployedContracts = {
           inputs: [],
           name: "cryptoTrophyToken",
           outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-          ],
-          name: "getOrganization",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
             {
               internalType: "address",
               name: "",
