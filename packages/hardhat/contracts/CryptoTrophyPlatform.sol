@@ -262,4 +262,77 @@ contract CryptoTrophyPlatform {
 	) public view returns (uint256[] memory) {
 		return organizations[_orgId].challengeIds;
 	}
+
+	/// @notice Devuelve las organizaciones a las que el sender pertenece como admin o usuario
+	function listOrganizationsWithDetails() public view returns (
+		uint256[] memory orgIds,
+		string[] memory names,
+		address[] memory tokens,
+		uint256[] memory adminCounts,
+		uint256[] memory userCounts,
+		bool[] memory isMembers
+	) {
+		uint256 count = 0;
+
+		// Contar las organizaciones a las que pertenece el sender
+		for (uint256 i = 0; i < orgCount; i++) {
+			if (organizations[i].adminExists[msg.sender] || organizations[i].userExists[msg.sender]) {
+				count++;
+			}
+		}
+
+		// Inicializar arrays
+		orgIds = new uint256[](count);
+		names = new string[](count);
+		tokens = new address[](count);
+		adminCounts = new uint256[](count);
+		userCounts = new uint256[](count);
+		isMembers = new bool[](count);
+
+		uint256 index = 0;
+
+		// Llenar arrays con los datos relevantes
+		for (uint256 i = 0; i < orgCount; i++) {
+			if (organizations[i].adminExists[msg.sender] || organizations[i].userExists[msg.sender]) {
+				Organization storage org = organizations[i];
+				orgIds[index] = org.id;
+				names[index] = org.name;
+				tokens[index] = org.token;
+				adminCounts[index] = org.admins.length;
+				userCounts[index] = org.users.length;
+				isMembers[index] = org.userExists[msg.sender] || org.adminExists[msg.sender];
+				index++;
+			}
+		}
+	}
+
+	/// @notice Verifica si una dirección es miembro de una organización
+	function isMember(uint256 _orgId, address _user) public view returns (bool) {
+		Organization storage org = organizations[_orgId];
+		return org.userExists[_user];
+	}
+
+	/// @notice Unirse a una organización
+	function joinOrganization(uint256 _orgId) public {
+		require(organizations[_orgId].exists, "Organization does not exist");
+		require(!organizations[_orgId].userExists[msg.sender], "Already a member");
+
+		_addUser(_orgId, msg.sender);
+	}
+
+	/// @notice Salir de una organización
+	function leaveOrganization(uint256 _orgId) public onlyUser(_orgId) {
+		Organization storage org = organizations[_orgId];
+		org.userExists[msg.sender] = false;
+
+		// Remover al usuario de la lista de usuarios
+		address[] storage users = org.users;
+		for (uint256 i = 0; i < users.length; i++) {
+			if (users[i] == msg.sender) {
+				users[i] = users[users.length - 1];
+				users.pop();
+				break;
+			}
+		}
+	}
 }

@@ -17,7 +17,6 @@ const Home: NextPage = () => {
         isDarkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
       }`}
     >
-      {/* Header */}
       <header className="w-full max-w-5xl mx-auto text-center py-6">
         <h1 className="text-5xl font-extrabold tracking-tight mb-4">
           Crypto<span className="text-indigo-500">Trophy</span> Platform
@@ -26,21 +25,28 @@ const Home: NextPage = () => {
           Revolutionize your organization with blockchain technology.
         </p>
       </header>
-
-      {/* Main Content */}
       <main className="w-full flex flex-col items-center">
         <h2 className="text-3xl font-semibold mb-6 text-center">Create your organization on the blockchain</h2>
-        <button
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition duration-200 hover:scale-105"
-          onClick={() => {
-            router.push("/create-organization");
-          }}
-        >
-          Create Organization
-        </button>
+        <div className="flex gap-4">
+          <button
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition duration-200 hover:scale-105"
+            onClick={() => {
+              router.push("/create-organization");
+            }}
+          >
+            Create Organization
+          </button>
+          <button
+            className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition duration-200 hover:scale-105"
+            onClick={() => {
+              router.push("/organizations");
+            }}
+          >
+            Join Organization
+          </button>
+        </div>
       </main>
 
-      {/* Footer */}
       <footer className="absolute bottom-4 text-center text-sm text-gray-400">
         {connectedAddress ? <p>Connected Wallet: {connectedAddress}</p> : <p>Connect your wallet to get started.</p>}
       </footer>
