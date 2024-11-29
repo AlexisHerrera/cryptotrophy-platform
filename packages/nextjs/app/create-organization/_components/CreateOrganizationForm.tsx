@@ -35,7 +35,7 @@ const CreateOrganizationForm = () => {
     event.preventDefault();
     const { organizationName, tokenSymbol, initialMint, ethBacking, admins, users } = organizationForm;
 
-    if (!organizationName || !tokenSymbol || admins.length === 0 || users.length === 0 || ethBacking <= 0) {
+    if (!organizationName || !tokenSymbol) {
       alert("Please fill all required fields.");
       return;
     }
