@@ -93,7 +93,7 @@ const OrganizationPage: React.FC = () => {
 
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-semibold mb-4">Active Challenges</h2>
-          <ChallengeList challengeIds={organization.challengeIds} />
+          <ChallengeList challengeIds={organization.challengeIds} orgId={BigInt(organizationId as string)} />
         </div>
       </div>
 

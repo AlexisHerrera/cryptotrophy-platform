@@ -1,14 +1,18 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import ClaimChallengeModal from "./ClaimChallengeModal";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 interface ChallengeListProps {
+  orgId: bigint;
   challengeIds: bigint[];
 }
 
-const ChallengeList: React.FC<ChallengeListProps> = ({ challengeIds }) => {
+const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) => {
   const [challenges, setChallenges] = useState<any[]>([]);
+  const [selectedChallengeId, setSelectedChallengeId] = useState<bigint | null>(null);
+  console.log("SelectedChallengeId", selectedChallengeId);
   const { data, isLoading } = useScaffoldReadContract({
     contractName: "CryptoTrophyPlatform",
     functionName: "listChallengesDetails",
@@ -52,6 +56,7 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ challengeIds }) => {
             <th>Max Winners</th>
             <th>Start Time</th>
             <th>End Time</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -64,10 +69,27 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ challengeIds }) => {
               <td>{challenge.maxWinners.toString()}</td>
               <td>{challenge.startTime}</td>
               <td>{challenge.endTime}</td>
+              <td>
+                {challenge.active ? (
+                  <button className="btn btn-primary btn-sm" onClick={() => setSelectedChallengeId(challenge.id)}>
+                    Claim Reward
+                  </button>
+                ) : (
+                  <span className="text-gray-500">Closed</span>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {selectedChallengeId !== null && (
+        <ClaimChallengeModal
+          orgId={orgId}
+          challengeId={selectedChallengeId}
+          onClose={() => setSelectedChallengeId(null)}
+        />
+      )}
     </div>
   );
 };
