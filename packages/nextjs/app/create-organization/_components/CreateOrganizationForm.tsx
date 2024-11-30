@@ -1,9 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import { parseEther } from "ethers";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Interface, parseEther } from "ethers";
+import { Transaction } from "viem";
+import { useWaitForTransactionReceipt } from "wagmi";
 import AddressManager from "~~/app/create-organization/_components/AddressManager";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { decodeTransactionData } from "~~/utils/scaffold-eth";
 
 interface CreateOrganizationFormProps {
   organizationName: string;
@@ -24,8 +28,32 @@ const CreateOrganizationForm = () => {
     ethBacking: 0,
   });
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const { writeContractAsync: createOrganization } = useScaffoldWriteContract("CryptoTrophyPlatform");
+  const { data: result, writeContractAsync: createOrganization } = useScaffoldWriteContract("CryptoTrophyPlatform");
+  const { data: receipt } = useWaitForTransactionReceipt({
+    hash: result,
+  });
+  const contractInterface = new Interface([
+    "event OrganizationCreated(uint256 indexed orgId, string name, address token)",
+  ]);
+
+  useEffect(() => {
+    if (receipt?.logs) {
+      // Filtrar logs para el evento OrganizationCreated
+      const log = receipt.logs.find(
+        log => log.topics[0] === contractInterface.getEvent("OrganizationCreated")?.topicHash,
+      );
+      if (log) {
+        // Decodificar el log
+        const decodedLog = contractInterface.decodeEventLog("OrganizationCreated", log.data, log.topics);
+        const organizationId = decodedLog.orgId;
+        console.log("Organization ID:", organizationId.toString()); // Convertir BigInt a string
+        // Redirigir a la página de la organización
+        router.push(`/organizations/${organizationId.toString()}`);
+      }
+    }
+  }, [receipt, contractInterface, router]);
 
   const handleInputChange = (field: keyof CreateOrganizationFormProps, value: string | number) => {
     setOrganizationForm({ ...organizationForm, [field]: value });
@@ -51,6 +79,7 @@ const CreateOrganizationForm = () => {
       if (!tx) {
         throw new Error("Failed to create organization.");
       }
+
       console.log("Organization created successfully:", tx);
       setOrganizationForm({
         organizationName: "",

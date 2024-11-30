@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     CryptoTrophyPlatform: {
-      address: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+      address: "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
       abi: [
         {
           inputs: [
@@ -364,6 +364,60 @@ const deployedContracts = {
               name: "_orgId",
               type: "uint256",
             },
+          ],
+          name: "getOrganizationDetails",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              internalType: "address",
+              name: "token",
+              type: "address",
+            },
+            {
+              internalType: "address[]",
+              name: "admins",
+              type: "address[]",
+            },
+            {
+              internalType: "address[]",
+              name: "users",
+              type: "address[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "orgChallengeIds",
+              type: "uint256[]",
+            },
+            {
+              internalType: "bool",
+              name: "isAdmin",
+              type: "bool",
+            },
+            {
+              internalType: "bool",
+              name: "isUser",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
             {
               internalType: "address",
               name: "_user",
@@ -420,6 +474,60 @@ const deployedContracts = {
             {
               internalType: "uint256[]",
               name: "",
+              type: "uint256[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256[]",
+              name: "ids",
+              type: "uint256[]",
+            },
+          ],
+          name: "listChallengesDetails",
+          outputs: [
+            {
+              internalType: "uint256[]",
+              name: "challengeIds",
+              type: "uint256[]",
+            },
+            {
+              internalType: "string[]",
+              name: "descriptions",
+              type: "string[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "prizeAmounts",
+              type: "uint256[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "startTimes",
+              type: "uint256[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "endTimes",
+              type: "uint256[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "maxWinners",
+              type: "uint256[]",
+            },
+            {
+              internalType: "bool[]",
+              name: "actives",
+              type: "bool[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "winnerCounts",
               type: "uint256[]",
             },
           ],

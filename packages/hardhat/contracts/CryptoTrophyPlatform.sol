@@ -313,6 +313,30 @@ contract CryptoTrophyPlatform {
 		}
 	}
 
+	/// @notice Obtiene los detalles de una organización por ID
+	function getOrganizationDetails(uint256 _orgId) public view returns (
+		uint256 orgId,
+		string memory name,
+		address token,
+		address[] memory admins,
+		address[] memory users,
+		uint256[] memory orgChallengeIds,
+		bool isAdmin,
+		bool isUser
+	) {
+		Organization storage org = organizations[_orgId];
+		require(org.exists, "Organization does not exist");
+
+		orgId = org.id;
+		name = org.name;
+		token = org.token;
+		admins = org.admins;
+		users = org.users;
+		orgChallengeIds = org.challengeIds;
+		isAdmin = org.adminExists[msg.sender];
+		isUser = org.userExists[msg.sender];
+	}
+
 	/// @notice Verifica si una dirección es miembro de una organización
 	function isMember(uint256 _orgId, address _user) public view returns (bool) {
 		Organization storage org = organizations[_orgId];
@@ -340,6 +364,56 @@ contract CryptoTrophyPlatform {
 				users.pop();
 				break;
 			}
+		}
+	}
+
+	/// @notice Obtiene los detalles de múltiples desafíos
+	/// @param ids Lista de IDs de los desafíos
+	/// @return challengeIds Lista de IDs de los desafíos
+	/// @return descriptions Lista de descripciones de los desafíos
+	/// @return prizeAmounts Lista de montos de premios de los desafíos
+	/// @return startTimes Lista de tiempos de inicio de los desafíos
+	/// @return endTimes Lista de tiempos de finalización de los desafíos
+	/// @return maxWinners Lista de máximos ganadores permitidos de los desafíos
+	/// @return actives Lista de estados de los desafíos (activos o inactivos)
+	/// @return winnerCounts Lista de conteos de ganadores actuales de los desafíos
+	function listChallengesDetails(uint256[] calldata ids)
+	external
+	view
+	returns (
+		uint256[] memory challengeIds,
+		string[] memory descriptions,
+		uint256[] memory prizeAmounts,
+		uint256[] memory startTimes,
+		uint256[] memory endTimes,
+		uint256[] memory maxWinners,
+		bool[] memory actives,
+		uint256[] memory winnerCounts
+	)
+	{
+		uint256 count = ids.length;
+
+		challengeIds = new uint256[](count);
+		descriptions = new string[](count);
+		prizeAmounts = new uint256[](count);
+		startTimes = new uint256[](count);
+		endTimes = new uint256[](count);
+		maxWinners = new uint256[](count);
+		actives = new bool[](count);
+		winnerCounts = new uint256[](count);
+
+		for (uint256 i = 0; i < count; i++) {
+			Challenge storage challenge = challenges[ids[i]];
+			require(challenge.exists, "Challenge does not exist");
+
+			challengeIds[i] = challenge.id;
+			descriptions[i] = challenge.description;
+			prizeAmounts[i] = challenge.prizeAmount;
+			startTimes[i] = challenge.startTime;
+			endTimes[i] = challenge.endTime;
+			maxWinners[i] = challenge.maxWinners;
+			actives[i] = challenge.active;
+			winnerCounts[i] = challenge.winnerCount;
 		}
 	}
 }

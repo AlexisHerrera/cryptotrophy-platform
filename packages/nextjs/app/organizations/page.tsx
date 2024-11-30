@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import Modal from "~~/components/Modal";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
@@ -19,6 +20,10 @@ const Organizations: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingAction, setLoadingAction] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  const router = useRouter();
 
   // Leer organizaciones desde el contrato
   const { data: organizationsData, isLoading } = useScaffoldReadContract({
@@ -57,6 +62,12 @@ const Organizations: React.FC = () => {
     userCount: userCounts[index],
     isMember: isMembers[index],
   }));
+
+  // Calcular el total de páginas
+  const totalPages = Math.ceil(organizations.length / itemsPerPage);
+
+  // Obtener los elementos de la página actual
+  const paginatedOrganizations = organizations.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handleJoin = async (organization: Organization) => {
     try {
@@ -114,10 +125,15 @@ const Organizations: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {organizations.map((org, index) => (
+            {paginatedOrganizations.map((org, index) => (
               <tr key={org.id.toString()} className="hover">
                 <td>{org.id.toString()}</td>
-                <td>{org.name}</td>
+                <td
+                  className="cursor-pointer text-blue-500 underline"
+                  onClick={() => router.push(`/organizations/${org.id.toString()}`)}
+                >
+                  {org.name}
+                </td>
                 <td>
                   {org.tokenSymbols}{" "}
                   <button
@@ -162,6 +178,25 @@ const Organizations: React.FC = () => {
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="flex justify-center items-center mt-4">
+        <button
+          className="btn btn-secondary mr-2"
+          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          className="btn btn-secondary ml-2"
+          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
       </div>
 
       {isModalOpen && selectedOrganization && (
