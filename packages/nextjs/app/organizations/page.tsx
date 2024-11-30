@@ -7,7 +7,8 @@ import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaf
 interface Organization {
   id: bigint;
   name: string;
-  token: string;
+  tokenSymbols: string;
+  tokenAddress: string;
   adminCount: bigint;
   userCount: bigint;
   isMember: boolean;
@@ -17,6 +18,7 @@ const Organizations: React.FC = () => {
   const [selectedOrganization, setSelectedOrganization] = useState<Organization | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingAction, setLoadingAction] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   // Leer organizaciones desde el contrato
   const { data: organizationsData, isLoading } = useScaffoldReadContract({
@@ -36,8 +38,9 @@ const Organizations: React.FC = () => {
     return <p>No organizations found.</p>;
   }
 
-  const [orgIds, names, tokens, adminCounts, userCounts, isMembers] = organizationsData as [
+  const [orgIds, names, tokenSymbols, tokenAddresses, adminCounts, userCounts, isMembers] = organizationsData as [
     readonly bigint[],
+    readonly string[],
     readonly string[],
     readonly string[],
     readonly bigint[],
@@ -48,7 +51,8 @@ const Organizations: React.FC = () => {
   const organizations: Organization[] = orgIds.map((id, index) => ({
     id,
     name: names[index],
-    token: tokens[index],
+    tokenSymbols: tokenSymbols[index],
+    tokenAddress: tokenAddresses[index],
     adminCount: adminCounts[index],
     userCount: userCounts[index],
     isMember: isMembers[index],
@@ -86,6 +90,14 @@ const Organizations: React.FC = () => {
     }
   };
 
+  const copyToClipboard = (address: string, index: number) => {
+    void navigator.clipboard.writeText(address);
+    setCopiedIndex(index);
+
+    // Cambiar el estado "Copied" temporalmente
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Organizations</h1>
@@ -95,18 +107,32 @@ const Organizations: React.FC = () => {
             <tr>
               <th>ID</th>
               <th>Name</th>
-              <th>Token</th>
+              <th>Token Info</th>
               <th>Admins</th>
               <th>Users</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {organizations.map(org => (
+            {organizations.map((org, index) => (
               <tr key={org.id.toString()} className="hover">
                 <td>{org.id.toString()}</td>
                 <td>{org.name}</td>
-                <td>{org.token}</td>
+                <td>
+                  {org.tokenSymbols}{" "}
+                  <button
+                    className={`btn btn-sm ${copiedIndex === index ? "btn-success" : "btn-secondary"} ml-2`}
+                    onClick={() => copyToClipboard(org.tokenAddress, index)}
+                  >
+                    {copiedIndex === index ? (
+                      <>
+                        Copied <span>✔️</span>
+                      </>
+                    ) : (
+                      "Copy Address"
+                    )}
+                  </button>
+                </td>
                 <td>{org.adminCount.toString()}</td>
                 <td>{org.userCount.toString()}</td>
                 <td>

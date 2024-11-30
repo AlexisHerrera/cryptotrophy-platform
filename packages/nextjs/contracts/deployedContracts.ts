@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     CryptoTrophyPlatform: {
-      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      address: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
       abi: [
         {
           inputs: [
@@ -47,6 +47,19 @@ const deployedContracts = {
             },
           ],
           name: "ChallengeCreated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "string",
+              name: "message",
+              type: "string",
+            },
+          ],
+          name: "DebugLog",
           type: "event",
         },
         {
@@ -441,8 +454,13 @@ const deployedContracts = {
               type: "string[]",
             },
             {
+              internalType: "string[]",
+              name: "tokenSymbols",
+              type: "string[]",
+            },
+            {
               internalType: "address[]",
-              name: "tokens",
+              name: "tokenAddresses",
               type: "address[]",
             },
             {

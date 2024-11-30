@@ -94,6 +94,8 @@ contract CryptoTrophyPlatform {
 			new CompanyToken(_name, _symbol, _initialSupply)
 		);
 	}
+	event DebugLog(string message);
+
 
 	// Funciones
 
@@ -107,11 +109,14 @@ contract CryptoTrophyPlatform {
 		address[] memory _users
 	) public payable returns (uint256) {
 		require(msg.value >= _initialEthBacking, "Insufficient ETH backing");
+		emit DebugLog("ETH backing validated");
 
 		// Crear nuevo token de la organización
 		address token = address(
 			new CompanyToken(_name, _symbol, _initialSupply)
 		);
+		require(token != address(0), "Failed to create token");
+		emit DebugLog("Token created");
 
 		// Crear y registrar organización
 		uint256 orgId = orgCount++;
@@ -123,6 +128,7 @@ contract CryptoTrophyPlatform {
 
 		// Por default, el creador de la organización es admin
 		_addAdmin(orgId, msg.sender);
+		emit DebugLog("Admin added");
 
 		for (uint256 i = 0; i < _admins.length; i++) {
 			_addAdmin(orgId, _admins[i]);
@@ -263,41 +269,42 @@ contract CryptoTrophyPlatform {
 		return organizations[_orgId].challengeIds;
 	}
 
-	/// @notice Devuelve las organizaciones a las que el sender pertenece como admin o usuario
+	// @notice Devuelve las organizaciones a las que el sender pertenece como admin o usuario, incluyendo nombre y dirección del token
 	function listOrganizationsWithDetails() public view returns (
 		uint256[] memory orgIds,
 		string[] memory names,
-		address[] memory tokens,
+		string[] memory tokenSymbols,
+		address[] memory tokenAddresses,
 		uint256[] memory adminCounts,
 		uint256[] memory userCounts,
 		bool[] memory isMembers
 	) {
 		uint256 count = 0;
-
-		// Contar las organizaciones a las que pertenece el sender
 		for (uint256 i = 0; i < orgCount; i++) {
 			if (organizations[i].adminExists[msg.sender] || organizations[i].userExists[msg.sender]) {
 				count++;
 			}
 		}
 
-		// Inicializar arrays
 		orgIds = new uint256[](count);
 		names = new string[](count);
-		tokens = new address[](count);
+		tokenSymbols = new string[](count);
+		tokenAddresses = new address[](count);
 		adminCounts = new uint256[](count);
 		userCounts = new uint256[](count);
 		isMembers = new bool[](count);
 
 		uint256 index = 0;
 
-		// Llenar arrays con los datos relevantes
 		for (uint256 i = 0; i < orgCount; i++) {
 			if (organizations[i].adminExists[msg.sender] || organizations[i].userExists[msg.sender]) {
 				Organization storage org = organizations[i];
 				orgIds[index] = org.id;
 				names[index] = org.name;
-				tokens[index] = org.token;
+
+				tokenSymbols[index] = ERC20(org.token).symbol();
+				tokenAddresses[index] = org.token;
+
 				adminCounts[index] = org.admins.length;
 				userCounts[index] = org.users.length;
 				isMembers[index] = org.userExists[msg.sender] || org.adminExists[msg.sender];
