@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./OnChainValidator.sol";
 
 // Ejemplo del contrato de tokens
 contract CompanyToken is ERC20, Ownable {
@@ -20,9 +21,6 @@ contract CompanyToken is ERC20, Ownable {
 	}
 }
 
-// interface IValidator {
-// 	function validate(address user) external view returns (bool);
-// }
 
 contract CryptoTrophyPlatform {
 	// Estructuras
@@ -41,7 +39,11 @@ contract CryptoTrophyPlatform {
 	struct Challenge {
 		uint256 id;
 		string description;
-		// address validator;
+
+		address validatorAddr;
+		OnChainValidator validator;
+		uint256 validationId;
+
 		uint256 prizeAmount;
 		uint256 startTime;
 		uint256 endTime;
@@ -200,10 +202,27 @@ contract CryptoTrophyPlatform {
 		return challengeId;
 	}
 
+    function setChallengeValidator(
+		uint256 _challengeId,
+		address _validatorAddr,
+		uint256 _validationId
+	) public {
+		Challenge storage challenge = challenges[_challengeId];
+        challenge.validatorAddr = _validatorAddr;
+	    challenge.validationId = _validationId;
+    }
+
+    function getConfig(uint256 _challengeId) public view returns (string memory) {
+		Challenge storage challenge = challenges[_challengeId];
+        IValidator validator = OnChainValidator(challenge.validatorAddr);
+        return validator.getConfig(challenge.validationId);
+    }
+
 	/// @notice Reclama un premio de un desafío
 	function claimReward(
 		uint256 _orgId,
-		uint256 _challengeId
+		uint256 _challengeId,
+		bytes calldata params
 	) public onlyUser(_orgId) {
 		Challenge storage challenge = challenges[_challengeId];
 		require(challenge.active, "Challenge not active");
@@ -218,8 +237,8 @@ contract CryptoTrophyPlatform {
 		);
 		require(!challenge.winners[msg.sender], "Already claimed");
 
-		// IValidator validator = IValidator(challenge.validator);
-		// require(validator.validate(msg.sender), "Validation failed");
+        IValidator validator = OnChainValidator(challenge.validatorAddr);
+		require(validator.validate(challenge.validationId, params), "Validation failed");
 
 		Organization storage organization = organizations[_orgId];
 
