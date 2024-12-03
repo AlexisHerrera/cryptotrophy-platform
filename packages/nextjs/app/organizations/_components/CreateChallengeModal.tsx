@@ -1,5 +1,6 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "~~/components/Modal";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 interface CreateChallengeModalProps {
   organizationId: bigint;
@@ -13,8 +14,23 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
     prizeAmount: "",
     startTime: "",
     endTime: "",
-    maxWinners: "",
+    maxWinners: "1",
   });
+
+  const [maxPrizeAmount, setMaxPrizeAmount] = useState<bigint>(BigInt(0));
+
+  // Hook para obtener tokens disponibles
+  const { data: availableTokens } = useScaffoldReadContract({
+    contractName: "CryptoTrophyPlatform",
+    functionName: "tokensAvailable",
+    args: [organizationId], // Pasar el ID de la organización como argumento
+  });
+
+  useEffect(() => {
+    if (availableTokens) {
+      setMaxPrizeAmount(availableTokens as bigint);
+    }
+  }, [availableTokens]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -41,25 +57,40 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
     }
   };
 
+  // Establecer valores por defecto para fechas
+  useEffect(() => {
+    const now = new Date();
+    const oneWeekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 1 semana después
+
+    setFormData(prev => ({
+      ...prev,
+      startTime: now.toISOString().slice(0, 16), // Formato `datetime-local`
+      endTime: oneWeekLater.toISOString().slice(0, 16),
+    }));
+  }, []);
+
   return (
     <Modal onClose={onClose}>
       <h2 className="text-xl font-bold mb-4 text-center">Create Challenge</h2>
       <div className="flex flex-col gap-4">
         <textarea
           name="description"
-          placeholder="Description"
+          placeholder="Describe your challenge here (e.g., Complete the task in 7 days)"
           value={formData.description}
           onChange={handleInputChange}
           className="textarea textarea-bordered w-full"
         />
-        <input
-          type="text"
-          name="prizeAmount"
-          placeholder="Prize Amount"
-          value={formData.prizeAmount}
-          onChange={handleInputChange}
-          className="input input-bordered w-full"
-        />
+        <div className="relative">
+          <input
+            type="text"
+            name="prizeAmount"
+            placeholder={`Prize Amount (Max: ${maxPrizeAmount.toString()} tokens)`}
+            value={formData.prizeAmount}
+            onChange={handleInputChange}
+            className="input input-bordered w-full"
+          />
+          <span className="absolute right-2 top-2 text-gray-500 text-sm">Max: {maxPrizeAmount.toString()}</span>
+        </div>
         <input
           type="datetime-local"
           name="startTime"
@@ -79,12 +110,16 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
         <input
           type="number"
           name="maxWinners"
-          placeholder="Max Winners"
+          placeholder="Max Winners (default: 1)"
           value={formData.maxWinners}
           onChange={handleInputChange}
           className="input input-bordered w-full"
         />
-        <button className="btn btn-primary" onClick={handleCreateChallenge}>
+        <button
+          className="btn btn-primary"
+          onClick={handleCreateChallenge}
+          disabled={!maxPrizeAmount || BigInt(formData.prizeAmount || "0") > maxPrizeAmount}
+        >
           Create
         </button>
       </div>

@@ -9,10 +9,11 @@ contract CompanyToken is ERC20, Ownable {
 	constructor(
 		string memory name,
 		string memory symbol,
-		uint256 initialSupply
+		uint256 initialSupply,
+		address initialRecipient
 	) ERC20(name, symbol) Ownable(msg.sender) {
-		// Suministro inicial enviado al creador del contrato
-		_mint(msg.sender, initialSupply * (10 ** decimals()));
+		// Suministro inicial enviado al recipient
+		_mint(initialRecipient, initialSupply * (10 ** decimals()));
 	}
 
 	function mint(address to, uint256 amount) public onlyOwner {
@@ -91,9 +92,10 @@ contract CryptoTrophyPlatform {
 	) {
 		// Crear token de la plataforma
 		cryptoTrophyToken = address(
-			new CompanyToken(_name, _symbol, _initialSupply)
+			new CompanyToken(_name, _symbol, _initialSupply, address(this))
 		);
 	}
+
 	event DebugLog(string message);
 
 
@@ -109,11 +111,10 @@ contract CryptoTrophyPlatform {
 		address[] memory _users
 	) public payable returns (uint256) {
 		require(msg.value >= _initialEthBacking, "Insufficient ETH backing");
-		emit DebugLog("ETH backing validated");
 
-		// Crear nuevo token de la organización
+		// Crear nuevo token de la organización y asignar tokens al contrato
 		address token = address(
-			new CompanyToken(_name, _symbol, _initialSupply)
+			new CompanyToken(_name, _symbol, _initialSupply, address(this))
 		);
 		require(token != address(0), "Failed to create token");
 		emit DebugLog("Token created");
@@ -170,7 +171,6 @@ contract CryptoTrophyPlatform {
 	function createChallenge(
 		uint256 _orgId,
 		string memory _description,
-		// address _validator,
 		uint256 _prizeAmount,
 		uint256 _startTime,
 		uint256 _endTime,
@@ -178,11 +178,14 @@ contract CryptoTrophyPlatform {
 	) public onlyAdmin(_orgId) returns (uint256) {
 		require(_startTime < _endTime, "Invalid time range");
 
+		// Verificar que hay suficientes tokens disponibles
+		uint256 availableTokens = tokensAvailable(_orgId);
+		require(_prizeAmount * _maxWinners <= availableTokens, "Not enough tokens available");
+
 		uint256 challengeId = challengeCount++;
 		Challenge storage challenge = challenges[challengeId];
 		challenge.id = challengeId;
 		challenge.description = _description;
-		// challenge.validator = _validator;
 		challenge.prizeAmount = _prizeAmount;
 		challenge.startTime = _startTime;
 		challenge.endTime = _endTime;
@@ -196,6 +199,7 @@ contract CryptoTrophyPlatform {
 
 		organization.challengeIds.push(challengeId);
 		challengeIds.push(challengeId);
+
 		emit ChallengeCreated(challengeId, _description);
 		return challengeId;
 	}
@@ -222,16 +226,20 @@ contract CryptoTrophyPlatform {
 		// require(validator.validate(msg.sender), "Validation failed");
 
 		Organization storage organization = organizations[_orgId];
+		require(
+			ERC20(organization.token).balanceOf(address(this)) >= challenge.prizeAmount,
+			"Not enough tokens in the organization"
+		);
 
 		challenge.winners[msg.sender] = true;
 		challenge.winnerCount++;
 
-		CompanyToken(organization.token).mint(
-			msg.sender,
-			challenge.prizeAmount
-		);
+		// Transferir tokens al ganador
+		ERC20(organization.token).transfer(msg.sender, challenge.prizeAmount);
+
 		emit RewardClaimed(_challengeId, msg.sender);
 	}
+
 
 	/// @notice Lista todas las organizaciones
 	function listOrganizations() public view returns (uint256[] memory) {
@@ -416,4 +424,29 @@ contract CryptoTrophyPlatform {
 			winnerCounts[i] = challenge.winnerCount;
 		}
 	}
+
+	/// @notice Calcula la cantidad de tokens disponibles para crear desafíos (en tokens completos)
+	function tokensAvailable(uint256 _orgId) public view returns (uint256) {
+		Organization storage org = organizations[_orgId];
+		require(org.exists, "Organization does not exist");
+
+		// Obtener el número de decimales del token
+		uint256 decimals = ERC20(org.token).decimals();
+
+		// Tokens disponibles = Balance del token en el contrato - tokens comprometidos en desafíos activos
+		uint256 tokenBalance = ERC20(org.token).balanceOf(address(this)) / (10 ** decimals);
+		uint256 committedTokens = 0;
+
+		for (uint256 i = 0; i < org.challengeIds.length; i++) {
+			uint256 challengeId = org.challengeIds[i];
+			Challenge storage challenge = challenges[challengeId];
+			if (challenge.active) {
+				committedTokens += challenge.prizeAmount * (challenge.maxWinners - challenge.winnerCount);
+			}
+		}
+
+		// `prizeAmount` ya está en tokens completos, no es necesario ajustar más
+		return tokenBalance >= committedTokens ? tokenBalance - committedTokens : 0;
+	}
+
 }

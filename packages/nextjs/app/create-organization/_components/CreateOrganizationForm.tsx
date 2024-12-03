@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Interface, parseEther } from "ethers";
-import { useWaitForTransactionReceipt } from "wagmi";
+import { Interface } from "ethers";
+import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import AddressManager from "~~/app/create-organization/_components/AddressManager";
 import { IntegerInput, IntegerVariant } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -28,6 +28,7 @@ const CreateOrganizationForm = () => {
   });
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { address } = useAccount();
 
   const { data: result, writeContractAsync: createOrganization } = useScaffoldWriteContract("CryptoTrophyPlatform");
   const { data: receipt } = useWaitForTransactionReceipt({
@@ -115,6 +116,7 @@ const CreateOrganizationForm = () => {
           <AddressManager
             addresses={organizationForm.admins}
             setAddresses={admins => setOrganizationForm({ ...organizationForm, admins })}
+            defaultAddress={address}
           />
         </div>
 
