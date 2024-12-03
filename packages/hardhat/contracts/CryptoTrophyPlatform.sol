@@ -222,53 +222,38 @@ contract CryptoTrophyPlatform {
 		);
 		require(!challenge.winners[msg.sender], "Already claimed");
 
-		// IValidator validator = IValidator(challenge.validator);
-		// require(validator.validate(msg.sender), "Validation failed");
-
 		Organization storage organization = organizations[_orgId];
+		uint256 prizeAmountInBaseUnits = challenge.prizeAmount;
+
 		require(
-			ERC20(organization.token).balanceOf(address(this)) >= challenge.prizeAmount,
+			ERC20(organization.token).balanceOf(address(this)) >= prizeAmountInBaseUnits,
 			"Not enough tokens in the organization"
 		);
 
 		challenge.winners[msg.sender] = true;
 		challenge.winnerCount++;
 
+		// Si se alcanzó el número máximo de ganadores, marcar el desafío como inactivo
+		if (challenge.winnerCount >= challenge.maxWinners) {
+			challenge.active = false;
+		}
+
 		// Transferir tokens al ganador
-		ERC20(organization.token).transfer(msg.sender, challenge.prizeAmount);
+		ERC20(organization.token).transfer(msg.sender, prizeAmountInBaseUnits);
 
 		emit RewardClaimed(_challengeId, msg.sender);
 	}
 
+	function getTokenDecimals(uint256 _orgId) public view returns (uint8) {
+		Organization storage org = organizations[_orgId];
+		require(org.exists, "Organization does not exist");
+		return ERC20(org.token).decimals();
+	}
 
 	/// @notice Lista todas las organizaciones
 	function listOrganizations() public view returns (uint256[] memory) {
 		return organizationIds;
 	}
-
-	// /// @notice Lista todas las organizaciones donde el sender es admin
-	// function listOrganizationsAsAdmin() public view returns (uint256[] memory) {
-	// 	uint256[] memory orgs = new uint256[](orgCount);
-	// 	uint256 count = 0;
-	// 	for (uint256 i = 0; i < orgCount; i++) {
-	// 		if (organizations[i].adminExists[msg.sender]) {
-	// 			orgs[count++] = i;
-	// 		}
-	// 	}
-	// 	return orgs;
-	// }
-
-	// /// @notice Lista todas las organizaciones donde el sender es usuario
-	// function listOrganizationsAsUser() public view returns (uint256[] memory) {
-	// 	uint256[] memory orgs = new uint256[](orgCount);
-	// 	uint256 count = 0;
-	// 	for (uint256 i = 0; i < orgCount; i++) {
-	// 		if (organizations[i].userExists[msg.sender]) {
-	// 			orgs[count++] = i;
-	// 		}
-	// 	}
-	// 	return orgs;
-	// }
 
 	/// @notice Lista todos los desafíos de una organización
 	function listChallenges(
@@ -425,16 +410,13 @@ contract CryptoTrophyPlatform {
 		}
 	}
 
-	/// @notice Calcula la cantidad de tokens disponibles para crear desafíos (en tokens completos)
+	/// @notice Calcula la cantidad de tokens disponibles para crear desafíos (en unidades base)
 	function tokensAvailable(uint256 _orgId) public view returns (uint256) {
 		Organization storage org = organizations[_orgId];
 		require(org.exists, "Organization does not exist");
 
-		// Obtener el número de decimales del token
-		uint256 decimals = ERC20(org.token).decimals();
-
 		// Tokens disponibles = Balance del token en el contrato - tokens comprometidos en desafíos activos
-		uint256 tokenBalance = ERC20(org.token).balanceOf(address(this)) / (10 ** decimals);
+		uint256 tokenBalance = ERC20(org.token).balanceOf(address(this));
 		uint256 committedTokens = 0;
 
 		for (uint256 i = 0; i < org.challengeIds.length; i++) {
@@ -445,7 +427,6 @@ contract CryptoTrophyPlatform {
 			}
 		}
 
-		// `prizeAmount` ya está en tokens completos, no es necesario ajustar más
 		return tokenBalance >= committedTokens ? tokenBalance - committedTokens : 0;
 	}
 
