@@ -16,19 +16,19 @@ const ClaimChallengeModal: React.FC<ClaimChallengeModalProps> = ({ orgId, challe
   const [loading, setLoading] = useState(false);
 
   const { writeContractAsync: claimReward } = useScaffoldWriteContract("CryptoTrophyPlatform");
-  const { data: publicHash } = useScaffoldReadContract({
+  const { data: validatorConfig } = useScaffoldReadContract({
     contractName: "CryptoTrophyPlatform",
     functionName: "getConfig",
     args: [challengeId],
   });
 
   const handleClaim = async () => {
-    if (publicHash !== undefined) {
+    if (validatorConfig !== undefined) {
       try {
         setLoading(true);
         console.log("Org ID", orgId, "Challenge ID", challengeId);
 
-        const inputJson = JSON.parse(publicHash);
+        const inputJson = JSON.parse(validatorConfig);
         if ("public_hash" in inputJson) {
           console.log("On chain validator detected");
 
@@ -88,25 +88,38 @@ const ClaimChallengeModal: React.FC<ClaimChallengeModalProps> = ({ orgId, challe
     return { pA, pB, pC };
   };
 
+  const hasOnChainValidator = () => {
+    if (validatorConfig !== undefined) {
+      const inputJson = JSON.parse(validatorConfig);
+      return "public_hash" in inputJson;
+    }
+    return false;
+  };
+
   return (
     <Modal onClose={onClose}>
       <div className="p-4">
         <h2 className="text-xl font-bold mb-4 text-center" style={{ color: "green" }}>
           Claim Reward
         </h2>
-        <p className="mb-4 text-center" style={{ color: "green" }}>
-          Set secret token to claim the reward for challenge <strong>{challengeId.toString()}</strong>?
-        </p>
 
-        <div className="mb-4 flex justify-center">
-          <input
-            type="text"
-            placeholder="Secret Input"
-            className="input input-bordered w-full max-w-xs"
-            value={inputValue}
-            onChange={e => setInputValue(e.target.value)}
-          />
-        </div>
+        {hasOnChainValidator() && (
+          <>
+            <p className="mb-4 text-center" style={{ color: "green" }}>
+              Set secret token to claim the reward for challenge <strong>{challengeId.toString()}</strong>?
+            </p>
+
+            <div className="mb-4 flex justify-center">
+              <input
+                type="text"
+                placeholder="Secret Input"
+                className="input input-bordered w-full max-w-xs"
+                value={inputValue}
+                onChange={e => setInputValue(e.target.value)}
+              />
+            </div>
+          </>
+        )}
 
         <div className="flex justify-center gap-4">
           <button className="btn btn-secondary" onClick={onClose} disabled={loading}>
