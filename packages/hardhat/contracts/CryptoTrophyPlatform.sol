@@ -41,7 +41,6 @@ contract CryptoTrophyPlatform {
 		string description;
 
 		address validatorAddr;
-		OnChainValidator validator;
 		uint256 validationId;
 
 		uint256 prizeAmount;
@@ -214,8 +213,12 @@ contract CryptoTrophyPlatform {
 
     function getConfig(uint256 _challengeId) public view returns (string memory) {
 		Challenge storage challenge = challenges[_challengeId];
-        IValidator validator = OnChainValidator(challenge.validatorAddr);
-        return validator.getConfig(challenge.validationId);
+		if (challenge.validatorAddr != address(0x0)) {
+			IValidator validator = IValidator(challenge.validatorAddr);
+			return validator.getConfig(challenge.validationId);
+		} else {
+			return "{}";
+		}
     }
 
 	/// @notice Reclama un premio de un desafío
@@ -237,8 +240,10 @@ contract CryptoTrophyPlatform {
 		);
 		require(!challenge.winners[msg.sender], "Already claimed");
 
-        IValidator validator = OnChainValidator(challenge.validatorAddr);
-		require(validator.validate(challenge.validationId, params), "Validation failed");
+		if (challenge.validatorAddr != address(0x0)) {
+			IValidator validator = IValidator(challenge.validatorAddr);
+			require(validator.validate(challenge.validationId, params), "Validation failed");
+		}
 
 		Organization storage organization = organizations[_orgId];
 

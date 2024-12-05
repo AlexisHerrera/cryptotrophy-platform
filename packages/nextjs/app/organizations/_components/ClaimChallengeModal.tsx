@@ -29,37 +29,41 @@ const ClaimChallengeModal: React.FC<ClaimChallengeModalProps> = ({ orgId, challe
         console.log("Org ID", orgId, "Challenge ID", challengeId);
 
         const inputJson = JSON.parse(publicHash);
-        const challengeHash = BigInt(inputJson["public_hash"]);
+        if ("public_hash" in inputJson) {
+          console.log("On chain validator detected");
 
-        const input = {
-          in: BigInt(inputValue),
-          hash: challengeHash,
-        };
-        console.log(input);
+          const challengeHash = BigInt(inputJson["public_hash"]);
 
-        const { proof, publicSignals } = await groth16.fullProve(input, "/validate_hash.wasm", "/circuit_0000.zkey");
+          const input = {
+            in: BigInt(inputValue),
+            hash: challengeHash,
+          };
+          console.log(input);
 
-        // Generate calldata to send to the contract
-        const callData = await groth16.exportSolidityCallData(proof, publicSignals);
+          const { proof, publicSignals } = await groth16.fullProve(input, "/validate_hash.wasm", "/circuit_0000.zkey");
 
-        console.log("Proof: ", proof);
-        console.log("Public Signals: ", publicSignals);
-        console.log("Call Data: ", callData);
+          // Generate calldata to send to the contract
+          const callData = await groth16.exportSolidityCallData(proof, publicSignals);
 
-        if (callData) {
-          const { pA, pB, pC } = parseCallData(callData);
+          console.log("Proof: ", proof);
+          console.log("Public Signals: ", publicSignals);
+          console.log("Call Data: ", callData);
 
-          // Create an ABI coder instance
-          const abiCoder = new ethers.AbiCoder();
+          if (callData) {
+            const { pA, pB, pC } = parseCallData(callData);
 
-          // Encode the parameters into bytes
-          const params = abiCoder.encode(["uint256[2]", "uint256[2][2]", "uint256[2]"], [pA, pB, pC]);
-          const hexParams: `0x${string}` = params as `0x${string}`;
+            // Create an ABI coder instance
+            const abiCoder = new ethers.AbiCoder();
 
-          await claimReward({
-            functionName: "claimReward",
-            args: [orgId, challengeId, hexParams],
-          });
+            // Encode the parameters into bytes
+            const params = abiCoder.encode(["uint256[2]", "uint256[2][2]", "uint256[2]"], [pA, pB, pC]);
+            const hexParams: `0x${string}` = params as `0x${string}`;
+
+            await claimReward({
+              functionName: "claimReward",
+              args: [orgId, challengeId, hexParams],
+            });
+          }
         }
 
         alert("Reward claimed successfully!");
