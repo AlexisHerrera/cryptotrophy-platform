@@ -34,6 +34,11 @@ export const Faucet = () => {
     const getFaucetAddress = async () => {
       try {
         const accounts = await localWalletClient.getAddresses();
+        console.log("⚡️ ~ file: Faucet.tsx:getFaucetAddress ~ accounts", accounts);
+        console.log(
+          "⚡️ ~ file: Faucet.tsx:getFaucetAddress ~ accounts[FAUCET_ACCOUNT_INDEX]",
+          accounts[FAUCET_ACCOUNT_INDEX],
+        );
         setFaucetAddress(accounts[FAUCET_ACCOUNT_INDEX]);
       } catch (error) {
         notification.error(

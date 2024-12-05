@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     CryptoTrophyPlatform: {
-      address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      address: "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
       abi: [
         {
           inputs: [
@@ -457,6 +457,25 @@ const deployedContracts = {
               name: "_orgId",
               type: "uint256",
             },
+          ],
+          name: "getTokenDecimals",
+          outputs: [
+            {
+              internalType: "uint8",
+              name: "",
+              type: "uint8",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
             {
               internalType: "address",
               name: "_user",
@@ -699,23 +718,19 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "_challengeId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_validatorAddr",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "_validationId",
+              name: "_orgId",
               type: "uint256",
             },
           ],
-          name: "setChallengeValidator",
-          outputs: [],
-          stateMutability: "nonpayable",
+          name: "tokensAvailable",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
       ],

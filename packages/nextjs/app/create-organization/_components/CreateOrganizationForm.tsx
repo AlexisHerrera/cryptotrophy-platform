@@ -2,20 +2,19 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Interface, parseEther } from "ethers";
-import { Transaction } from "viem";
-import { useWaitForTransactionReceipt } from "wagmi";
+import { Interface } from "ethers";
+import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import AddressManager from "~~/app/create-organization/_components/AddressManager";
+import { IntegerInput, IntegerVariant } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { decodeTransactionData } from "~~/utils/scaffold-eth";
 
 interface CreateOrganizationFormProps {
   organizationName: string;
   admins: string[];
   users: string[];
   tokenSymbol: string;
-  initialMint: number;
-  ethBacking: number;
+  initialMint: string;
+  ethBacking: string;
 }
 
 const CreateOrganizationForm = () => {
@@ -24,21 +23,22 @@ const CreateOrganizationForm = () => {
     admins: [],
     users: [],
     tokenSymbol: "",
-    initialMint: 1000,
-    ethBacking: 0,
+    initialMint: "1000",
+    ethBacking: "0",
   });
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { address } = useAccount();
 
   const { data: result, writeContractAsync: createOrganization } = useScaffoldWriteContract("CryptoTrophyPlatform");
   const { data: receipt } = useWaitForTransactionReceipt({
     hash: result,
   });
-  const contractInterface = new Interface([
-    "event OrganizationCreated(uint256 indexed orgId, string name, address token)",
-  ]);
 
   useEffect(() => {
+    const contractInterface = new Interface([
+      "event OrganizationCreated(uint256 indexed orgId, string name, address token)",
+    ]);
     if (receipt?.logs) {
       // Filtrar logs para el evento OrganizationCreated
       const log = receipt.logs.find(
@@ -53,9 +53,9 @@ const CreateOrganizationForm = () => {
         router.push(`/organizations/${organizationId.toString()}`);
       }
     }
-  }, [receipt, contractInterface, router]);
+  }, [receipt, router]);
 
-  const handleInputChange = (field: keyof CreateOrganizationFormProps, value: string | number) => {
+  const handleInputChange = (field: keyof CreateOrganizationFormProps, value: string) => {
     setOrganizationForm({ ...organizationForm, [field]: value });
   };
 
@@ -73,28 +73,27 @@ const CreateOrganizationForm = () => {
 
       const tx = await createOrganization({
         functionName: "createOrganization",
-        args: [organizationName, tokenSymbol, BigInt(initialMint), parseEther(ethBacking.toString()), admins, users],
-        value: parseEther(ethBacking.toString()),
+        args: [organizationName, tokenSymbol, BigInt(initialMint), BigInt(ethBacking), admins, users],
+        value: BigInt(ethBacking),
       });
+
       if (!tx) {
         throw new Error("Failed to create organization.");
       }
 
       console.log("Organization created successfully:", tx);
-      setOrganizationForm({
-        organizationName: "",
-        admins: [],
-        users: [],
-        tokenSymbol: "",
-        initialMint: 1000,
-        ethBacking: 0,
-      });
+      // Resetear el formulario si lo deseas
     } catch (error: any) {
       console.error("Error creating organization:", error);
       alert(error.message || "Failed to create organization.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const formatEthBacking = (value: string): string => {
+    const ethValue = parseFloat((parseInt(value || "0", 10) / 1e18).toFixed(6)); // Convertir wei a ETH
+    return ethValue >= 0.001 ? `${ethValue} ETH` : `${value} wei`;
   };
 
   return (
@@ -117,6 +116,7 @@ const CreateOrganizationForm = () => {
           <AddressManager
             addresses={organizationForm.admins}
             setAddresses={admins => setOrganizationForm({ ...organizationForm, admins })}
+            defaultAddress={address}
           />
         </div>
 
@@ -146,23 +146,22 @@ const CreateOrganizationForm = () => {
             placeholder="Enter initial mint"
             className="input input-bordered"
             value={organizationForm.initialMint}
-            onChange={e => handleInputChange("initialMint", parseFloat(e.target.value) || 0)}
+            onChange={e => handleInputChange("initialMint", e.target.value)}
           />
         </div>
 
         <div className="form-control mb-4">
-          <label className="label text-lg">ETH Backing:</label>
-          <input
-            type="number"
-            placeholder="Enter ETH backing amount"
-            className="input input-bordered"
+          <label className="label text-lg">ETH Backing (wei):</label>
+          <IntegerInput
             value={organizationForm.ethBacking}
-            onChange={e => handleInputChange("ethBacking", parseFloat(e.target.value) || 0)}
+            onChange={value => handleInputChange("ethBacking", value)}
+            placeholder="Enter ETH backing amount"
+            variant={IntegerVariant.UINT256}
           />
         </div>
 
         <button type="submit" className="btn btn-primary mt-4 w-full" disabled={loading}>
-          {loading ? "Processing..." : `Pay ${organizationForm.ethBacking} ETH`}
+          {loading ? "Processing..." : `Pay ${formatEthBacking(organizationForm.ethBacking)}`}
         </button>
       </form>
     </div>

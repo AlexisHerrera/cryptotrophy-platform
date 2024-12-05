@@ -10,10 +10,11 @@ contract CompanyToken is ERC20, Ownable {
 	constructor(
 		string memory name,
 		string memory symbol,
-		uint256 initialSupply
+		uint256 initialSupply,
+		address initialRecipient
 	) ERC20(name, symbol) Ownable(msg.sender) {
-		// Suministro inicial enviado al creador del contrato
-		_mint(msg.sender, initialSupply * (10 ** decimals()));
+		// Suministro inicial enviado al recipient
+		_mint(initialRecipient, initialSupply * (10 ** decimals()));
 	}
 
 	function mint(address to, uint256 amount) public onlyOwner {
@@ -92,9 +93,10 @@ contract CryptoTrophyPlatform {
 	) {
 		// Crear token de la plataforma
 		cryptoTrophyToken = address(
-			new CompanyToken(_name, _symbol, _initialSupply)
+			new CompanyToken(_name, _symbol, _initialSupply, address(this))
 		);
 	}
+
 	event DebugLog(string message);
 
 
@@ -110,11 +112,10 @@ contract CryptoTrophyPlatform {
 		address[] memory _users
 	) public payable returns (uint256) {
 		require(msg.value >= _initialEthBacking, "Insufficient ETH backing");
-		emit DebugLog("ETH backing validated");
 
-		// Crear nuevo token de la organización
+		// Crear nuevo token de la organización y asignar tokens al contrato
 		address token = address(
-			new CompanyToken(_name, _symbol, _initialSupply)
+			new CompanyToken(_name, _symbol, _initialSupply, address(this))
 		);
 		require(token != address(0), "Failed to create token");
 		emit DebugLog("Token created");
@@ -171,7 +172,6 @@ contract CryptoTrophyPlatform {
 	function createChallenge(
 		uint256 _orgId,
 		string memory _description,
-		// address _validator,
 		uint256 _prizeAmount,
 		uint256 _startTime,
 		uint256 _endTime,
@@ -179,11 +179,14 @@ contract CryptoTrophyPlatform {
 	) public onlyAdmin(_orgId) returns (uint256) {
 		require(_startTime < _endTime, "Invalid time range");
 
+		// Verificar que hay suficientes tokens disponibles
+		uint256 availableTokens = tokensAvailable(_orgId);
+		require(_prizeAmount * _maxWinners <= availableTokens, "Not enough tokens available");
+
 		uint256 challengeId = challengeCount++;
 		Challenge storage challenge = challenges[challengeId];
 		challenge.id = challengeId;
 		challenge.description = _description;
-		// challenge.validator = _validator;
 		challenge.prizeAmount = _prizeAmount;
 		challenge.startTime = _startTime;
 		challenge.endTime = _endTime;
@@ -197,6 +200,7 @@ contract CryptoTrophyPlatform {
 
 		organization.challengeIds.push(challengeId);
 		challengeIds.push(challengeId);
+
 		emit ChallengeCreated(challengeId, _description);
 		return challengeId;
 	}
@@ -246,45 +250,37 @@ contract CryptoTrophyPlatform {
 		}
 
 		Organization storage organization = organizations[_orgId];
+		uint256 prizeAmountInBaseUnits = challenge.prizeAmount;
+
+		require(
+			ERC20(organization.token).balanceOf(address(this)) >= prizeAmountInBaseUnits,
+			"Not enough tokens in the organization"
+		);
 
 		challenge.winners[msg.sender] = true;
 		challenge.winnerCount++;
 
-		CompanyToken(organization.token).mint(
-			msg.sender,
-			challenge.prizeAmount
-		);
+		// Si se alcanzó el número máximo de ganadores, marcar el desafío como inactivo
+		if (challenge.winnerCount >= challenge.maxWinners) {
+			challenge.active = false;
+		}
+
+		// Transferir tokens al ganador
+		ERC20(organization.token).transfer(msg.sender, prizeAmountInBaseUnits);
+
 		emit RewardClaimed(_challengeId, msg.sender);
+	}
+
+	function getTokenDecimals(uint256 _orgId) public view returns (uint8) {
+		Organization storage org = organizations[_orgId];
+		require(org.exists, "Organization does not exist");
+		return ERC20(org.token).decimals();
 	}
 
 	/// @notice Lista todas las organizaciones
 	function listOrganizations() public view returns (uint256[] memory) {
 		return organizationIds;
 	}
-
-	// /// @notice Lista todas las organizaciones donde el sender es admin
-	// function listOrganizationsAsAdmin() public view returns (uint256[] memory) {
-	// 	uint256[] memory orgs = new uint256[](orgCount);
-	// 	uint256 count = 0;
-	// 	for (uint256 i = 0; i < orgCount; i++) {
-	// 		if (organizations[i].adminExists[msg.sender]) {
-	// 			orgs[count++] = i;
-	// 		}
-	// 	}
-	// 	return orgs;
-	// }
-
-	// /// @notice Lista todas las organizaciones donde el sender es usuario
-	// function listOrganizationsAsUser() public view returns (uint256[] memory) {
-	// 	uint256[] memory orgs = new uint256[](orgCount);
-	// 	uint256 count = 0;
-	// 	for (uint256 i = 0; i < orgCount; i++) {
-	// 		if (organizations[i].userExists[msg.sender]) {
-	// 			orgs[count++] = i;
-	// 		}
-	// 	}
-	// 	return orgs;
-	// }
 
 	/// @notice Lista todos los desafíos de una organización
 	function listChallenges(
@@ -440,4 +436,25 @@ contract CryptoTrophyPlatform {
 			winnerCounts[i] = challenge.winnerCount;
 		}
 	}
+
+	/// @notice Calcula la cantidad de tokens disponibles para crear desafíos (en unidades base)
+	function tokensAvailable(uint256 _orgId) public view returns (uint256) {
+		Organization storage org = organizations[_orgId];
+		require(org.exists, "Organization does not exist");
+
+		// Tokens disponibles = Balance del token en el contrato - tokens comprometidos en desafíos activos
+		uint256 tokenBalance = ERC20(org.token).balanceOf(address(this));
+		uint256 committedTokens = 0;
+
+		for (uint256 i = 0; i < org.challengeIds.length; i++) {
+			uint256 challengeId = org.challengeIds[i];
+			Challenge storage challenge = challenges[challengeId];
+			if (challenge.active) {
+				committedTokens += challenge.prizeAmount * (challenge.maxWinners - challenge.winnerCount);
+			}
+		}
+
+		return tokenBalance >= committedTokens ? tokenBalance - committedTokens : 0;
+	}
+
 }
