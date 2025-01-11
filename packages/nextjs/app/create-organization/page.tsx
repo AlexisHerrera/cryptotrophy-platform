@@ -5,9 +5,9 @@ import { MotionDiv } from "~~/app/motions/use-motion";
 const CreateOrganization = (): React.ReactElement => {
   return (
     <MotionDiv
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -50 }}
+      exit={{ opacity: 0, y: 50 }}
       transition={{ duration: 0.5 }}
     >
       <CreateOrganizationForm />
