@@ -34,7 +34,7 @@ const deployRewardSystem: DeployFunction = async function (hre: HardhatRuntimeEn
 
   // Get the deployed contract to interact with it after deploying.
   const yourContract = await hre.ethers.getContract<Contract>("RewardSystem", deployer);
-  const campaignNames = await yourContract.getAllCampaignNames();
+  const campaignNames = await yourContract.getAllCampaignDetails();
   console.log(campaignNames);
 };
 

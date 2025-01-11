@@ -24,7 +24,7 @@ export const useScaffoldWriteContract = <TContractName extends ContractName>(
   contractName: TContractName,
   writeContractParams?: UseWriteContractParameters,
 ) => {
-  const { chain } = useAccount();
+  const { chain, address } = useAccount();
   const writeTx = useTransactor();
   const [isMining, setIsMining] = useState(false);
   const { targetNetwork } = useTargetNetwork();
@@ -61,6 +61,7 @@ export const useScaffoldWriteContract = <TContractName extends ContractName>(
           {
             abi: deployedContractData.abi as Abi,
             address: deployedContractData.address,
+            account: address,
             ...variables,
           } as WriteContractVariables<Abi, string, any[], Config, number>,
           mutateOptions as

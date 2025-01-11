@@ -3,7 +3,7 @@ import { useTargetNetwork } from "./useTargetNetwork";
 import { QueryObserverResult, RefetchOptions, useQueryClient } from "@tanstack/react-query";
 import type { ExtractAbiFunctionNames } from "abitype";
 import { ReadContractErrorType } from "viem";
-import { useBlockNumber, useReadContract } from "wagmi";
+import { useAccount, useBlockNumber, useReadContract } from "wagmi";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 import {
   AbiFunctionReturnType,
@@ -29,6 +29,7 @@ export const useScaffoldReadContract = <
   args,
   ...readConfig
 }: UseScaffoldReadConfig<TContractName, TFunctionName>) => {
+  const { address: connectedAddress } = useAccount(); // Dirección conectada
   const { data: deployedContract } = useDeployedContractInfo(contractName);
   const { targetNetwork } = useTargetNetwork();
   const { query: queryOptions, watch, ...readContractConfig } = readConfig;
@@ -38,6 +39,7 @@ export const useScaffoldReadContract = <
   const readContractHookRes = useReadContract({
     chainId: targetNetwork.id,
     functionName,
+    account: connectedAddress,
     address: deployedContract?.address,
     abi: deployedContract?.abi,
     args,
