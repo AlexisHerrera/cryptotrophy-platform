@@ -58,15 +58,14 @@ const AddressManager = ({ addresses, setAddresses, defaultAddress }: AddressInpu
             ))}
         </div>
       </div>
-      <div className="flex flex-wrap gap-2 mt-4">
+      <div className="flex flex-wrap gap-2 mt-3">
         {defaultAddress && (
           <div className="flex items-center px-3 py-1 bg-gray-300 text-gray-700 rounded-full shadow-sm">
             <BlockieAvatar address={defaultAddress} size={20} />
-            <span className="mr-2">{`${defaultAddress.slice(0, 6)}...${defaultAddress.slice(-4)}`}</span>
+            <span className="mr-2">{`${defaultAddress.slice(0, 6)}...${defaultAddress.slice(-4)} (You)`}</span>
           </div>
         )}
 
-        {/* Mostrar las addresses del estado */}
         {addresses.map((address, index) => (
           <div key={index} className="flex items-center px-3 py-1 bg-gray-200 text-gray-800 rounded-full shadow-sm">
             <BlockieAvatar address={address} size={20} />
