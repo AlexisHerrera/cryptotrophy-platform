@@ -40,7 +40,7 @@ const AddressManager = ({ addresses, setAddresses, defaultAddress }: AddressInpu
           value={inputValue}
           onChange={handleInputChange}
           placeholder="Enter Ethereum Address"
-          className={`w-full p-3 pr-10 border rounded-lg focus:outline-none ${
+          className={`input input-bordered w-full p-3 pr-10 border rounded-lg focus:outline-none ${
             isValid ? "border-green-500" : inputValue ? "border-red-500" : "border-gray-300"
           }`}
           onKeyDown={e => {
@@ -59,12 +59,10 @@ const AddressManager = ({ addresses, setAddresses, defaultAddress }: AddressInpu
         </div>
       </div>
       <div className="flex flex-wrap gap-2 mt-4">
-        {/* Mostrar el defaultAddress */}
         {defaultAddress && (
           <div className="flex items-center px-3 py-1 bg-gray-300 text-gray-700 rounded-full shadow-sm">
             <BlockieAvatar address={defaultAddress} size={20} />
             <span className="mr-2">{`${defaultAddress.slice(0, 6)}...${defaultAddress.slice(-4)}`}</span>
-            {/* Sin botón para eliminar */}
           </div>
         )}
 

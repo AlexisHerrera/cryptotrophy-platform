@@ -98,14 +98,14 @@ const CreateOrganizationForm = () => {
 
   return (
     <div className="p-8 bg-base-100 rounded-xl shadow-lg max-w-5xl mx-auto">
-      <h2 className="text-3xl font-semibold text-center mb-6 text-gray-500">Create Your New Organization</h2>
+      <h2 className="text-3xl text-center">Create Your New Organization</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-control mb-4">
           <label className="label text-lg">Organization Name:</label>
           <input
             type="text"
             placeholder="Enter organization name"
-            className="input input-bordered"
+            className="input input-bordered border-gray-300 border rounded-lg"
             value={organizationForm.organizationName}
             onChange={e => handleInputChange("organizationName", e.target.value)}
           />
@@ -133,7 +133,7 @@ const CreateOrganizationForm = () => {
           <input
             type="text"
             placeholder="Enter token symbol"
-            className="input input-bordered"
+            className="input input-bordered border-gray-300 border rounded-lg"
             value={organizationForm.tokenSymbol}
             onChange={e => handleInputChange("tokenSymbol", e.target.value)}
           />
@@ -144,7 +144,7 @@ const CreateOrganizationForm = () => {
           <input
             type="number"
             placeholder="Enter initial mint"
-            className="input input-bordered"
+            className="input input-bordered border-gray-300 border rounded-lg"
             value={organizationForm.initialMint}
             onChange={e => handleInputChange("initialMint", e.target.value)}
           />

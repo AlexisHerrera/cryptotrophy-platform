@@ -10,7 +10,9 @@ const CreateOrganization = (): React.ReactElement => {
       exit={{ opacity: 0, y: 50 }}
       transition={{ duration: 0.5 }}
     >
-      <CreateOrganizationForm />
+      <div className="container mx-auto p-4 max-w-3xl">
+        <CreateOrganizationForm />
+      </div>
     </MotionDiv>
   );
 };
