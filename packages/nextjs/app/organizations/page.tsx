@@ -3,8 +3,11 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { MotionDiv } from "~~/app/motions/use-motion";
+import CopyButton from "~~/app/organizations/_components/CopyButton";
+import ModalLeaveJoin from "~~/app/organizations/_components/ModalLeaveJoin";
 import Modal from "~~/components/Modal";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { notification } from "~~/utils/scaffold-eth";
 
 interface Organization {
   id: bigint;
@@ -102,14 +105,10 @@ const Organizations: React.FC = () => {
     }
   };
 
-  const copyToClipboard = (address: string, index: number) => {
-    void navigator.clipboard.writeText(address);
-    setCopiedIndex(index);
-
-    // Cambiar el estado "Copied" temporalmente
-    setTimeout(() => setCopiedIndex(null), 2000);
+  const handleCopy = () => {
+    notification.success("Token address copied!");
   };
-  // MotionDiv va desde la izquierda hacia el centro
+
   return (
     <MotionDiv
       initial={{ opacity: 0, x: -50 }}
@@ -118,12 +117,10 @@ const Organizations: React.FC = () => {
       transition={{ duration: 0.2 }}
     >
       <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Organizations</h1>
-        <div className="overflow-x-auto">
-          <table className="table w-full border border-gray-200 shadow-lg">
+        <div className="container mx-auto p-4 max-w-4xl">
+          <table className="table table-zebra border border-gray-200 shadow-lg">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Name</th>
                 <th>Token Info</th>
                 <th>Admins</th>
@@ -134,27 +131,15 @@ const Organizations: React.FC = () => {
             <tbody>
               {paginatedOrganizations.map((org, index) => (
                 <tr key={org.id.toString()} className="hover">
-                  <td>{org.id.toString()}</td>
                   <td
-                    className="cursor-pointer text-blue-500 underline"
+                    className="cursor-pointer font-bold"
                     onClick={() => router.push(`/organizations/${org.id.toString()}`)}
                   >
                     {org.name}
                   </td>
-                  <td>
-                    {org.tokenSymbols}{" "}
-                    <button
-                      className={`btn btn-sm ${copiedIndex === index ? "btn-success" : "btn-secondary"} ml-2`}
-                      onClick={() => copyToClipboard(org.tokenAddress, index)}
-                    >
-                      {copiedIndex === index ? (
-                        <>
-                          Copied <span>✔️</span>
-                        </>
-                      ) : (
-                        "Copy Address"
-                      )}
-                    </button>
+                  <td className="flex items-center">
+                    {org.tokenSymbols}
+                    <CopyButton address={org.tokenAddress} onCopy={handleCopy} />
                   </td>
                   <td>{org.adminCount.toString()}</td>
                   <td>{org.userCount.toString()}</td>
@@ -205,32 +190,21 @@ const Organizations: React.FC = () => {
             Next
           </button>
         </div>
-
-        {isModalOpen && selectedOrganization && (
-          <Modal onClose={() => setIsModalOpen(false)}>
-            <h2 className="text-xl font-bold mb-4 text-center">
-              {selectedOrganization.isMember ? "Leave" : "Join"} Organization
-            </h2>
-            <p className="mb-4 text-center">
-              Are you sure you want to {selectedOrganization.isMember ? "leave" : "join"}{" "}
-              <strong>{selectedOrganization.name}</strong>?
-            </p>
-            <div className="flex justify-center gap-4">
-              <button className="btn btn-secondary" onClick={() => setIsModalOpen(false)} disabled={loadingAction}>
-                Cancel
-              </button>
-              <button
-                className="btn btn-primary"
-                onClick={() =>
-                  selectedOrganization.isMember ? handleLeave(selectedOrganization) : handleJoin(selectedOrganization)
-                }
-                disabled={loadingAction}
-              >
-                {loadingAction ? "Processing..." : selectedOrganization.isMember ? "Leave" : "Join"}
-              </button>
-            </div>
-          </Modal>
-        )}
+        <ModalLeaveJoin
+          title={selectedOrganization?.isMember ? "Leave Organization" : "Join Organization"}
+          message={`Are you sure you want to ${selectedOrganization?.isMember ? "leave" : "join"} ${
+            selectedOrganization?.name
+          }?`}
+          isOpen={isModalOpen}
+          isLoading={loadingAction}
+          onAccept={() => {
+            if (selectedOrganization?.isMember) {
+              void handleLeave(selectedOrganization);
+            }
+            setIsModalOpen(false);
+          }}
+          onCancel={() => setIsModalOpen(false)}
+        />
       </div>
     </MotionDiv>
   );
