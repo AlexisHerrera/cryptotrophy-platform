@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { MotionDiv } from "~~/app/motions/use-motion";
 import CopyButton from "~~/app/organizations/_components/CopyButton";
 import ModalLeaveJoin from "~~/app/organizations/_components/ModalLeaveJoin";
-import Modal from "~~/components/Modal";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -23,7 +22,6 @@ const Organizations: React.FC = () => {
   const [selectedOrganization, setSelectedOrganization] = useState<Organization | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingAction, setLoadingAction] = useState(false);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -80,7 +78,7 @@ const Organizations: React.FC = () => {
         functionName: "joinOrganization",
         args: [organization.id],
       });
-      alert(`Successfully joined ${organization.name}!`);
+      //notification.success(`Successfully joined ${organization.name}!`);
       setSelectedOrganization(null);
     } catch (error) {
       console.error("Error joining organization:", error);
@@ -96,7 +94,7 @@ const Organizations: React.FC = () => {
         functionName: "leaveOrganization",
         args: [organization.id],
       });
-      alert(`Successfully left ${organization.name}!`);
+      //notification.success(`Successfully left ${organization.name}!`);
       setSelectedOrganization(null);
     } catch (error) {
       console.error("Error leaving organization:", error);
@@ -129,7 +127,7 @@ const Organizations: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedOrganizations.map((org, index) => (
+              {paginatedOrganizations.map(org => (
                 <tr key={org.id.toString()} className="hover">
                   <td
                     className="cursor-pointer font-bold"
@@ -190,6 +188,7 @@ const Organizations: React.FC = () => {
             Next
           </button>
         </div>
+
         <ModalLeaveJoin
           title={selectedOrganization?.isMember ? "Leave Organization" : "Join Organization"}
           message={`Are you sure you want to ${selectedOrganization?.isMember ? "leave" : "join"} ${
@@ -197,9 +196,12 @@ const Organizations: React.FC = () => {
           }?`}
           isOpen={isModalOpen}
           isLoading={loadingAction}
-          onAccept={() => {
+          onAccept={async () => {
+            if (selectedOrganization === null) return;
             if (selectedOrganization?.isMember) {
-              void handleLeave(selectedOrganization);
+              await handleLeave(selectedOrganization);
+            } else {
+              await handleJoin(selectedOrganization);
             }
             setIsModalOpen(false);
           }}
