@@ -37,12 +37,8 @@ const Organizations: React.FC = () => {
   const { writeContractAsync: joinOrganization } = useScaffoldWriteContract("CryptoTrophyPlatform");
   const { writeContractAsync: leaveOrganization } = useScaffoldWriteContract("CryptoTrophyPlatform");
 
-  if (isLoading) {
+  if (isLoading || !organizationsData) {
     return <span className="loading loading-spinner loading-lg"></span>;
-  }
-
-  if (!organizationsData) {
-    return <p>No organizations found.</p>;
   }
 
   const [orgIds, names, tokenSymbols, tokenAddresses, adminCounts, userCounts, isMembers] = organizationsData as [
