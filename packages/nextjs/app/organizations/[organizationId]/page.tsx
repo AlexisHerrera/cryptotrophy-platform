@@ -63,11 +63,11 @@ const OrganizationPage: React.FC = () => {
     }
   }, [organizationData]);
 
-  if (isLoadingOrganization) {
+  if (isLoadingOrganization || !organization) {
     return <span className="loading loading-spinner loading-lg"></span>;
   }
 
-  if (!organization || (!organization.isAdmin && !organization.isUser)) {
+  if (!organization.isAdmin && !organization.isUser) {
     return <p>You do not have access to this organization.</p>;
   }
 
