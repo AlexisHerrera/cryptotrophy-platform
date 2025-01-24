@@ -63,8 +63,8 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="table w-full border border-gray-200 shadow-lg text-center">
+    <div className="container mx-auto p-4 max-w-4xl">
+      <table className="table table-zebra border border-gray-200 shadow-lg text-center">
         <thead>
           <tr>
             <th>ID</th>
@@ -79,7 +79,7 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
         </thead>
         <tbody>
           {challenges.map((challenge, index) => (
-            <tr key={index}>
+            <tr key={index} className="hover">
               <td>{challenge.id.toString()}</td>
               <td>{challenge.description}</td>
               <td>{challenge.prizeAmount} tokens</td>

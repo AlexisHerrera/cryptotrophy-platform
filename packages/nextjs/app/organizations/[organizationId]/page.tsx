@@ -78,7 +78,7 @@ const OrganizationPage: React.FC = () => {
       </button>
 
       <div className="text-center">
-        <h1 className="text-3xl font-bold mb-4">{organization.name}</h1>
+        <h1 className="text-4xl text-gray-700 font-mono grayscale mb-4">{organization.name}</h1>
 
         {organization.isAdmin && (
           <div className="flex justify-center gap-4 mb-4">
