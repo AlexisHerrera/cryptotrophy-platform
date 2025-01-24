@@ -80,16 +80,26 @@ const OrganizationPage: React.FC = () => {
       <div className="text-center">
         <h1 className="text-4xl text-gray-700 font-mono grayscale mb-4">{organization.name}</h1>
 
-        {organization.isAdmin && (
-          <div className="flex justify-center gap-4 mb-4">
-            <button className="btn btn-primary" onClick={() => setShowCreateChallengeModal(true)}>
-              Create Challenge
-            </button>
-            <button className="btn btn-secondary" onClick={() => setShowAdminPanelModal(true)}>
-              Open Admin Panel
+        <div className="flex justify-center gap-4 mb-4">
+          {organization.isAdmin && (
+            <div className="flex gap-4">
+              <button className="btn btn-primary" onClick={() => setShowCreateChallengeModal(true)}>
+                Create Challenge
+              </button>
+              <button className="btn btn-secondary" onClick={() => setShowAdminPanelModal(true)}>
+                Open Admin Panel
+              </button>
+            </div>
+          )}
+          <div>
+            <button
+              className="btn bg-amber-400"
+              onClick={() => router.push(`/organizations/${organization.id}/prizes`)}
+            >
+              Prize Center
             </button>
           </div>
-        )}
+        </div>
 
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-semibold mb-4">Active Challenges</h2>
