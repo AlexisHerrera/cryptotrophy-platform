@@ -1,27 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./CompanyToken.sol";
 import "./OnChainValidator.sol";
-
-// Ejemplo del contrato de tokens
-contract CompanyToken is ERC20, Ownable {
-	constructor(
-		string memory name,
-		string memory symbol,
-		uint256 initialSupply,
-		address initialRecipient
-	) ERC20(name, symbol) Ownable(msg.sender) {
-		// Suministro inicial enviado al recipient
-		_mint(initialRecipient, initialSupply * (10 ** decimals()));
-	}
-
-	function mint(address to, uint256 amount) public onlyOwner {
-		_mint(to, amount);
-	}
-}
-
 
 contract CryptoTrophyPlatform {
 	// Estructuras
@@ -408,7 +388,8 @@ contract CryptoTrophyPlatform {
 		uint256[] memory endTimes,
 		uint256[] memory maxWinners,
 		bool[] memory actives,
-		uint256[] memory winnerCounts
+		uint256[] memory winnerCounts,
+		bool[] memory hasValidator
 	)
 	{
 		uint256 count = ids.length;
@@ -421,6 +402,7 @@ contract CryptoTrophyPlatform {
 		maxWinners = new uint256[](count);
 		actives = new bool[](count);
 		winnerCounts = new uint256[](count);
+		hasValidator = new bool[](count);
 
 		for (uint256 i = 0; i < count; i++) {
 			Challenge storage challenge = challenges[ids[i]];
@@ -434,6 +416,7 @@ contract CryptoTrophyPlatform {
 			maxWinners[i] = challenge.maxWinners;
 			actives[i] = challenge.active;
 			winnerCounts[i] = challenge.winnerCount;
+			hasValidator[i] = challenge.validatorAddr != address(0x0);
 		}
 	}
 

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import ClaimChallengeModal from "./ClaimChallengeModal";
 import { formatUnits } from "ethers";
+import ClaimChallengeBasic from "~~/app/organizations/_components/ClaimChallengeBasic";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 interface ChallengeListProps {
@@ -12,8 +13,8 @@ interface ChallengeListProps {
 
 const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) => {
   const [challenges, setChallenges] = useState<any[]>([]);
-  const [selectedChallengeId, setSelectedChallengeId] = useState<bigint | null>(null);
-  console.log("SelectedChallengeId", selectedChallengeId);
+  const [selectedChallenge, setSelectedChallenge] = useState<{ id: bigint; hasValidator: boolean } | null>(null);
+  console.log("SelectedChallengeId", selectedChallenge?.id);
 
   // Hook para obtener los detalles de los desafíos
   const { data, isLoading } = useScaffoldReadContract({
@@ -48,6 +49,7 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
         maxWinners: data[5][index],
         active: data[6][index],
         winnerCount: data[7][index],
+        hasValidator: data[8][index],
       }));
 
       setChallenges(formattedChallenges);
@@ -89,7 +91,10 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
               <td>{challenge.endTime}</td>
               <td>
                 {challenge.active ? (
-                  <button className="btn btn-primary btn-sm" onClick={() => setSelectedChallengeId(challenge.id)}>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => setSelectedChallenge({ id: challenge.id, hasValidator: challenge.hasValidator })}
+                  >
                     Claim Reward
                   </button>
                 ) : (
@@ -101,11 +106,18 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
         </tbody>
       </table>
 
-      {selectedChallengeId !== null && (
+      {selectedChallenge !== null && selectedChallenge.hasValidator && (
         <ClaimChallengeModal
           orgId={orgId}
-          challengeId={selectedChallengeId}
-          onClose={() => setSelectedChallengeId(null)}
+          challengeId={selectedChallenge.id}
+          onClose={() => setSelectedChallenge(null)}
+        />
+      )}
+      {selectedChallenge !== null && !selectedChallenge.hasValidator && (
+        <ClaimChallengeBasic
+          orgId={orgId}
+          challengeId={selectedChallenge.id}
+          onClose={() => setSelectedChallenge(null)}
         />
       )}
     </div>

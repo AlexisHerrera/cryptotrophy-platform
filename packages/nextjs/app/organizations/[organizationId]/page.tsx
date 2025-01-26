@@ -78,7 +78,7 @@ const OrganizationPage: React.FC = () => {
       </button>
 
       <div className="text-center">
-        <h1 className="text-4xl text-gray-700 font-mono grayscale mb-4">{organization.name}</h1>
+        <h1 className="text-4xl text-gray-700 font-mono grayscale mb-4 dark:text-gray-300">{organization.name}</h1>
 
         <div className="flex justify-center gap-4 mb-4">
           {organization.isAdmin && (
@@ -93,7 +93,7 @@ const OrganizationPage: React.FC = () => {
           )}
           <div>
             <button
-              className="btn bg-amber-400"
+              className="btn bg-amber-400 dark:text-gray-800 dark:btn-warning"
               onClick={() => router.push(`/organizations/${organization.id}/prizes`)}
             >
               Prize Center
