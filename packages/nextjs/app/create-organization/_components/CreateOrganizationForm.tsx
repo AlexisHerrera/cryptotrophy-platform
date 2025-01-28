@@ -33,7 +33,7 @@ const CreateOrganizationForm = () => {
   const { address } = useAccount();
   const router = useRouter();
 
-  const { data: result, writeContractAsync: createOrganization } = useScaffoldWriteContract("CryptoTrophyPlatform");
+  const { data: result, writeContractAsync: createOrganization } = useScaffoldWriteContract("OrganizationManager");
   const { data: receipt } = useWaitForTransactionReceipt({ hash: result });
 
   useEffect(() => {

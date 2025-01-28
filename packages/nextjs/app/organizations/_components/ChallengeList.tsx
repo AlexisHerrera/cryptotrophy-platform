@@ -8,7 +8,7 @@ import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 interface ChallengeListProps {
   orgId: bigint;
-  challengeIds: bigint[];
+  challengeIds: readonly bigint[];
 }
 
 const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) => {
@@ -18,14 +18,14 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
 
   // Hook para obtener los detalles de los desafíos
   const { data, isLoading } = useScaffoldReadContract({
-    contractName: "CryptoTrophyPlatform",
+    contractName: "ChallengeManager",
     functionName: "listChallengesDetails",
     args: [challengeIds],
   });
 
   // Hook para obtener los decimales del token
   const { data: decimalsData } = useScaffoldReadContract({
-    contractName: "CryptoTrophyPlatform",
+    contractName: "OrganizationManager",
     functionName: "getTokenDecimals",
     args: [orgId],
   });

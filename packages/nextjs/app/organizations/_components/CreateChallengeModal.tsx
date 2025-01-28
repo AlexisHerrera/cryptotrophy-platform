@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "ethers";
 import Modal from "~~/components/Modal";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 interface CreateChallengeModalProps {
   organizationId: bigint;
   onClose: () => void;
-  createChallenge: any;
 }
 
-const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizationId, onClose, createChallenge }) => {
+const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizationId, onClose }) => {
   const [formData, setFormData] = useState({
     description: "",
     prizeAmount: "",
@@ -20,22 +19,32 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
 
   const [maxPrizeAmount, setMaxPrizeAmount] = useState<bigint | null>(null);
 
+  const { writeContractAsync: organizationManager } = useScaffoldWriteContract("OrganizationManager");
+  const challengeManagerAddress = useDeployedContractInfo("ChallengeManager").data?.address;
+  console.log("Challenge Manager Address:", challengeManagerAddress);
   // Hook to get available tokens
   const { data: availableTokens } = useScaffoldReadContract({
-    contractName: "CryptoTrophyPlatform",
+    contractName: "ChallengeManager",
     functionName: "tokensAvailable",
     args: [organizationId],
   });
 
   // Hook to get decimals from the main contract
   const { data: decimals } = useScaffoldReadContract({
-    contractName: "CryptoTrophyPlatform",
+    contractName: "OrganizationManager",
     functionName: "getTokenDecimals",
     args: [organizationId],
   });
 
   const decimalsNumber = decimals ? Number(decimals) : null;
-
+  console.log(
+    "Organization Id:",
+    organizationId,
+    "token decimals:",
+    decimalsNumber,
+    "available tokens:",
+    availableTokens,
+  );
   useEffect(() => {
     if (availableTokens) {
       setMaxPrizeAmount(availableTokens as bigint);
@@ -59,9 +68,10 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
 
       const prizeAmountInBaseUnits = parseUnits(prizeAmount, decimalsNumber);
 
-      await createChallenge({
-        functionName: "createChallenge",
+      await organizationManager({
+        functionName: "createChallengeAndTransfer",
         args: [
+          challengeManagerAddress,
           organizationId,
           description,
           prizeAmountInBaseUnits,

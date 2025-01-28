@@ -15,9 +15,9 @@ const ClaimChallengeModal: React.FC<ClaimChallengeModalProps> = ({ orgId, challe
   const [inputValue, setInputValue] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
-  const { writeContractAsync: claimReward } = useScaffoldWriteContract("CryptoTrophyPlatform");
+  const { writeContractAsync: claimReward } = useScaffoldWriteContract("ChallengeManager");
   const { data: validatorConfig } = useScaffoldReadContract({
-    contractName: "CryptoTrophyPlatform",
+    contractName: "ChallengeManager",
     functionName: "getConfig",
     args: [challengeId],
   });
@@ -61,7 +61,7 @@ const ClaimChallengeModal: React.FC<ClaimChallengeModalProps> = ({ orgId, challe
 
             await claimReward({
               functionName: "claimReward",
-              args: [orgId, challengeId, hexParams],
+              args: [challengeId, hexParams],
             });
           }
         }

@@ -2597,6 +2597,7 @@ __metadata:
     eslint-plugin-prettier: ~5.2.1
     ethers: ~6.13.2
     hardhat: ~2.22.10
+    hardhat-console: ^1.0.0
     hardhat-deploy: ~0.12.4
     hardhat-deploy-ethers: ~0.4.2
     hardhat-gas-reporter: ~2.2.1
@@ -8706,6 +8707,13 @@ __metadata:
   bin:
     handlebars: bin/handlebars
   checksum: 00e68bb5c183fd7b8b63322e6234b5ac8fbb960d712cb3f25587d559c2951d9642df83c04a1172c918c41bcfc81bfbd7a7718bbce93b893e0135fc99edea93ff
+  languageName: node
+  linkType: hard
+
+"hardhat-console@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "hardhat-console@npm:1.0.0"
+  checksum: 23640d8520029662eaa4801abc3d4cc12fa7689c9504f30aaad9ab8077606588a37c1313fcc91f0bc783ca4d66bb6f7277be1e305c150e9a3db98a85d7a09550
   languageName: node
   linkType: hard
 

@@ -11,7 +11,7 @@ interface ClaimChallengeBasicProps {
 const ClaimChallengeBasic: React.FC<ClaimChallengeBasicProps> = ({ orgId, challengeId, onClose }) => {
   const [loading, setLoading] = useState(false);
 
-  const { writeContractAsync: claimReward } = useScaffoldWriteContract("CryptoTrophyPlatform");
+  const { writeContractAsync: claimReward } = useScaffoldWriteContract("ChallengeManager");
 
   const handleClaim = async () => {
     try {
@@ -19,7 +19,7 @@ const ClaimChallengeBasic: React.FC<ClaimChallengeBasicProps> = ({ orgId, challe
       console.log("Org ID", orgId, "Challenge ID", challengeId);
       await claimReward({
         functionName: "claimReward",
-        args: [orgId, challengeId, "0x"],
+        args: [challengeId, "0x"],
       });
       alert("Reward claimed successfully!");
       onClose();

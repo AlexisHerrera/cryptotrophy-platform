@@ -14,9 +14,8 @@ interface OrganizationDetails {
   token: string;
   admins: string[];
   users: string[];
-  challengeIds: bigint[];
-  isAdmin: boolean;
-  isUser: boolean;
+  userIsAdmin: boolean;
+  userIsMember: boolean;
 }
 
 const OrganizationPage: React.FC = () => {
@@ -28,24 +27,28 @@ const OrganizationPage: React.FC = () => {
   const [showAdminPanelModal, setShowAdminPanelModal] = useState(false);
 
   const { data: organizationData, isLoading: isLoadingOrganization } = useScaffoldReadContract({
-    contractName: "CryptoTrophyPlatform",
+    contractName: "OrganizationManager",
     functionName: "getOrganizationDetails",
     args: [BigInt(organizationId as string)],
   });
 
-  const { writeContractAsync: createChallenge } = useScaffoldWriteContract("CryptoTrophyPlatform");
-  const { writeContractAsync: addAdmin } = useScaffoldWriteContract("CryptoTrophyPlatform");
-  const { writeContractAsync: addUser } = useScaffoldWriteContract("CryptoTrophyPlatform");
+  const { data: challengeIds } = useScaffoldReadContract({
+    contractName: "ChallengeManager",
+    functionName: "getChallengesByOrg",
+    args: [BigInt(organizationId as string)],
+  });
+
+  const { writeContractAsync: addAdmin } = useScaffoldWriteContract("OrganizationManager");
+  const { writeContractAsync: addUser } = useScaffoldWriteContract("OrganizationManager");
 
   useEffect(() => {
     if (organizationData) {
-      const [id, name, token, admins, users, challengeIds, isAdmin, isUser] = organizationData as [
+      const [id, name, token, admins, users, userIsAdmin, userIsMember] = organizationData as [
         bigint,
         string,
         string,
         string[],
         string[],
-        bigint[],
         boolean,
         boolean,
       ];
@@ -56,9 +59,8 @@ const OrganizationPage: React.FC = () => {
         token,
         admins,
         users,
-        challengeIds,
-        isAdmin,
-        isUser,
+        userIsAdmin: userIsAdmin,
+        userIsMember: userIsMember,
       });
     }
   }, [organizationData]);
@@ -67,7 +69,7 @@ const OrganizationPage: React.FC = () => {
     return <span className="loading loading-spinner loading-lg"></span>;
   }
 
-  if (!organization.isAdmin && !organization.isUser) {
+  if (!organization.userIsAdmin && !organization.userIsMember) {
     return <p>You do not have access to this organization.</p>;
   }
 
@@ -81,7 +83,7 @@ const OrganizationPage: React.FC = () => {
         <h1 className="text-4xl text-gray-700 font-mono grayscale mb-4 dark:text-gray-300">{organization.name}</h1>
 
         <div className="flex justify-center gap-4 mb-4">
-          {organization.isAdmin && (
+          {organization.userIsAdmin && (
             <div className="flex gap-4">
               <button className="btn btn-primary" onClick={() => setShowCreateChallengeModal(true)}>
                 Create Challenge
@@ -103,16 +105,12 @@ const OrganizationPage: React.FC = () => {
 
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-semibold mb-4">Active Challenges</h2>
-          <ChallengeList challengeIds={organization.challengeIds} orgId={BigInt(organizationId as string)} />
+          <ChallengeList challengeIds={challengeIds ?? []} orgId={BigInt(organizationId as string)} />
         </div>
       </div>
 
       {showCreateChallengeModal && (
-        <CreateChallengeModal
-          organizationId={organization.id}
-          onClose={() => setShowCreateChallengeModal(false)}
-          createChallenge={createChallenge}
-        />
+        <CreateChallengeModal organizationId={organization.id} onClose={() => setShowCreateChallengeModal(false)} />
       )}
 
       {showAdminPanelModal && (

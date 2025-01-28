@@ -29,13 +29,13 @@ const Organizations: React.FC = () => {
 
   // Leer organizaciones desde el contrato
   const { data: organizationsData, isLoading } = useScaffoldReadContract({
-    contractName: "CryptoTrophyPlatform",
+    contractName: "OrganizationManager",
     functionName: "listOrganizationsWithDetails",
   });
 
   // Funciones para unirse o salir
-  const { writeContractAsync: joinOrganization } = useScaffoldWriteContract("CryptoTrophyPlatform");
-  const { writeContractAsync: leaveOrganization } = useScaffoldWriteContract("CryptoTrophyPlatform");
+  const { writeContractAsync: joinOrganization } = useScaffoldWriteContract("OrganizationManager");
+  const { writeContractAsync: leaveOrganization } = useScaffoldWriteContract("OrganizationManager");
 
   if (isLoading || !organizationsData) {
     return <span className="loading loading-spinner loading-lg"></span>;
