@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "ethers";
 import Modal from "~~/components/Modal";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { DECIMALS_TOKEN } from "~~/settings";
 
 interface CreateChallengeModalProps {
   organizationId: bigint;
@@ -29,19 +30,11 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
     args: [organizationId],
   });
 
-  // Hook to get decimals from the main contract
-  const { data: decimals } = useScaffoldReadContract({
-    contractName: "OrganizationManager",
-    functionName: "getTokenDecimals",
-    args: [organizationId],
-  });
-
-  const decimalsNumber = decimals ? Number(decimals) : null;
   console.log(
     "Organization Id:",
     organizationId,
     "token decimals:",
-    decimalsNumber,
+    DECIMALS_TOKEN,
     "available tokens:",
     availableTokens,
   );
@@ -51,8 +44,7 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
     }
   }, [availableTokens]);
 
-  const formattedMaxPrizeAmount =
-    maxPrizeAmount && decimalsNumber !== null ? formatUnits(maxPrizeAmount, decimalsNumber) : "Loading...";
+  const formattedMaxPrizeAmount = maxPrizeAmount ? formatUnits(maxPrizeAmount, DECIMALS_TOKEN) : "Loading...";
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -61,12 +53,7 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
   const handleCreateChallenge = async () => {
     const { description, prizeAmount, startTime, endTime, maxWinners } = formData;
     try {
-      if (decimalsNumber === null) {
-        alert("Decimals not loaded yet.");
-        return;
-      }
-
-      const prizeAmountInBaseUnits = parseUnits(prizeAmount, decimalsNumber);
+      const prizeAmountInBaseUnits = parseUnits(prizeAmount, DECIMALS_TOKEN);
 
       await organizationManager({
         functionName: "createChallengeAndTransfer",
@@ -100,10 +87,7 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
   }, []);
 
   const isCreateButtonDisabled =
-    !maxPrizeAmount ||
-    !decimalsNumber ||
-    !formData.prizeAmount ||
-    parseUnits(formData.prizeAmount, decimalsNumber) > maxPrizeAmount;
+    !maxPrizeAmount || !formData.prizeAmount || parseUnits(formData.prizeAmount, DECIMALS_TOKEN) > maxPrizeAmount;
 
   return (
     <Modal onClose={onClose}>

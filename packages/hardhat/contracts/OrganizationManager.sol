@@ -60,6 +60,13 @@ contract OrganizationManager is IOrganizationManager {
 		return org.token;
 	}
 
+	/// @notice Obtiene el balance de una organización en su token con los 18 decimales
+	function getBalanceOfOrg(uint256 _orgId) external view override returns (uint256) {
+		Organization storage org = organizations[_orgId];
+		require(org.exists, "Organization does not exist");
+		return ERC20(org.token).balanceOf(address(this));
+	}
+
 	event DebugLog(string message);
 
 	function createChallengeAndTransfer(
@@ -73,7 +80,9 @@ contract OrganizationManager is IOrganizationManager {
 	) external onlyAdmin(_orgId) {
 		uint256 totalPrizeAmount = _prizeAmount * _maxWinners;
 		address orgToken = organizations[_orgId].token;
-		require(ERC20(orgToken).balanceOf(address(this)) >= totalPrizeAmount, "Not enough tokens in OrgManager");
+		console.log("Org Balance: %d", ERC20(orgToken).balanceOf(challengeManagerAddr));
+		console.log("Total prize amount: %d", totalPrizeAmount);
+		require(ERC20(orgToken).balanceOf(challengeManagerAddr) >= totalPrizeAmount, "Not enough tokens in OrgManager");
 
 		ERC20(orgToken).transfer(challengeManagerAddr, totalPrizeAmount);
 
@@ -153,12 +162,6 @@ contract OrganizationManager is IOrganizationManager {
 	/// @notice Agrega un usuario a una organización
 	function addUser(uint256 _orgId, address _user) public onlyAdmin(_orgId) {
 		_addUser(_orgId, _user);
-	}
-
-	function getTokenDecimals(uint256 _orgId) public view returns (uint8) {
-		Organization storage org = organizations[_orgId];
-		require(org.exists, "Organization does not exist");
-		return ERC20(org.token).decimals();
 	}
 
 	// Implementación de las funciones de la interfaz
@@ -277,5 +280,4 @@ contract OrganizationManager is IOrganizationManager {
 
 		_addUser(_orgId, msg.sender);
 	}
-
 }

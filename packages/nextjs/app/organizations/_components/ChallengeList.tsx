@@ -5,6 +5,7 @@ import ClaimChallengeModal from "./ClaimChallengeModal";
 import { formatUnits } from "ethers";
 import ClaimChallengeBasic from "~~/app/organizations/_components/ClaimChallengeBasic";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { DECIMALS_TOKEN } from "~~/settings";
 
 interface ChallengeListProps {
   orgId: bigint;
@@ -23,27 +24,12 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
     args: [challengeIds],
   });
 
-  // Hook para obtener los decimales del token
-  const { data: decimalsData } = useScaffoldReadContract({
-    contractName: "OrganizationManager",
-    functionName: "getTokenDecimals",
-    args: [orgId],
-  });
-
-  const [decimalsNumber, setDecimalsNumber] = useState<number | null>(null);
-
   useEffect(() => {
-    if (decimalsData) {
-      setDecimalsNumber(Number(decimalsData));
-    }
-  }, [decimalsData]);
-
-  useEffect(() => {
-    if (!isLoading && data && decimalsNumber !== null) {
+    if (!isLoading && data) {
       const formattedChallenges = data[0].map((id: bigint, index: number) => ({
         id,
         description: data[1][index],
-        prizeAmount: formatUnits(data[2][index], decimalsNumber), // Convertir prizeAmount
+        prizeAmount: formatUnits(data[2][index], DECIMALS_TOKEN), // Convertir prizeAmount
         startTime: new Date(Number(data[3][index]) * 1000).toLocaleString(),
         endTime: new Date(Number(data[4][index]) * 1000).toLocaleString(),
         maxWinners: data[5][index],
@@ -54,9 +40,9 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
 
       setChallenges(formattedChallenges);
     }
-  }, [data, isLoading, decimalsNumber]);
+  }, [data, isLoading, DECIMALS_TOKEN]);
 
-  if (isLoading || decimalsNumber === null) {
+  if (isLoading || DECIMALS_TOKEN === null) {
     return <p>Loading challenges...</p>;
   }
 

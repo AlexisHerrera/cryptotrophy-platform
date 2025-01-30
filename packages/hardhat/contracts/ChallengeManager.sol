@@ -213,11 +213,7 @@ contract ChallengeManager is IChallengeManager {
 
     /// @notice Calcula la cantidad de tokens disponibles para crear desafíos (en unidades base)
     function tokensAvailable(uint256 _orgId) public view returns (uint256) {
-        address orgToken = orgManager.getTokenOfOrg(_orgId);
-        console.log("Organization token address:", orgToken);
-        address orgAddress = address(orgManager);
-
-        uint256 tokenBalance = ERC20(orgToken).balanceOf(orgAddress);
+        uint256 tokenBalance = orgManager.getBalanceOfOrg(_orgId);
         console.log("Token balance:", tokenBalance);
 
         uint256 committedTokens = 0;
