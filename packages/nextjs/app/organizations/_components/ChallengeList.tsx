@@ -40,9 +40,9 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
 
       setChallenges(formattedChallenges);
     }
-  }, [data, isLoading, DECIMALS_TOKEN]);
+  }, [data, isLoading]);
 
-  if (isLoading || DECIMALS_TOKEN === null) {
+  if (isLoading) {
     return <p>Loading challenges...</p>;
   }
 
