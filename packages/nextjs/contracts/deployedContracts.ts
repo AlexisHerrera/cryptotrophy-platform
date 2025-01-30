@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     ChallengeManager: {
-      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      address: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
       abi: [
         {
           inputs: [
@@ -189,6 +189,44 @@ const deployedContracts = {
               name: "_orgId",
               type: "uint256",
             },
+            {
+              internalType: "string",
+              name: "_description",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "_prizeAmount",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_startTime",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_endTime",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_maxWinners",
+              type: "uint256",
+            },
+          ],
+          name: "createChallenge",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
           ],
           name: "getChallengesByOrg",
           outputs: [
@@ -283,44 +321,6 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-            {
-              internalType: "string",
-              name: "_description",
-              type: "string",
-            },
-            {
-              internalType: "uint256",
-              name: "_prizeAmount",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "_startTime",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "_endTime",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "_maxWinners",
-              type: "uint256",
-            },
-          ],
-          name: "onTokensReceivedAndCreateChallenge",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
               name: "",
               type: "uint256",
             },
@@ -398,7 +398,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        onTokensReceivedAndCreateChallenge: "contracts/IChallengeManager.sol",
+        createChallenge: "contracts/IChallengeManager.sol",
       },
     },
     Groth16Verifier: {
@@ -966,49 +966,6 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "address",
-              name: "challengeManagerAddr",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-            {
-              internalType: "string",
-              name: "_description",
-              type: "string",
-            },
-            {
-              internalType: "uint256",
-              name: "_prizeAmount",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "_startTime",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "_endTime",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "_maxWinners",
-              type: "uint256",
-            },
-          ],
-          name: "createChallengeAndTransfer",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
               internalType: "string",
               name: "_name",
               type: "string",
@@ -1071,6 +1028,25 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
+          name: "getBalanceOfOrg",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+          ],
           name: "getOrganizationDetails",
           outputs: [
             {
@@ -1107,25 +1083,6 @@ const deployedContracts = {
               internalType: "bool",
               name: "userIsMember",
               type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-          ],
-          name: "getTokenDecimals",
-          outputs: [
-            {
-              internalType: "uint8",
-              name: "",
-              type: "uint8",
             },
           ],
           stateMutability: "view",
@@ -1370,11 +1327,36 @@ const deployedContracts = {
           stateMutability: "view",
           type: "function",
         },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_destAddress",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "_amount",
+              type: "uint256",
+            },
+          ],
+          name: "transferTokensTo",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
       ],
       inheritedFunctions: {
+        getBalanceOfOrg: "contracts/IOrganizationManager.sol",
         getTokenOfOrg: "contracts/IOrganizationManager.sol",
         isAdmin: "contracts/IOrganizationManager.sol",
         isUser: "contracts/IOrganizationManager.sol",
+        transferTokensTo: "contracts/IOrganizationManager.sol",
       },
     },
     RewardSystem: {

@@ -50,28 +50,33 @@ contract ChallengeManager is IChallengeManager {
         _;
     }
 
-    /// @notice Crea un nuevo desafío
-    function onTokensReceivedAndCreateChallenge(
+    function createChallenge(
         uint256 _orgId,
         string memory _description,
         uint256 _prizeAmount,
         uint256 _startTime,
         uint256 _endTime,
         uint256 _maxWinners
-    ) external override {
-        require(msg.sender == address(orgManager), "Only OrgManager can call");
+    ) public override onlyAdmin(_orgId) {
+        // 1. Validar que msg.sender sea admin de la org
+        require(orgManager.isAdmin(_orgId, msg.sender), "Not an admin");
+
+        // 2. Validar tiempos
         require(_startTime < _endTime, "Invalid time range");
 
+        // 3. Calcular total de tokens
         uint256 totalPrizeAmount = _prizeAmount * _maxWinners;
-        address orgToken = orgManager.getTokenOfOrg(_orgId);
-        uint256 balance = ERC20(orgToken).balanceOf(address(this));
-        require(balance >= totalPrizeAmount, "Not enough tokens in ChallengeManager");
 
+        // 4. Solicitar a la OrgManager que transfiera los tokens al contrato
+        orgManager.transferTokensTo(_orgId, address(this), totalPrizeAmount);
+
+        // 5. Registrar el challenge en storage
         uint256 challengeId = challengeCount++;
         Challenge storage challenge = challenges[challengeId];
         challenge.id = challengeId;
         challenge.description = _description;
         challenge.prizeAmount = _prizeAmount;
+        challenge.winnerCount = 0;
         challenge.startTime = _startTime;
         challenge.endTime = _endTime;
         challenge.maxWinners = _maxWinners;

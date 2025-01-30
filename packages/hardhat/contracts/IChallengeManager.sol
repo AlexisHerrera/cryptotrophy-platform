@@ -2,7 +2,7 @@
 pragma solidity ^0.8.10;
 
 interface IChallengeManager {
-    function onTokensReceivedAndCreateChallenge(
+    function createChallenge(
         uint256 _orgId,
         string memory _description,
         uint256 _prizeAmount,

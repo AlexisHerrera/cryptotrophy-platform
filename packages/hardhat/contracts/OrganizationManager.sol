@@ -69,31 +69,17 @@ contract OrganizationManager is IOrganizationManager {
 
 	event DebugLog(string message);
 
-	function createChallengeAndTransfer(
-		address challengeManagerAddr,
-		uint256 _orgId,
-		string memory _description,
-		uint256 _prizeAmount,
-		uint256 _startTime,
-		uint256 _endTime,
-		uint256 _maxWinners
-	) external onlyAdmin(_orgId) {
-		uint256 totalPrizeAmount = _prizeAmount * _maxWinners;
-		address orgToken = organizations[_orgId].token;
-		console.log("Org Balance: %d", ERC20(orgToken).balanceOf(challengeManagerAddr));
-		console.log("Total prize amount: %d", totalPrizeAmount);
-		require(ERC20(orgToken).balanceOf(challengeManagerAddr) >= totalPrizeAmount, "Not enough tokens in OrgManager");
+	function transferTokensTo(uint256 _orgId, address _destAddress, uint256 _amount) external {
+		// require(msg.sender == address(challengeManagerAddr), "Only ChallengeManager can call");
+		Organization storage org = organizations[_orgId];
+		require(org.exists, "Organization does not exist");
 
-		ERC20(orgToken).transfer(challengeManagerAddr, totalPrizeAmount);
+		// Validar balance
+		uint256 orgBalance = ERC20(org.token).balanceOf(address(this));
+		require(orgBalance >= _amount, "Not enough tokens in OrgManager");
 
-		IChallengeManager(challengeManagerAddr).onTokensReceivedAndCreateChallenge(
-			_orgId,
-			_description,
-			_prizeAmount,
-			_startTime,
-			_endTime,
-			_maxWinners
-		);
+		// Hacer transferencia
+		ERC20(org.token).transfer(_destAddress, _amount);
 	}
 
 	// Funciones

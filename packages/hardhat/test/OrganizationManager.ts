@@ -325,100 +325,97 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
   });
 
   // ----------------------------------------------------------------
-  // 7. createChallengeAndTransfer con ChallengeManager real
+  // 7. transferTokensTo
   // ----------------------------------------------------------------
-  // describe("createChallengeAndTransfer (integration with ChallengeManager)", function () {
-  //   async function challengeFixture() {
-  //     const f = await deployCoreContractsFixture();
-  //     const { orgManager, admin1 } = f;
-  //
-  //     // 1) Crear una organización y hacer a admin1 administrador
-  //     const tx = await orgManager.createOrganization(
-  //       "OrgWithTokens",
-  //       "OWT",
-  //       1000, // tokens
-  //       ethers.parseEther("1"),
-  //       [admin1.address],
-  //       [], // no users extra
-  //       { value: ethers.parseEther("1") },
-  //     );
-  //     const receipt = await tx.wait();
-  //     const eventTopic = orgManager.interface.getEvent("OrganizationCreated");
-  //     const log = receipt?.logs.find(l => l.topics[0] === eventTopic.topicHash);
-  //     if (!log) return { ...f, orgId: null };
-  //     const decoded = orgManager.interface.decodeEventLog("OrganizationCreated", log.data, log.topics);
-  //     const orgId = decoded.orgId;
-  //
-  //     return { ...f, orgId };
-  //   }
-  //
-  //   it("Should create a new challenge if called by admin with enough tokens", async function () {
-  //     const { orgManager, challengeManager, orgId, admin1 } = await loadFixture(challengeFixture);
-  //
-  //     const description = "My new challenge";
-  //     const prizeAmount = 10;
-  //     const startTime = 100; // >0
-  //     const endTime = 200; // > startTime
-  //     const maxWinners = 2;
-  //
-  //     // Observamos el evento ChallengeCreated de ChallengeManager
-  //     await expect(
-  //       orgManager
-  //         .connect(admin1)
-  //         .createChallengeAndTransfer(
-  //           await challengeManager.getAddress(),
-  //           orgId,
-  //           description,
-  //           prizeAmount,
-  //           startTime,
-  //           endTime,
-  //           maxWinners,
-  //         ),
-  //     )
-  //       .to.emit(challengeManager, "ChallengeCreated")
-  //       .withArgs(
-  //         0, // challengeId = 0 (asumiendo que es la primera challenge en ChallengeManager)
-  //         description,
-  //       );
-  //   });
-  //
-  //   it("Should revert if caller is not an admin", async function () {
-  //     const { orgManager, challengeManager, orgId, user1 } = await loadFixture(challengeFixture);
-  //
-  //     await expect(
-  //       orgManager
-  //         .connect(user1)
-  //         .createChallengeAndTransfer(await challengeManager.getAddress(), orgId, "Desc", 10, 0, 100, 1),
-  //     ).to.be.revertedWith("Not an admin");
-  //   });
-  //
-  //   it("Should revert if not enough tokens in OrgManager", async function () {
-  //     const { orgManager, challengeManager, orgId, admin1 } = await loadFixture(challengeFixture);
-  //
-  //     // La org se creó con 1000 tokens en el OrganizationManager
-  //     // Solicitamos 600 con 2 ganadores => 1200 tokens, supera 1000
-  //     await expect(
-  //       orgManager
-  //         .connect(admin1)
-  //         .createChallengeAndTransfer(await challengeManager.getAddress(), orgId, "BigPrize", 600, 0, 100, 2),
-  //     ).to.be.revertedWith("Not enough tokens in OrgManager");
-  //   });
-  //
-  //   it("Should revert in ChallengeManager if time range is invalid", async function () {
-  //     const { orgManager, challengeManager, orgId, admin1 } = await loadFixture(challengeFixture);
-  //
-  //     // startTime >= endTime provoca "Invalid time range" en ChallengeManager
-  //     await expect(
-  //       orgManager.connect(admin1).createChallengeAndTransfer(
-  //         await challengeManager.getAddress(),
-  //         orgId,
-  //         "InvalidTime",
-  //         10,
-  //         1000,
-  //         500, // endTime menor que startTime
-  //         1,
-  //       ),
-  //     ).to.be.revertedWith("Invalid time range");
-  //   });
+  describe("transferTokensTo", function () {
+    async function createOrgWithTokensFixture() {
+      // Usamos la fixture principal
+      const f = await deployCoreContractsFixture();
+      const { orgManager, admin1 } = f;
+
+      // Crear una organización con supply 1000
+      const tx = await orgManager.createOrganization(
+        "OrgWithTokens",
+        "OWT",
+        1000,
+        ethers.parseEther("1"),
+        [admin1.address], // admin extra
+        [], // no users
+        { value: ethers.parseEther("1") },
+      );
+      const receipt = await tx.wait();
+
+      // Decodificar el evento para obtener orgId
+      const eventTopic = orgManager.interface.getEvent("OrganizationCreated");
+      const log = receipt?.logs.find(l => l.topics[0] === eventTopic.topicHash);
+      if (!log) return { ...f, orgId: null };
+
+      const decoded = orgManager.interface.decodeEventLog("OrganizationCreated", log.data, log.topics);
+      const orgId = decoded.orgId;
+
+      return { ...f, orgId };
+    }
+
+    it("Should transfer tokens successfully", async function () {
+      const { orgManager, orgId, user1 } = await loadFixture(createOrgWithTokensFixture);
+
+      // Revisar balance inicial en OrgManager
+      const initialOrgBalance = await orgManager.getBalanceOfOrg(orgId);
+      // Queremos transferir 100 tokens (escala 10^18 si es un ERC20 con 18 decimales)
+      const transferAmount = ethers.parseUnits("100", 18);
+
+      // Llamamos a la función
+      await orgManager.transferTokensTo(orgId, user1.address, transferAmount);
+
+      // Nuevo balance en OrgManager
+      const finalOrgBalance = await orgManager.getBalanceOfOrg(orgId);
+      // Balance del user1 en el token
+      const tokenAddress = await orgManager.getTokenOfOrg(orgId);
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        ["function balanceOf(address) view returns (uint256)"],
+        user1,
+      ); // user1 aquí sirve para conexión, pero es indiferente
+
+      const userBalance = await tokenContract.balanceOf(user1.address);
+
+      expect(finalOrgBalance).to.equal(initialOrgBalance - transferAmount);
+      expect(userBalance).to.equal(transferAmount);
+    });
+
+    it("Should revert if not enough tokens in OrgManager", async function () {
+      const { orgManager, orgId, user1 } = await loadFixture(createOrgWithTokensFixture);
+
+      // Verificar cuánto tiene la org
+      const orgBalance = await orgManager.getBalanceOfOrg(orgId);
+      // Pedimos transferir más de lo que tiene
+      const tooMuch = orgBalance + ethers.parseUnits("1", 18);
+
+      await expect(orgManager.transferTokensTo(orgId, user1.address, tooMuch)).to.be.revertedWith(
+        "Not enough tokens in OrgManager",
+      );
+    });
+
+    it("Should revert if organization does not exist", async function () {
+      const { orgManager, user1 } = await loadFixture(createOrgWithTokensFixture);
+
+      // orgCount es el número actual de orgs, así que orgCount + 9999 es inexistente
+      const invalidOrgId = 99999;
+      const amount = ethers.parseUnits("10", 18);
+
+      await expect(orgManager.transferTokensTo(invalidOrgId, user1.address, amount)).to.be.revertedWith(
+        "Organization does not exist",
+      );
+    });
+  });
+
+  // Opcional: si descomentas require(msg.sender == challengeManagerAddr) dentro de transferTokensTo:
+  // it("Should revert if caller is not challengeManager", async function () {
+  //   const { orgManager, orgId, user1 } = await loadFixture(createOrgWithTokensFixture);
+  //   const amount = ethers.parseUnits("10", 18);
+
+  //   await expect(
+  //     orgManager.transferTokensTo(orgId, user1.address, amount)
+  //   ).to.be.revertedWith("Only ChallengeManager can call");
   // });
 });

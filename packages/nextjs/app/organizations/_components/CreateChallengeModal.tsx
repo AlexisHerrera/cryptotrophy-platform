@@ -20,7 +20,7 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
 
   const [maxPrizeAmount, setMaxPrizeAmount] = useState<bigint | null>(null);
 
-  const { writeContractAsync: organizationManager } = useScaffoldWriteContract("OrganizationManager");
+  const { writeContractAsync: challengeManager } = useScaffoldWriteContract("ChallengeManager");
   const challengeManagerAddress = useDeployedContractInfo("ChallengeManager").data?.address;
   console.log("Challenge Manager Address:", challengeManagerAddress);
   // Hook to get available tokens
@@ -55,10 +55,9 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
     try {
       const prizeAmountInBaseUnits = parseUnits(prizeAmount, DECIMALS_TOKEN);
 
-      await organizationManager({
-        functionName: "createChallengeAndTransfer",
+      await challengeManager({
+        functionName: "createChallenge",
         args: [
-          challengeManagerAddress,
           organizationId,
           description,
           prizeAmountInBaseUnits,
