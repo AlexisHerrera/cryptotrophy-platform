@@ -34,8 +34,15 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
     log: true,
   });
 
+  const prizesDeployment = await deploy("Prizes", {
+    from: deployer,
+    args: [orgManagerDeployment.address],
+    log: true,
+  });
+
   console.log("OrganizationManager at:", orgManagerDeployment.address);
   console.log("ChallengeManager at:", challengeManagerDeployment.address);
+  console.log("Prizes at:", prizesDeployment.address);
   //
   //
   // await deploy("CryptoTrophyPlatform", {
