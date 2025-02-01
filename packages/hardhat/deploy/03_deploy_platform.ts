@@ -24,7 +24,13 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
 
   const orgManagerDeployment = await deploy("OrganizationManager", {
     from: deployer,
-    args: ["CryptoTrophyPlatform", "CTP", 100],
+    args: [],
+    log: true,
+  });
+
+  const cryptoTrophyTokenDeployment = await deploy("OrganizationToken", {
+    from: deployer,
+    args: ["CryptoTrophyToken", "CTT", 100, orgManagerDeployment.address],
     log: true,
   });
 
@@ -41,6 +47,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   });
 
   console.log("OrganizationManager at:", orgManagerDeployment.address);
+  console.log("CryptoTrophyToken at:", cryptoTrophyTokenDeployment.address);
   console.log("ChallengeManager at:", challengeManagerDeployment.address);
   console.log("Prizes at:", prizesDeployment.address);
   //
@@ -57,7 +64,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
 
   // Get the deployed contract to interact with it after deploying.
   const yourContract = await hre.ethers.getContract<Contract>("OrganizationManager", deployer);
-  console.log("👋cryptoTrophyToken:", await yourContract.cryptoTrophyToken());
+  console.log("👋Organization Created at:", await yourContract.getAddress());
 };
 
 export default deployYourContract;

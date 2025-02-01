@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import "./CompanyToken.sol";
+import "./OrganizationToken.sol";
 import "../Challenges/IChallengeManager.sol";
 import "../Challenges/OnChainValidator.sol";
 import {IOrganizationManager} from "./IOrganizationManager.sol";
@@ -23,7 +23,7 @@ contract OrganizationManager is IOrganizationManager {
 	mapping(uint256 => Organization) public organizations;
 
 	uint256[] public organizationIds;
-	address public cryptoTrophyToken;
+	// address public cryptoTrophyToken;
 
 	// Eventos
 	event OrganizationCreated(
@@ -43,17 +43,6 @@ contract OrganizationManager is IOrganizationManager {
 		_;
 	}
 
-	constructor(
-		string memory _name,
-		string memory _symbol,
-		uint256 _initialSupply
-	) {
-		// Crear token de la plataforma
-		cryptoTrophyToken = address(
-			new CompanyToken(_name, _symbol, _initialSupply, address(this))
-		);
-	}
-
 	function getTokenOfOrg(uint256 _orgId) external view override returns (address) {
 		Organization storage org = organizations[_orgId];
 		require(org.exists, "Organization does not exist");
@@ -67,7 +56,12 @@ contract OrganizationManager is IOrganizationManager {
 		return ERC20(org.token).balanceOf(address(this));
 	}
 
-	event DebugLog(string message);
+	// @return Balance de un usuario en una organización y el nombre del token
+	function getBalanceOfUser(uint256 _orgId, address _user) external view override returns (uint256, string memory) {
+		Organization storage org = organizations[_orgId];
+		require(org.exists, "Organization does not exist");
+		return (ERC20(org.token).balanceOf(_user), ERC20(org.token).symbol());
+	}
 
 	function transferTokensTo(uint256 _orgId, address _destAddress, uint256 _amount) external {
 		// require(msg.sender == address(challengeManagerAddr), "Only ChallengeManager can call");
@@ -97,10 +91,9 @@ contract OrganizationManager is IOrganizationManager {
 
 		// Crear nuevo token de la organización y asignar tokens al contrato
 		address token = address(
-			new CompanyToken(_name, _symbol, _initialSupply, address(this))
+			new OrganizationToken(_name, _symbol, _initialSupply, address(this))
 		);
 		require(token != address(0), "Failed to create token");
-		emit DebugLog("Token created");
 
 		// Crear y registrar organización
 		uint256 orgId = orgCount++;
@@ -112,7 +105,6 @@ contract OrganizationManager is IOrganizationManager {
 
 		// Por default, el creador de la organización es admin
 		_addAdmin(orgId, msg.sender);
-		emit DebugLog("Admin added");
 
 		for (uint256 i = 0; i < _admins.length; i++) {
 			_addAdmin(orgId, _admins[i]);
