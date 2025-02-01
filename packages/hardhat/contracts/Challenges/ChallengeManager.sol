@@ -2,7 +2,7 @@
 pragma solidity ^0.8.10;
 
 import "hardhat/console.sol";
-import "./IOrganizationManager.sol";
+import "../Organization/IOrganizationManager.sol";
 import "./OnChainValidator.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IChallengeManager} from "./IChallengeManager.sol";

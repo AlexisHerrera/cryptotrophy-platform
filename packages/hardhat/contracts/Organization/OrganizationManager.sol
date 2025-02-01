@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import "./CompanyToken.sol";
-import "./IChallengeManager.sol";
-import "./OnChainValidator.sol";
+import "../Challenges/IChallengeManager.sol";
+import "../Challenges/OnChainValidator.sol";
 import {IOrganizationManager} from "./IOrganizationManager.sol";
 
 contract OrganizationManager is IOrganizationManager {

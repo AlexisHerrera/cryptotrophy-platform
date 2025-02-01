@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     ChallengeManager: {
-      address: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
       abi: [
         {
           inputs: [
@@ -398,7 +398,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        createChallenge: "contracts/IChallengeManager.sol",
+        createChallenge: "contracts/Challenges/IChallengeManager.sol",
       },
     },
     Groth16Verifier: {
@@ -1352,11 +1352,11 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        getBalanceOfOrg: "contracts/IOrganizationManager.sol",
-        getTokenOfOrg: "contracts/IOrganizationManager.sol",
-        isAdmin: "contracts/IOrganizationManager.sol",
-        isUser: "contracts/IOrganizationManager.sol",
-        transferTokensTo: "contracts/IOrganizationManager.sol",
+        getBalanceOfOrg: "contracts/Organization/IOrganizationManager.sol",
+        getTokenOfOrg: "contracts/Organization/IOrganizationManager.sol",
+        isAdmin: "contracts/Organization/IOrganizationManager.sol",
+        isUser: "contracts/Organization/IOrganizationManager.sol",
+        transferTokensTo: "contracts/Organization/IOrganizationManager.sol",
       },
     },
     RewardSystem: {
