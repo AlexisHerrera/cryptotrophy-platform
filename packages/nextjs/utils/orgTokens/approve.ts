@@ -11,6 +11,7 @@ import { ethers } from "ethers";
  * @param spenderAddress dirección del contrato que hará el transferFrom (por ej. Prizes)
  * @param neededAmount   cantidad que necesitamos aprobar (en wei, BigInt)
  * @param userAddress    dirección del usuario (owner)
+ * @param signer         instancia de ethers.Signer
  * @returns boolean
  */
 export async function checkAndApproveErc20(
@@ -18,8 +19,9 @@ export async function checkAndApproveErc20(
   spenderAddress: string,
   neededAmount: bigint,
   userAddress: string,
+  signer: ethers.Signer | undefined,
 ): Promise<boolean> {
-  if (!tokenAddress || !spenderAddress || neededAmount <= 0n || !userAddress) {
+  if (!tokenAddress || !spenderAddress || neededAmount <= 0n || !userAddress || !signer) {
     console.error("Invalid params in checkAndApproveErc20:", {
       tokenAddress,
       spenderAddress,
@@ -30,9 +32,6 @@ export async function checkAndApproveErc20(
   }
 
   try {
-    const provider = new ethers.BrowserProvider((window as any).ethereum);
-    const signer = await provider.getSigner();
-
     const erc20Abi = [
       "function allowance(address owner, address spender) view returns (uint256)",
       "function approve(address spender, uint256 amount) public returns (bool)",

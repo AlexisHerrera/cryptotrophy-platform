@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import CreatePrizeModal from "./_components/CreatePrizeModal";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
+import { useEthersSigner } from "~~/hooks/ethers/useEthersSigner";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
 import { checkAndApproveErc20 } from "~~/utils/orgTokens/approve";
@@ -13,6 +14,7 @@ import { notification } from "~~/utils/scaffold-eth";
 const PrizeCenter: React.FC = () => {
   const { organizationId } = useParams() as { organizationId: string };
   const { address } = useAccount();
+  const signer = useEthersSigner();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [claimAmounts, setClaimAmounts] = useState<{ [prizeId: string]: string }>({});
 
@@ -80,7 +82,7 @@ const PrizeCenter: React.FC = () => {
       console.log("Claiming prize:", prizeId.toString(), amountBN, totalCostBN.toString());
 
       const tokenAddress = orgTokenAddressData as string;
-      const ok = await checkAndApproveErc20(tokenAddress, prizesContractAddress, totalCostBN, address);
+      const ok = await checkAndApproveErc20(tokenAddress, prizesContractAddress, totalCostBN, address, signer);
 
       if (!ok) {
         notification.error("User canceled or allowance is still insufficient");
