@@ -5,13 +5,9 @@ import { useParams } from "next/navigation";
 import CreatePrizeModal from "./_components/CreatePrizeModal";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
-import {
-  useDeployedContractInfo,
-  useScaffoldContract,
-  useScaffoldReadContract,
-  useScaffoldWriteContract,
-} from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
+import { checkAndApproveErc20 } from "~~/utils/orgTokens/approve";
 import { notification } from "~~/utils/scaffold-eth";
 
 const PrizeCenter: React.FC = () => {
@@ -40,45 +36,60 @@ const PrizeCenter: React.FC = () => {
     args: [BigInt(organizationId), address || ethers.ZeroAddress],
   });
 
-  const { data: orgTokenAddressData, isLoading: isLoadingTokenAddr } = useScaffoldReadContract({
+  const { data: orgTokenAddressData } = useScaffoldReadContract({
     contractName: "OrganizationManager",
     functionName: "getTokenOfOrg",
     args: [BigInt(organizationId)],
   });
-
-  const { data: prizesContract } = useDeployedContractInfo("Prizes");
-
-  const { data: allowanceData, refetch: refetchAllowance } = useScaffoldReadContract({
-    contractName: "OrganizationToken",
-    functionName: "allowance",
-    args: [address, prizesContract?.address || ethers.ZeroAddress],
-  });
+  const { data: prizesDeployed } = useDeployedContractInfo("Prizes");
+  const prizesContractAddress = prizesDeployed?.address ?? ethers.ZeroAddress;
 
   const { writeContractAsync: claimPrize } = useScaffoldWriteContract("Prizes");
 
   const handleClaim = async (prizeId: bigint) => {
     try {
-      if (prizesData === undefined || balanceData === undefined) {
+      if (
+        address === undefined ||
+        prizesData === undefined ||
+        balanceData === undefined ||
+        orgTokenAddressData === undefined
+      ) {
         notification.error("Error fetching data.");
         return;
       }
       const amountStr = claimAmounts[prizeId.toString()] || "0";
-      const amount = BigInt(amountStr);
-      if (amount <= 0n) {
+      const amountBN = BigInt(amountStr);
+      if (amountBN <= 0n) {
         notification.error("Invalid amount.");
         return;
       }
-      const unitPrice = prizesData[3][prizesData[0].indexOf(prizeId)];
-      const totalCost = amount * unitPrice;
-      if (totalCost > balanceData[0]) {
-        notification.error("Insufficient balance.");
+
+      const idx = prizesData[0].indexOf(prizeId);
+      if (idx < 0) {
+        notification.error("Prize not found.");
         return;
       }
-      console.log("Claiming prize:", prizeId.toString(), amount, totalCost.toString());
+      const unitPriceBN = prizesData[3][idx];
+      const totalCostBN = amountBN * unitPriceBN;
+
+      if (totalCostBN > balanceData[0]) {
+        notification.error("Insufficient token balance.");
+        return;
+      }
+
+      console.log("Claiming prize:", prizeId.toString(), amountBN, totalCostBN.toString());
+
+      const tokenAddress = orgTokenAddressData as string;
+      const ok = await checkAndApproveErc20(tokenAddress, prizesContractAddress, totalCostBN, address);
+
+      if (!ok) {
+        notification.error("User canceled or allowance is still insufficient");
+        return;
+      }
 
       await claimPrize({
         functionName: "claimPrize",
-        args: [BigInt(organizationId), prizeId, amount],
+        args: [BigInt(organizationId), prizeId, amountBN],
       });
 
       notification.success(`Prize #${prizeId.toString()} claimed successfully!`);
@@ -93,10 +104,8 @@ const PrizeCenter: React.FC = () => {
     return <span className="loading loading-spinner loading-lg"></span>;
   }
 
-  // prizesData viene en la forma: [ids, names, descriptions, prices, stocks]
   const [ids = [], names = [], descriptions = [], prices = [], stocks = []] = prizesData || [];
 
-  // Convertimos a un array de objetos
   const prizes = ids.map((id: bigint, index: number) => ({
     id,
     name: names[index],
@@ -173,13 +182,12 @@ const PrizeCenter: React.FC = () => {
         </table>
       </div>
 
-      {/* Modal para crear un Prize */}
       <CreatePrizeModal
         orgId={organizationId}
         isOpen={isCreateModalOpen}
         onClose={async () => {
           setIsCreateModalOpen(false);
-          await refetchPrizes(); // refresca la lista tras crear
+          await refetchPrizes();
         }}
       />
     </div>
