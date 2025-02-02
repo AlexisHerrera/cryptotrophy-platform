@@ -15,7 +15,7 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
 
     // Desplegar OrganizationManager
     const OrgManagerFactory = await ethersHardhat.getContractFactory("OrganizationManager");
-    const orgManager = (await OrgManagerFactory.deploy("CryptoTrophyPlatform", "CTP", 100)) as OrganizationManager;
+    const orgManager = (await OrgManagerFactory.deploy()) as OrganizationManager;
     await orgManager.waitForDeployment();
 
     // Desplegar ChallengeManager (constructor recibe orgManager address)
@@ -39,10 +39,9 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
   // 2. Tests iniciales: Despliegue
   // ----------------------------------------------------------------
   describe("Deployment checks", function () {
-    it("Should deploy OrganizationManager with a valid cryptoTrophyToken", async function () {
+    it("Should deploy OrganizationManager with a valid address", async function () {
       const { orgManager } = await loadFixture(deployCoreContractsFixture);
-      const tokenAddress = await orgManager.cryptoTrophyToken();
-      expect(tokenAddress).to.not.equal(ethers.ZeroAddress);
+      expect(orgManager.getAddress()).to.not.equal(ethers.ZeroAddress);
     });
 
     it("Should deploy ChallengeManager correctly linked to OrganizationManager", async function () {

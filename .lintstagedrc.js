@@ -12,10 +12,12 @@ const buildHardhatEslintCommand = (filenames) =>
     .map((f) => path.relative(path.join("packages", "hardhat"), f))
     .join(" ")}`;
 
+const checkTestsHardhatCommand = () => "yarn hardhat:test";
+
 module.exports = {
   "packages/nextjs/**/*.{ts,tsx}": [
     buildNextEslintCommand,
     checkTypesNextCommand,
   ],
-  "packages/hardhat/**/*.{ts,tsx}": [buildHardhatEslintCommand],
+  "packages/hardhat/**/*.{ts,tsx}": [buildHardhatEslintCommand, checkTestsHardhatCommand],
 };

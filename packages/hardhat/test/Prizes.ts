@@ -18,11 +18,7 @@ describe("Prizes contract", function () {
       "OrganizationManager",
     )) as OrganizationManager__factory;
 
-    const orgManager = (await OrgManagerFactory.deploy(
-      "CryptoTrophyPlatform",
-      "CTP",
-      100, // supply inicial del token principal de la plataforma (ejemplo)
-    )) as OrganizationManager;
+    const orgManager = (await OrgManagerFactory.deploy()) as OrganizationManager;
     await orgManager.waitForDeployment();
 
     // 1B. Desplegamos Prizes apuntando al orgManager
@@ -84,7 +80,7 @@ describe("Prizes contract", function () {
   // 2. createPrize
   // ----------------------------------------------------------------
   describe("createPrize", function () {
-    it("Debe crear un nuevo premio si el caller es admin de la org", async function () {
+    it("Should allow an org admin to create a prize", async function () {
       const { prizes, orgId, admin1 } = await loadFixture(deployPrizesFixture);
 
       await prizes.connect(admin1).createPrize(orgId, "T-Shirt", "T-Shirt con logo", 10, 100);
@@ -98,7 +94,7 @@ describe("Prizes contract", function () {
       expect(stocks[0]).to.equal(100n);
     });
 
-    it("Debe revertir si no eres admin de la org", async function () {
+    it("Should revert if caller is not an admin of the org", async function () {
       const { prizes, orgId, user1 } = await loadFixture(deployPrizesFixture);
       const price = ethers.parseUnits("5", 18);
       await expect(prizes.connect(user1).createPrize(orgId, "Mug", "Taza oficial", price, 50)).to.be.revertedWith(
@@ -111,7 +107,7 @@ describe("Prizes contract", function () {
   // 3. listPrizes
   // ----------------------------------------------------------------
   describe("listPrizes", function () {
-    it("Debe listar todos los premios creados", async function () {
+    it("Should return the list of prizes created", async function () {
       const { prizes, orgId, admin1 } = await loadFixture(deployPrizesFixture);
 
       // Creamos 2 premios
@@ -133,7 +129,7 @@ describe("Prizes contract", function () {
       expect(stocks[1]).to.equal(500n);
     });
 
-    it("Debe retornar arrays vacíos si no hay premios creados", async function () {
+    it("Should return empty arrays if no prizes created", async function () {
       const { prizes, orgId } = await loadFixture(deployPrizesFixture);
       const [ids, names, descriptions, prices, stocks] = await prizes.listPrizes(orgId);
 
@@ -173,7 +169,7 @@ describe("Prizes contract", function () {
       return { ...f };
     }
 
-    it("Debe permitir a un user miembro claimPrize con tokens suficientes y stock suficiente", async function () {
+    it("Should allow a user to claim a prize", async function () {
       const { prizes, orgManager, orgId, user1 } = await loadFixture(createPrizeAndApproveFixture);
 
       // Revisamos stock inicial
@@ -218,7 +214,7 @@ describe("Prizes contract", function () {
       await expect(prizes.connect(user1).claimPrize(orgId, 0, 101)).to.be.revertedWith("Prizes: not enough stock");
     });
 
-    it("Debe revertir si el caller no es miembro de la org", async function () {
+    it("Should revert if the caller is not a member or admin of the org", async function () {
       const { prizes, outsider, orgId } = await loadFixture(createPrizeAndApproveFixture);
 
       await expect(prizes.connect(outsider).claimPrize(orgId, 0, 1)).to.be.revertedWith(
@@ -226,7 +222,7 @@ describe("Prizes contract", function () {
       );
     });
 
-    it("Debe revertir si no tiene suficientes tokens (o allowance) en user1", async function () {
+    it("Should revert if the caller has not approved enough tokens", async function () {
       const { prizes, orgManager, orgId, admin1, user1 } = await loadFixture(deployPrizesFixture);
 
       // Creamos un premio con price=10 y stock=100
