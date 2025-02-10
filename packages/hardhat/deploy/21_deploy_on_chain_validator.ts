@@ -28,11 +28,8 @@ const deployValidatorContract: DeployFunction = async function (hre: HardhatRunt
 
   await deploy("OnChainValidator", {
     from: deployer,
-    // Contract constructor arguments
     args: [grothVerifierContractAddress],
     log: true,
-    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
-    // automatically mining the contract deployment transaction. There is no effect on live networks.
     autoMine: true,
   });
 
