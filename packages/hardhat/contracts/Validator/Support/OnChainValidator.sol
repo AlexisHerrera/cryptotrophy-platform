@@ -4,7 +4,7 @@ pragma solidity >=0.7.0 <0.9.0;
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "./Groth16Verifier.sol";
-import "../../Challenge/IValidator.sol";
+import "../../Challenges/IValidator.sol";
 
 
 contract OnChainValidator is IValidator {
