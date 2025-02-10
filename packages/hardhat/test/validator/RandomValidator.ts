@@ -4,9 +4,6 @@ import hre from "hardhat";
 import { ethers as ethersHardhat } from "hardhat";
 
 describe("RandomValidator contract", function () {
-  // ----------------------------------------------------------------
-  // 1. Fixture principal: despliega OrganizationManager y Prizes
-  // ----------------------------------------------------------------
   async function deployRandomValidatorFixture() {
     const [owner, admin1, user1, user2, outsider] = await ethersHardhat.getSigners();
 
@@ -25,7 +22,7 @@ describe("RandomValidator contract", function () {
     const subsId = args[0];
     console.log("Subscription id:", subsId);
 
-    // Found subscription
+    // Fund subscription
     const fundsubs = await coord.fundSubscription(subsId, 13615227254092620456000n);
     await fundsubs.wait();
 
@@ -50,9 +47,6 @@ describe("RandomValidator contract", function () {
     };
   }
 
-  // ----------------------------------------------------------------
-  // 2. createPrize
-  // ----------------------------------------------------------------
   describe("simulatedVRFCall", function () {
     it("Should validate when VRF reports the correct result", async function () {
       const { randomValidator, coord } = await loadFixture(deployRandomValidatorFixture);

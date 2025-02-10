@@ -31,9 +31,6 @@ describe("OffChainValidator contract", function () {
     };
   }
 
-  // ----------------------------------------------------------------
-  // 2. createPrize
-  // ----------------------------------------------------------------
   describe("simulatedOffChainCall", function () {
     it("Should validate when offChain API returns true", async function () {
       const { offChainValidator, oracleMock } = await loadFixture(deployOffChainValidatorFixture);
