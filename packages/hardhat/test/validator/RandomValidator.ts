@@ -20,7 +20,6 @@ describe("RandomValidator contract", function () {
 
     const { args } = receipt.logs[0];
     const subsId = args[0];
-    console.log("Subscription id:", subsId);
 
     // Fund subscription
     const fundsubs = await coord.fundSubscription(subsId, 13615227254092620456000n);
