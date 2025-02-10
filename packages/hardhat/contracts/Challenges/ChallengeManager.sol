@@ -3,7 +3,7 @@ pragma solidity ^0.8.10;
 
 import "hardhat/console.sol";
 import "../Organization/IOrganizationManager.sol";
-import "./OnChainValidator.sol";
+import {IValidator} from "./IValidator.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IChallengeManager} from "./IChallengeManager.sol";
 
@@ -12,6 +12,7 @@ contract ChallengeManager is IChallengeManager {
         uint256 id;
         string description;
 
+        bytes32 validatorUID;
         address validatorAddr;
         uint256 validationId;
 
@@ -48,6 +49,10 @@ contract ChallengeManager is IChallengeManager {
     modifier onlyUser(uint256 orgId) {
         require(orgManager.isUser(orgId, msg.sender), "Not a user");
         _;
+    }
+
+    function getOrganizationId(uint256 _challengeId) external view returns (uint256) {
+        return challenges[_challengeId].orgId;
     }
 
     function createChallenge(
@@ -97,22 +102,16 @@ contract ChallengeManager is IChallengeManager {
     function setChallengeValidator(
         uint256 _challengeId,
         address _validatorAddr,
+        bytes32 _validatorUID,
         uint256 _validationId
-    ) public {
-        // TODO: Validar que sea un admin de la organización
+    ) public override {
+		// TODO require(msg.sender == address(validatorManagerAddr), "Only ChallengeManager can call or admin");
+        // require(orgManager.isAdmin(challenge.orgId, msg.sender), "Not an admin");
+
         Challenge storage challenge = challenges[_challengeId];
         challenge.validatorAddr = _validatorAddr;
         challenge.validationId = _validationId;
-    }
-
-    function getConfig(uint256 _challengeId) public view returns (string memory) {
-        Challenge storage challenge = challenges[_challengeId];
-        if (challenge.validatorAddr != address(0x0)) {
-            IValidator validator = IValidator(challenge.validatorAddr);
-            return validator.getConfig(challenge.validationId);
-        } else {
-            return "{}";
-        }
+        challenge.validatorUID = _validatorUID;
     }
 
     /// @notice Reclama un premio de un desafío
