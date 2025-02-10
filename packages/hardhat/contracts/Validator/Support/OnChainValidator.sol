@@ -34,12 +34,12 @@ contract OnChainValidator is IValidator {
         (uint[2] memory _pA, uint[2][2] memory _pB, uint[2] memory _pC) = abi.decode(
             params, (uint[2], uint[2][2], uint[2])
         );
-        console.log("Calling validator from %s", msg.sender);
-        console.log("_pA %i %i", _pA[0], _pA[1]);
-        console.log("_pB0 %i %i", _pB[0][0], _pB[0][1]);
-        console.log("_pB1 %i %i", _pB[1][0], _pB[1][1]);
-        console.log("_pC %i %i", _pC[0], _pC[1]);
-        console.log("_pubSignals %i", validationId);
+        // console.log("Calling validator from %s", msg.sender);
+        // console.log("_pA %i %i", _pA[0], _pA[1]);
+        // console.log("_pB0 %i %i", _pB[0][0], _pB[0][1]);
+        // console.log("_pB1 %i %i", _pB[1][0], _pB[1][1]);
+        // console.log("_pC %i %i", _pC[0], _pC[1]);
+        // console.log("_pubSignals %i", config[validationId]);
 
         return verifier.verifyProof(_pA, _pB, _pC, [config[validationId]]);
     }
