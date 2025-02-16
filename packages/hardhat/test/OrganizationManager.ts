@@ -89,8 +89,12 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
 
       // Chequeamos datos de la organización
       const details = await orgManager.getOrganizationDetails(orgId);
-      const balance = await orgManager.getBalanceOfOrg(orgId);
+      const orgBalance = await orgManager.getBalanceOfOrg(orgId);
       const token = await orgManager.getTokenOfOrg(orgId);
+      const tokenContract = await ethersHardhat.getContractAt("OrganizationToken", token);
+      const tokenDecimals = await tokenContract.decimals();
+      const tokenETHBalance = await ethersHardhat.provider.getBalance(token);
+
       expect(details.orgId).to.equal(orgId);
       expect(details.name).to.equal(name);
       expect(details.admins).to.include(owner.address);
@@ -98,10 +102,15 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
       expect(details.admins).to.include(admin2.address);
       expect(details.users).to.include(user1.address);
       expect(details.users).to.include(user2.address);
-      expect(balance).to.equal(ethers.parseUnits(initialSupply.toString(), 18));
+      expect(orgBalance).to.equal(ethers.parseUnits(initialSupply.toString(), tokenDecimals));
+      expect(await tokenContract.totalSupply()).to.equal(orgBalance);
+      expect(await tokenContract.balanceOf(orgManager.getAddress())).to.equal(orgBalance);
       expect(details.token).to.equal(token);
       expect(await orgManager.isAdmin(orgId, admin1.address)).to.equal(true);
       expect(await orgManager.isUser(orgId, user1.address)).to.equal(true);
+
+      // Validamos que el ETH que posee la org sea lo que se envió
+      expect(tokenETHBalance).to.equal(initialEthBacking);
     });
 
     it("Should revert if not enough ETH is sent for initial backing", async function () {

@@ -90,17 +90,26 @@ contract OrganizationManager is IOrganizationManager {
 		require(msg.value >= _initialEthBacking, "Insufficient ETH backing");
 
 		// Crear nuevo token de la organización y asignar tokens al contrato
-		address token = address(
-			new OrganizationToken(_name, _symbol, _initialSupply, address(this))
+		OrganizationToken token = new OrganizationToken(
+			_name,
+			_symbol,
+			_initialSupply,
+			address(this)
 		);
-		require(token != address(0), "Failed to create token");
+		require(address(token) != address(0), "Failed to create token");
+
+		// Send ETH backing to the token contract if provided
+		if (_initialEthBacking > 0) {
+			(bool success, ) = address(token).call{value: _initialEthBacking}("");
+			require(success, "Failed to send ETH to token contract");
+		}
 
 		// Crear y registrar organización
 		uint256 orgId = orgCount++;
 		Organization storage org = organizations[orgId];
 		org.id = orgId;
 		org.name = _name;
-		org.token = token;
+		org.token = address(token);
 		org.exists = true;
 
 		// Por default, el creador de la organización es admin
@@ -114,7 +123,7 @@ contract OrganizationManager is IOrganizationManager {
 		}
 
 		organizationIds.push(orgId);
-		emit OrganizationCreated(orgId, _name, token);
+		emit OrganizationCreated(orgId, _name, address(token));
 		return orgId;
 	}
 
