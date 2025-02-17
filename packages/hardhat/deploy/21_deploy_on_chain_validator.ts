@@ -35,7 +35,13 @@ const deployValidatorContract: DeployFunction = async function (hre: HardhatRunt
 
   // Get the deployed contract to interact with it after deploying.
   const validatorContract = await hre.ethers.getContract<Contract>("OnChainValidator", deployer);
-  console.log("Description:", await validatorContract.description());
+  const validatorContractAddr = await validatorContract.getAddress();
+  console.log("👋 OnChainValidator address:", validatorContractAddr);
+
+  // Add OnChainValidator to challenge manager registred validators.
+  const validatorRegistry = await hre.ethers.getContract<Contract>("ValidatorRegistry", deployer);
+  const validatorUID = hre.ethers.encodeBytes32String("OnChainValidatorV1");
+  await validatorRegistry.registerValidator(validatorUID, validatorContractAddr);
 };
 
 export default deployValidatorContract;
