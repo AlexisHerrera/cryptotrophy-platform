@@ -33,7 +33,7 @@ describe("OffChainValidator contract", function () {
 
   describe("simulatedOffChainCall", function () {
     it("Should validate when offChain API returns true", async function () {
-      const { offChainValidator, oracleMock } = await loadFixture(deployOffChainValidatorFixture);
+      const { owner, offChainValidator, oracleMock } = await loadFixture(deployOffChainValidatorFixture);
 
       // Initiate offchain validation
       const dummyChallengeId = 134;
@@ -57,7 +57,9 @@ describe("OffChainValidator contract", function () {
       await fulfill.wait();
 
       // Test Validation
-      expect(await offChainValidator.validate(dummyChallengeId, "0x")).to.equal(true);
+      const abiCoder = new ethersHardhat.AbiCoder();
+      const params = abiCoder.encode(["address[1]"], [[owner.address]]);
+      expect(await offChainValidator.validate(dummyChallengeId, params)).to.equal(true);
     });
   });
 });

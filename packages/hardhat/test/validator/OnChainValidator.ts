@@ -48,6 +48,7 @@ describe("OnChainValidator contract", function () {
       ];
 
       // Configure validator apiUrl and field path for dummy challenge
+      // Related private key 236328977562389765 from which pA, pB and pC are generated.
       const publicHash = BigInt("0x27be7bee4249f4ca283b260d6888168532746c8312c1167104664c8ff1fa5167");
       await onChainValidator.setConfig(dummyChallengeId, publicHash);
 

@@ -48,22 +48,23 @@ describe("RandomValidator contract", function () {
 
   describe("simulatedVRFCall", function () {
     it("Should validate when VRF reports the correct result", async function () {
-      const { randomValidator, coord } = await loadFixture(deployRandomValidatorFixture);
+      const { owner, randomValidator, coord } = await loadFixture(deployRandomValidatorFixture);
 
       // Make VRF call
       const randwords = await randomValidator.preValidation(1n, "0x");
       await randwords.wait();
-      const request_id = await randomValidator.s_requestId();
+      const request_id = await randomValidator.lastRequestId();
 
       // Simulate VRF response
       const randomValidatorAddr = await randomValidator.getAddress();
 
-      const fullfill = await coord.fulfillRandomWordsWithOverride(request_id, randomValidatorAddr, [14, 12]);
+      const fullfill = await coord.fulfillRandomWordsWithOverride(request_id, randomValidatorAddr, [13]);
       await fullfill.wait();
 
-      expect(await randomValidator.s_randomWords(0)).to.equal(14);
-      expect(await randomValidator.s_randomWords(1)).to.equal(12);
-      expect(await randomValidator.validate(1n, "0x")).to.equal(true);
+      // Test Validation
+      const abiCoder = new ethersHardhat.AbiCoder();
+      const params = abiCoder.encode(["address[1]"], [[owner.address]]);
+      expect(await randomValidator.validate(1n, params)).to.equal(true);
     });
   });
 });
