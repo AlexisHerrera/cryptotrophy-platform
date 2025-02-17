@@ -88,6 +88,7 @@ contract ChallengeManager is IChallengeManager {
         challenge.orgId = _orgId;
         challenge.active = true;
         challenge.exists = true;
+        challenge.validatorUID = bytes32(0);
 
         orgChallenges[_orgId].push(challengeId);
         challengeIds.push(challengeId);
@@ -184,7 +185,7 @@ contract ChallengeManager is IChallengeManager {
         uint256[] memory maxWinners,
         bool[] memory actives,
         uint256[] memory winnerCounts,
-        bool[] memory hasValidator
+        bytes32[] memory validatorUID
     )
     {
         uint256 count = ids.length;
@@ -197,7 +198,7 @@ contract ChallengeManager is IChallengeManager {
         maxWinners = new uint256[](count);
         actives = new bool[](count);
         winnerCounts = new uint256[](count);
-        hasValidator = new bool[](count);
+        validatorUID = new bytes32[](count);
 
         for (uint256 i = 0; i < count; i++) {
             Challenge storage challenge = challenges[ids[i]];
@@ -211,7 +212,7 @@ contract ChallengeManager is IChallengeManager {
             maxWinners[i] = challenge.maxWinners;
             actives[i] = challenge.active;
             winnerCounts[i] = challenge.winnerCount;
-            hasValidator[i] = challenge.validatorAddr != address(0x0);
+            validatorUID[i] = challenge.validatorUID;
         }
     }
 
