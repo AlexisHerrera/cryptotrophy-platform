@@ -5,11 +5,10 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import {VRFConsumerBaseV2Plus} from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
 import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
-import "../../Challenges/IValidator.sol";
-import "./ITwoStepValidator.sol";
+import "./TwoStepValidator.sol";
 
 
-contract RandomValidator is IValidator, ITwoStepValidator, VRFConsumerBaseV2Plus {
+contract RandomValidator is TwoStepValidator, VRFConsumerBaseV2Plus {
     // Your subscription ID.
     uint256 immutable s_subscriptionId;
 
@@ -29,19 +28,11 @@ contract RandomValidator is IValidator, ITwoStepValidator, VRFConsumerBaseV2Plus
     // The default is 3, but you can set this higher.
     uint16 constant REQUEST_CONFIRMATIONS = 3;
 
-    // For this example, retrieve 2 random values in one request.
+    // For this example, retrieve 1 random values in one request.
     // Cannot exceed VRFCoordinatorV2_5.MAX_NUM_WORDS.
-    uint32 constant NUM_WORDS = 2;
-
-    uint256[] public s_randomWords;
-    uint256 public s_requestId;
+    uint32 constant NUM_WORDS = 1;
 
     event ReturnedRandomness(uint256[] randomWords);
-
-    // keccak256(abi.encodePacked(validationId, user account)) -> claimed 
-    mapping(bytes32 => bool) public successfulClaim;
-    // request id -> keccak256(abi.encodePacked(validationId, user account))
-    mapping(bytes32 => bytes32) public validationRequest;
 
     /**
      * @notice Constructor inherits VRFConsumerBaseV2Plus
@@ -67,19 +58,13 @@ contract RandomValidator is IValidator, ITwoStepValidator, VRFConsumerBaseV2Plus
         return string.concat("{}");
     }
 
-    function validate(uint256 validationId, bytes calldata /* params */) public view override returns (bool) {
-        bytes32 claimUID = keccak256(abi.encodePacked(validationId, msg.sender));
-        bool result = successfulClaim[claimUID];
-        return result;
-    }
-
     /**
      * @notice Requests randomness
      * Assumes the subscription is funded sufficiently; "Words" refers to unit of data in Computer Science
      */
     function preValidation(uint256 validationId, bytes calldata /* preValidationParams */) external returns (bytes32) {
         // Will revert if subscription is not set and funded.
-        s_requestId = s_vrfCoordinator.requestRandomWords(
+        uint256 requestId = s_vrfCoordinator.requestRandomWords(
             VRFV2PlusClient.RandomWordsRequest({
                 keyHash: s_keyHash,
                 subId: s_subscriptionId,
@@ -93,7 +78,11 @@ contract RandomValidator is IValidator, ITwoStepValidator, VRFConsumerBaseV2Plus
         );
 
         bytes32 claimUID = keccak256(abi.encodePacked(validationId, msg.sender));
-        validationRequest[bytes32(s_requestId)] = claimUID;
+        validationRequest[bytes32(requestId)] = claimUID;
+        claimState[claimUID] = ValidationState.PREVALIDATION;
+
+        // DEBUG
+        lastRequestId = bytes32(requestId);
 
         return claimUID;
     }
@@ -109,13 +98,14 @@ contract RandomValidator is IValidator, ITwoStepValidator, VRFConsumerBaseV2Plus
         uint256[] calldata randomWords
     ) internal override {
         bytes32 _requestIdb32 = bytes32(_requestId);
-        s_randomWords = randomWords;
+        bytes32 _claim_uid = validationRequest[_requestIdb32];
         
-        if (randomWords[0] > randomWords[1]) {
-            bytes32 _claim_uid = validationRequest[_requestIdb32];
-            successfulClaim[_claim_uid] = true;
+        if (randomWords[0] % 2 == 1) {
+            claimState[_claim_uid] = ValidationState.SUCCESS;
+        } else {
+            claimState[_claim_uid] = ValidationState.FAIL;
         }
 
-        emit ReturnedRandomness(randomWords);
+        // emit ReturnedRandomness(randomWords);
     }
 }

@@ -6,8 +6,7 @@ import {Chainlink, ChainlinkClient} from "@chainlink/contracts/src/v0.8/Chainlin
 import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import "../../Challenges/IValidator.sol";
-import "./ITwoStepValidator.sol";
+import "./TwoStepValidator.sol";
 
 
 struct OffChainApiConfig {
@@ -17,7 +16,7 @@ struct OffChainApiConfig {
 }
 
 
-contract OffChainValidator is IValidator, ITwoStepValidator, ChainlinkClient, ConfirmedOwner  {
+contract OffChainValidator is TwoStepValidator, ChainlinkClient, ConfirmedOwner  {
     using Chainlink for Chainlink.Request;
 
     // Chainlink variables
@@ -29,14 +28,8 @@ contract OffChainValidator is IValidator, ITwoStepValidator, ChainlinkClient, Co
     // validationId -> validatorConfig
     mapping(uint256 => OffChainApiConfig) public config;
 
-    // keccak256(abi.encodePacked(validationId, user account)) -> claimed 
-    mapping(bytes32 => bool) public successfulClaim;
-    // request id -> keccak256(abi.encodePacked(validationId, user account))
-    mapping(bytes32 => bytes32) public validationRequest;
-
     // Debug info
     uint256 public lastExecuted;
-    bytes32 public lastRequestId;
     string public lastUrl;
     bool public lastCompleted;
 
@@ -59,11 +52,6 @@ contract OffChainValidator is IValidator, ITwoStepValidator, ChainlinkClient, Co
         OffChainApiConfig memory paramsStruct = config[validationId];
 		require(paramsStruct.exists, "Error. Invalid configuration. No API configured for validationId.");
         return string.concat("{\"apiUrl\": \"", paramsStruct.apiUrl, "\"}");
-    }
-
-    function validate(uint256 validationId, bytes calldata /* params */) public view override returns (bool) {
-        bytes32 claimUID = keccak256(abi.encodePacked(validationId, msg.sender));
-        return successfulClaim[claimUID];
     }
 
     function preValidation(uint256 validationId, bytes calldata /* preValidationParams */) external returns (bytes32) {
@@ -93,6 +81,7 @@ contract OffChainValidator is IValidator, ITwoStepValidator, ChainlinkClient, Co
 
         bytes32 claimUID = keccak256(abi.encodePacked(validationId, msg.sender));
         validationRequest[requestId] = claimUID;
+        claimState[claimUID] = ValidationState.PREVALIDATION;
 
         // DEBUG
         lastUrl=url;
@@ -109,9 +98,9 @@ contract OffChainValidator is IValidator, ITwoStepValidator, ChainlinkClient, Co
         lastCompleted=_completed;
         lastExecuted += 1;
         if (_completed) {
-            successfulClaim[validationRequest[_requestId]] = true;
+            claimState[validationRequest[_requestId]] = ValidationState.SUCCESS;
         } else {
-            revert("Validator task not completed");
+            claimState[validationRequest[_requestId]] = ValidationState.FAIL;
         }
     }
 }
