@@ -1,9 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import ClaimChallengeModal from "./ClaimChallengeModal";
+import ClaimChallengeOnChainModal from "./ClaimChallengeOnChainModal";
+import ClaimChallengeTwoStepModal from "./ClaimChallengeTwoStepModal";
 import { formatUnits } from "ethers";
+import { decodeBytes32String } from "ethers";
+import AdminSetChallengeValidator from "~~/app/organizations/_components/AdminSetChallengeValidator";
 import ClaimChallengeBasic from "~~/app/organizations/_components/ClaimChallengeBasic";
+import MockExternalValidatorResponse from "~~/app/organizations/_components/MockExternalValidatorResponse";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
 
@@ -14,7 +18,17 @@ interface ChallengeListProps {
 
 const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) => {
   const [challenges, setChallenges] = useState<any[]>([]);
-  const [selectedChallenge, setSelectedChallenge] = useState<{ id: bigint; hasValidator: boolean } | null>(null);
+  const [selectedChallenge, setSelectedChallenge] = useState<{
+    id: bigint;
+    hasValidator: boolean;
+    validatorUID: string;
+  } | null>(null);
+  const [challengeValidator, setChallengeValidator] = useState<{
+    id: bigint;
+    hasValidator: boolean;
+    validatorUID: string;
+  } | null>(null);
+  const [mockValidatorResponse, setMockValidatorResponse] = useState<{ id: bigint; validatorUID: string } | null>(null);
   console.log("SelectedChallengeId", selectedChallenge?.id);
 
   // Hook para obtener los detalles de los desafíos
@@ -35,7 +49,8 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
         maxWinners: data[5][index],
         active: data[6][index],
         winnerCount: data[7][index],
-        hasValidator: data[8][index],
+        validatorUID: decodeBytes32String(data[8][index]),
+        hasValidator: data[8][index] !== "0x0000000000000000000000000000000000000000000000000000000000000000",
       }));
 
       setChallenges(formattedChallenges);
@@ -63,6 +78,8 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
             <th>Start Time</th>
             <th>End Time</th>
             <th>Actions</th>
+            <th>Admin</th>
+            <th>Local Network</th>
           </tr>
         </thead>
         <tbody>
@@ -79,7 +96,13 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
                 {challenge.active ? (
                   <button
                     className="btn btn-primary btn-sm"
-                    onClick={() => setSelectedChallenge({ id: challenge.id, hasValidator: challenge.hasValidator })}
+                    onClick={() =>
+                      setSelectedChallenge({
+                        id: challenge.id,
+                        hasValidator: challenge.hasValidator,
+                        validatorUID: challenge.validatorUID,
+                      })
+                    }
                   >
                     Claim Reward
                   </button>
@@ -87,23 +110,91 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
                   <span className="text-gray-500">Closed</span>
                 )}
               </td>
+              <td>
+                {true ? (
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() =>
+                      setChallengeValidator({
+                        id: challenge.id,
+                        hasValidator: challenge.hasValidator,
+                        validatorUID: challenge.validatorUID,
+                      })
+                    }
+                  >
+                    Configure Validator
+                  </button>
+                ) : (
+                  <span className="text-gray-500">Closed</span>
+                )}
+              </td>
+              <td>
+                {challenge.hasValidator ? (
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => setMockValidatorResponse({ id: challenge.id, validatorUID: challenge.validatorUID })}
+                  >
+                    Mock Validator
+                  </button>
+                ) : (
+                  <span className="text-gray-500">Missing Validator</span>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {selectedChallenge !== null && selectedChallenge.hasValidator && (
-        <ClaimChallengeModal
-          orgId={orgId}
-          challengeId={selectedChallenge.id}
-          onClose={() => setSelectedChallenge(null)}
-        />
-      )}
+      {selectedChallenge !== null &&
+        selectedChallenge.hasValidator &&
+        selectedChallenge.validatorUID === "OnChainValidatorV1" && (
+          <ClaimChallengeOnChainModal
+            orgId={orgId}
+            challengeId={selectedChallenge.id}
+            onClose={() => setSelectedChallenge(null)}
+          />
+        )}
+      {selectedChallenge !== null &&
+        selectedChallenge.hasValidator &&
+        selectedChallenge.validatorUID === "OffChainValidatorV1" && (
+          <ClaimChallengeTwoStepModal
+            orgId={orgId}
+            challengeId={selectedChallenge.id}
+            contractName="OffChainValidator"
+            onClose={() => setSelectedChallenge(null)}
+          />
+        )}
+      {selectedChallenge !== null &&
+        selectedChallenge.hasValidator &&
+        selectedChallenge.validatorUID === "RandomValidatorV1" && (
+          <ClaimChallengeTwoStepModal
+            orgId={orgId}
+            challengeId={selectedChallenge.id}
+            contractName="RandomValidator"
+            onClose={() => setSelectedChallenge(null)}
+          />
+        )}
       {selectedChallenge !== null && !selectedChallenge.hasValidator && (
         <ClaimChallengeBasic
           orgId={orgId}
           challengeId={selectedChallenge.id}
           onClose={() => setSelectedChallenge(null)}
+        />
+      )}
+      {challengeValidator !== null && (
+        <AdminSetChallengeValidator
+          orgId={orgId}
+          challengeId={challengeValidator.id}
+          validatorUID={challengeValidator ? challengeValidator.validatorUID : ""}
+          onClose={() => setChallengeValidator(null)}
+        />
+      )}
+      {mockValidatorResponse !== null && (
+        <MockExternalValidatorResponse
+          orgId={orgId}
+          challengeId={mockValidatorResponse.id}
+          validatorUID={mockValidatorResponse ? mockValidatorResponse.validatorUID : ""}
+          onClose={() => setMockValidatorResponse(null)}
         />
       )}
     </div>
