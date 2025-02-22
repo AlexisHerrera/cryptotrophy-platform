@@ -11,13 +11,13 @@ interface ClaimChallengeModalProps {
   onClose: () => void;
 }
 
-const ClaimChallengeModal: React.FC<ClaimChallengeModalProps> = ({ orgId, challengeId, onClose }) => {
+const ClaimChallengeOnChainModal: React.FC<ClaimChallengeModalProps> = ({ orgId, challengeId, onClose }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
   const { writeContractAsync: claimReward } = useScaffoldWriteContract("ChallengeManager");
   const { data: validatorConfig } = useScaffoldReadContract({
-    contractName: "ChallengeManager",
+    contractName: "OnChainValidator",
     functionName: "getConfig",
     args: [challengeId],
   });
@@ -134,4 +134,4 @@ const ClaimChallengeModal: React.FC<ClaimChallengeModalProps> = ({ orgId, challe
   );
 };
 
-export default ClaimChallengeModal;
+export default ClaimChallengeOnChainModal;
