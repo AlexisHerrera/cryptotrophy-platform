@@ -17,7 +17,7 @@ const ClaimChallengeOnChainModal: React.FC<ClaimChallengeModalProps> = ({ orgId,
 
   const { writeContractAsync: claimReward } = useScaffoldWriteContract("ChallengeManager");
   const { data: validatorConfig } = useScaffoldReadContract({
-    contractName: "OffChainValidator",
+    contractName: "OnChainValidator",
     functionName: "getConfig",
     args: [challengeId],
   });
