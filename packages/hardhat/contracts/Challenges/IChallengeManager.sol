@@ -10,4 +10,13 @@ interface IChallengeManager {
         uint256 _endTime,
         uint256 _maxWinners
     ) external;
+
+    function setChallengeValidator(
+        uint256 _challengeId,
+        address _validatorAddr,
+        bytes32 _validatorUID,
+        uint256 _validationId
+    ) external;
+
+    function getOrganizationId(uint256 _challengeId) external view returns (uint256);
 }

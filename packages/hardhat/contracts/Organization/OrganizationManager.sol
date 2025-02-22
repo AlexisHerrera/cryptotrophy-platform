@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 import "./OrganizationToken.sol";
 import "../Challenges/IChallengeManager.sol";
-import "../Challenges/OnChainValidator.sol";
 import {IOrganizationManager} from "./IOrganizationManager.sol";
 
 contract OrganizationManager is IOrganizationManager {
