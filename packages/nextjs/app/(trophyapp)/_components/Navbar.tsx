@@ -1,29 +1,8 @@
-// components/Navbar.tsx
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-
-// components/Navbar.tsx
-
-// components/Navbar.tsx
-
-// components/Navbar.tsx
-
-// components/Navbar.tsx
-
-// components/Navbar.tsx
-
-// components/Navbar.tsx
-
-// components/Navbar.tsx
-
-// components/Navbar.tsx
-
-// components/Navbar.tsx
-
-// components/Navbar.tsx
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
