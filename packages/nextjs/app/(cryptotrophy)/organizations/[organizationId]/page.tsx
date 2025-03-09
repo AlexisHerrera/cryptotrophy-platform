@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import AdminPanel from "~~/app/organizations/_components/AdminPanel";
-import ChallengeList from "~~/app/organizations/_components/ChallengeList";
-import CreateChallengeModal from "~~/app/organizations/_components/CreateChallengeModal";
+import AdminPanel from "~~/app/(cryptotrophy)/organizations/_components/AdminPanel";
+import ChallengeList from "~~/app/(cryptotrophy)/organizations/_components/ChallengeList";
+import CreateChallengeModal from "~~/app/(cryptotrophy)/organizations/_components/CreateChallengeModal";
 import Modal from "~~/components/Modal";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
