@@ -1,5 +1,5 @@
 import React from "react";
-import CreateOrganizationForm from "~~/app/create-organization/_components/CreateOrganizationForm";
+import CreateOrganizationForm from "~~/app/(cryptotrophy)/create-organization/_components/CreateOrganizationForm";
 import { MotionDiv } from "~~/app/motions/use-motion";
 
 const CreateOrganization = (): React.ReactElement => {
