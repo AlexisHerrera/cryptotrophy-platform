@@ -39,12 +39,12 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
     availableTokens,
   );
   useEffect(() => {
-    if (availableTokens) {
+    if (availableTokens !== undefined) {
       setMaxPrizeAmount(availableTokens as bigint);
     }
   }, [availableTokens]);
 
-  const formattedMaxPrizeAmount = maxPrizeAmount ? formatUnits(maxPrizeAmount, DECIMALS_TOKEN) : "Loading...";
+  const formattedMaxPrizeAmount = maxPrizeAmount !== null ? formatUnits(maxPrizeAmount, DECIMALS_TOKEN) : "Loading...";
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
