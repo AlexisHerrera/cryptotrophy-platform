@@ -6,25 +6,15 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
 const deployedContracts = {
   31337: {
-    CryptoTrophyPlatform: {
-      address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+    ChallengeManager: {
+      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
       abi: [
         {
           inputs: [
             {
-              internalType: "string",
-              name: "_name",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "_symbol",
-              type: "string",
-            },
-            {
-              internalType: "uint256",
-              name: "_initialSupply",
-              type: "uint256",
+              internalType: "address",
+              name: "_orgManagerAddr",
+              type: "address",
             },
           ],
           stateMutability: "nonpayable",
@@ -53,44 +43,6 @@ const deployedContracts = {
           anonymous: false,
           inputs: [
             {
-              indexed: false,
-              internalType: "string",
-              name: "message",
-              type: "string",
-            },
-          ],
-          name: "DebugLog",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "orgId",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "string",
-              name: "name",
-              type: "string",
-            },
-            {
-              indexed: false,
-              internalType: "address",
-              name: "token",
-              type: "address",
-            },
-          ],
-          name: "OrganizationCreated",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
               indexed: true,
               internalType: "uint256",
               name: "challengeId",
@@ -105,42 +57,6 @@ const deployedContracts = {
           ],
           name: "RewardClaimed",
           type: "event",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_admin",
-              type: "address",
-            },
-          ],
-          name: "addAdmin",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_user",
-              type: "address",
-            },
-          ],
-          name: "addUser",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
         },
         {
           inputs: [],
@@ -252,11 +168,6 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
               name: "_challengeId",
               type: "uint256",
             },
@@ -305,68 +216,24 @@ const deployedContracts = {
             },
           ],
           name: "createChallenge",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
+          outputs: [],
           stateMutability: "nonpayable",
           type: "function",
         },
         {
           inputs: [
             {
-              internalType: "string",
-              name: "_name",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "_symbol",
-              type: "string",
-            },
-            {
               internalType: "uint256",
-              name: "_initialSupply",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "_initialEthBacking",
-              type: "uint256",
-            },
-            {
-              internalType: "address[]",
-              name: "_admins",
-              type: "address[]",
-            },
-            {
-              internalType: "address[]",
-              name: "_users",
-              type: "address[]",
-            },
-          ],
-          name: "createOrganization",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
+              name: "_orgId",
               type: "uint256",
             },
           ],
-          stateMutability: "payable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "cryptoTrophyToken",
+          name: "getChallengesByOrg",
           outputs: [
             {
-              internalType: "address",
+              internalType: "uint256[]",
               name: "",
-              type: "address",
+              type: "uint256[]",
             },
           ],
           stateMutability: "view",
@@ -394,148 +261,6 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-          ],
-          name: "getOrganizationDetails",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "orgId",
-              type: "uint256",
-            },
-            {
-              internalType: "string",
-              name: "name",
-              type: "string",
-            },
-            {
-              internalType: "address",
-              name: "token",
-              type: "address",
-            },
-            {
-              internalType: "address[]",
-              name: "admins",
-              type: "address[]",
-            },
-            {
-              internalType: "address[]",
-              name: "users",
-              type: "address[]",
-            },
-            {
-              internalType: "uint256[]",
-              name: "orgChallengeIds",
-              type: "uint256[]",
-            },
-            {
-              internalType: "bool",
-              name: "isAdmin",
-              type: "bool",
-            },
-            {
-              internalType: "bool",
-              name: "isUser",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-          ],
-          name: "getTokenDecimals",
-          outputs: [
-            {
-              internalType: "uint8",
-              name: "",
-              type: "uint8",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_user",
-              type: "address",
-            },
-          ],
-          name: "isMember",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-          ],
-          name: "joinOrganization",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-          ],
-          name: "leaveOrganization",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-          ],
-          name: "listChallenges",
-          outputs: [
-            {
-              internalType: "uint256[]",
-              name: "",
-              type: "uint256[]",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
               internalType: "uint256[]",
               name: "ids",
               type: "uint256[]",
@@ -545,7 +270,7 @@ const deployedContracts = {
           outputs: [
             {
               internalType: "uint256[]",
-              name: "challengeIds",
+              name: "retChallengeIds",
               type: "uint256[]",
             },
             {
@@ -583,60 +308,9 @@ const deployedContracts = {
               name: "winnerCounts",
               type: "uint256[]",
             },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "listOrganizations",
-          outputs: [
-            {
-              internalType: "uint256[]",
-              name: "",
-              type: "uint256[]",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "listOrganizationsWithDetails",
-          outputs: [
-            {
-              internalType: "uint256[]",
-              name: "orgIds",
-              type: "uint256[]",
-            },
-            {
-              internalType: "string[]",
-              name: "names",
-              type: "string[]",
-            },
-            {
-              internalType: "string[]",
-              name: "tokenSymbols",
-              type: "string[]",
-            },
-            {
-              internalType: "address[]",
-              name: "tokenAddresses",
-              type: "address[]",
-            },
-            {
-              internalType: "uint256[]",
-              name: "adminCounts",
-              type: "uint256[]",
-            },
-            {
-              internalType: "uint256[]",
-              name: "userCounts",
-              type: "uint256[]",
-            },
             {
               internalType: "bool[]",
-              name: "isMembers",
+              name: "hasValidator",
               type: "bool[]",
             },
           ],
@@ -644,66 +318,37 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "orgChallenges",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
           inputs: [],
-          name: "orgCount",
+          name: "orgManager",
           outputs: [
             {
-              internalType: "uint256",
+              internalType: "contract IOrganizationManager",
               name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          name: "organizationIds",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          name: "organizations",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "id",
-              type: "uint256",
-            },
-            {
-              internalType: "string",
-              name: "name",
-              type: "string",
-            },
-            {
-              internalType: "address",
-              name: "token",
               type: "address",
-            },
-            {
-              internalType: "bool",
-              name: "exists",
-              type: "bool",
             },
           ],
           stateMutability: "view",
@@ -753,22 +398,11 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        allowance: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
-        approve: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
-        balanceOf: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
-        decimals: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
-        name: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
-        symbol: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
-        totalSupply: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
-        transfer: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
-        transferFrom: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
-        owner: "@openzeppelin/contracts/access/Ownable.sol",
-        renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
-        transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
+        createChallenge: "contracts/Challenges/IChallengeManager.sol",
       },
     },
     Groth16Verifier: {
-      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
       abi: [
         {
           inputs: [
@@ -808,7 +442,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     MarathonTrophyV1: {
-      address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
       abi: [
         {
           inputs: [
@@ -1146,7 +780,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     OnChainValidator: {
-      address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      address: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
       abi: [
         {
           inputs: [
@@ -1231,8 +865,1055 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
+    OrganizationManager: {
+      address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      abi: [
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "address",
+              name: "token",
+              type: "address",
+            },
+          ],
+          name: "OrganizationCreated",
+          type: "event",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_admin",
+              type: "address",
+            },
+          ],
+          name: "addAdmin",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_user",
+              type: "address",
+            },
+          ],
+          name: "addUser",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_name",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "_symbol",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "_initialSupply",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_initialEthBacking",
+              type: "uint256",
+            },
+            {
+              internalType: "address[]",
+              name: "_admins",
+              type: "address[]",
+            },
+            {
+              internalType: "address[]",
+              name: "_users",
+              type: "address[]",
+            },
+          ],
+          name: "createOrganization",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "payable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+          ],
+          name: "getBalanceOfOrg",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_user",
+              type: "address",
+            },
+          ],
+          name: "getBalanceOfUser",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+          ],
+          name: "getOrganizationDetails",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              internalType: "address",
+              name: "token",
+              type: "address",
+            },
+            {
+              internalType: "address[]",
+              name: "admins",
+              type: "address[]",
+            },
+            {
+              internalType: "address[]",
+              name: "users",
+              type: "address[]",
+            },
+            {
+              internalType: "bool",
+              name: "userIsAdmin",
+              type: "bool",
+            },
+            {
+              internalType: "bool",
+              name: "userIsMember",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+          ],
+          name: "getTokenOfOrg",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_user",
+              type: "address",
+            },
+          ],
+          name: "isAdmin",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_user",
+              type: "address",
+            },
+          ],
+          name: "isMember",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_user",
+              type: "address",
+            },
+          ],
+          name: "isUser",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+          ],
+          name: "joinOrganization",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+          ],
+          name: "leaveOrganization",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "listOrganizations",
+          outputs: [
+            {
+              internalType: "uint256[]",
+              name: "",
+              type: "uint256[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "listOrganizationsWithDetails",
+          outputs: [
+            {
+              internalType: "uint256[]",
+              name: "orgIds",
+              type: "uint256[]",
+            },
+            {
+              internalType: "string[]",
+              name: "names",
+              type: "string[]",
+            },
+            {
+              internalType: "string[]",
+              name: "tokenSymbols",
+              type: "string[]",
+            },
+            {
+              internalType: "address[]",
+              name: "tokenAddresses",
+              type: "address[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "adminCounts",
+              type: "uint256[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "userCounts",
+              type: "uint256[]",
+            },
+            {
+              internalType: "bool[]",
+              name: "isMembers",
+              type: "bool[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "orgCount",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "organizationIds",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "organizations",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "id",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              internalType: "address",
+              name: "token",
+              type: "address",
+            },
+            {
+              internalType: "bool",
+              name: "exists",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_destAddress",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "_amount",
+              type: "uint256",
+            },
+          ],
+          name: "transferTokensTo",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {
+        getBalanceOfOrg: "contracts/Organization/IOrganizationManager.sol",
+        getBalanceOfUser: "contracts/Organization/IOrganizationManager.sol",
+        getTokenOfOrg: "contracts/Organization/IOrganizationManager.sol",
+        isAdmin: "contracts/Organization/IOrganizationManager.sol",
+        isUser: "contracts/Organization/IOrganizationManager.sol",
+        transferTokensTo: "contracts/Organization/IOrganizationManager.sol",
+      },
+    },
+    OrganizationToken: {
+      address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      abi: [
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "symbol",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "initialSupply",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "initialRecipient",
+              type: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "spender",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "allowance",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "needed",
+              type: "uint256",
+            },
+          ],
+          name: "ERC20InsufficientAllowance",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "sender",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "balance",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "needed",
+              type: "uint256",
+            },
+          ],
+          name: "ERC20InsufficientBalance",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "approver",
+              type: "address",
+            },
+          ],
+          name: "ERC20InvalidApprover",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "receiver",
+              type: "address",
+            },
+          ],
+          name: "ERC20InvalidReceiver",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "sender",
+              type: "address",
+            },
+          ],
+          name: "ERC20InvalidSender",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "spender",
+              type: "address",
+            },
+          ],
+          name: "ERC20InvalidSpender",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "OwnableInvalidOwner",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "account",
+              type: "address",
+            },
+          ],
+          name: "OwnableUnauthorizedAccount",
+          type: "error",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "spender",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "value",
+              type: "uint256",
+            },
+          ],
+          name: "Approval",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "previousOwner",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "OwnershipTransferred",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "from",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "value",
+              type: "uint256",
+            },
+          ],
+          name: "Transfer",
+          type: "event",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "spender",
+              type: "address",
+            },
+          ],
+          name: "allowance",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "spender",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "value",
+              type: "uint256",
+            },
+          ],
+          name: "approve",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "account",
+              type: "address",
+            },
+          ],
+          name: "balanceOf",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "decimals",
+          outputs: [
+            {
+              internalType: "uint8",
+              name: "",
+              type: "uint8",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+          ],
+          name: "mint",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "name",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "renounceOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "symbol",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "totalSupply",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "value",
+              type: "uint256",
+            },
+          ],
+          name: "transfer",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "from",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "value",
+              type: "uint256",
+            },
+          ],
+          name: "transferFrom",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "transferOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {
+        allowance: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        approve: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        balanceOf: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        decimals: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        name: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        symbol: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        totalSupply: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        transfer: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        transferFrom: "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        owner: "@openzeppelin/contracts/access/Ownable.sol",
+        renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
+        transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
+      },
+    },
+    Prizes: {
+      address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      abi: [
+        {
+          inputs: [
+            {
+              internalType: "contract IOrganizationManager",
+              name: "_orgManager",
+              type: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "prizeId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+          ],
+          name: "claimPrize",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "description",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "price",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "stock",
+              type: "uint256",
+            },
+          ],
+          name: "createPrize",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+          ],
+          name: "listPrizes",
+          outputs: [
+            {
+              internalType: "uint256[]",
+              name: "ids",
+              type: "uint256[]",
+            },
+            {
+              internalType: "string[]",
+              name: "names",
+              type: "string[]",
+            },
+            {
+              internalType: "string[]",
+              name: "descriptions",
+              type: "string[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "prices",
+              type: "uint256[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "stocks",
+              type: "uint256[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "orgManager",
+          outputs: [
+            {
+              internalType: "contract IOrganizationManager",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {},
+    },
     RewardSystem: {
-      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       abi: [
         {
           anonymous: false,
@@ -1377,149 +2058,6 @@ const deployedContracts = {
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
-        },
-      ],
-      inheritedFunctions: {},
-    },
-    YourContract: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      abi: [
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_owner",
-              type: "address",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "constructor",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "greetingSetter",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "string",
-              name: "newGreeting",
-              type: "string",
-            },
-            {
-              indexed: false,
-              internalType: "bool",
-              name: "premium",
-              type: "bool",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "GreetingChange",
-          type: "event",
-        },
-        {
-          inputs: [],
-          name: "greeting",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "owner",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "premium",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "string",
-              name: "_newGreeting",
-              type: "string",
-            },
-          ],
-          name: "setGreeting",
-          outputs: [],
-          stateMutability: "payable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "totalCounter",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          name: "userGreetingCounter",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "withdraw",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          stateMutability: "payable",
-          type: "receive",
         },
       ],
       inheritedFunctions: {},

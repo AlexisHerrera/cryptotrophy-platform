@@ -22,23 +22,53 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  await deploy("CryptoTrophyPlatform", {
+  const orgManagerDeployment = await deploy("OrganizationManager", {
     from: deployer,
-    // Contract constructor arguments
-    args: ["CryptoTrophyPlatform", "CTP", 100],
+    args: [],
     log: true,
-    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
-    // automatically mining the contract deployment transaction. There is no effect on live networks.
-    autoMine: true,
   });
 
+  const cryptoTrophyTokenDeployment = await deploy("OrganizationToken", {
+    from: deployer,
+    args: ["CryptoTrophyToken", "CTT", 100, orgManagerDeployment.address],
+    log: true,
+  });
+
+  const challengeManagerDeployment = await deploy("ChallengeManager", {
+    from: deployer,
+    args: [orgManagerDeployment.address],
+    log: true,
+  });
+
+  const prizesDeployment = await deploy("Prizes", {
+    from: deployer,
+    args: [orgManagerDeployment.address],
+    log: true,
+  });
+
+  console.log("OrganizationManager at:", orgManagerDeployment.address);
+  console.log("CryptoTrophyToken at:", cryptoTrophyTokenDeployment.address);
+  console.log("ChallengeManager at:", challengeManagerDeployment.address);
+  console.log("Prizes at:", prizesDeployment.address);
+  //
+  //
+  // await deploy("CryptoTrophyPlatform", {
+  //   from: deployer,
+  //   // Contract constructor arguments
+  //   args: ["CryptoTrophyPlatform", "CTP", 100],
+  //   log: true,
+  //   // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+  //   // automatically mining the contract deployment transaction. There is no effect on live networks.
+  //   autoMine: true,
+  // });
+
   // Get the deployed contract to interact with it after deploying.
-  const yourContract = await hre.ethers.getContract<Contract>("CryptoTrophyPlatform", deployer);
-  console.log("👋cryptoTrophyToken:", await yourContract.cryptoTrophyToken());
+  const yourContract = await hre.ethers.getContract<Contract>("OrganizationManager", deployer);
+  console.log("👋Organization Created at:", await yourContract.getAddress());
 };
 
 export default deployYourContract;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags CryptoTrophyPlatform
-deployYourContract.tags = ["CryptoTrophyPlatform"];
+deployYourContract.tags = ["OrganizationManager", "ChallengeManager"];
