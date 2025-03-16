@@ -122,10 +122,6 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
                   <CopyButton address={org.tokenAddress} onCopy={handleCopy} />
                 </td>
                 <td>
-                  {org.tokenSymbols}
-                  <CopyButton address={org.tokenAddress} onCopy={handleCopy} />
-                </td>
-                <td>
                   <UserBalance orgId={org.id} />
                 </td>
                 <td>{org.adminCount.toString()}</td>
