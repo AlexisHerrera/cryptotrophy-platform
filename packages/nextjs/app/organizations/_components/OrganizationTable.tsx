@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import CopyButton from "~~/app/organizations/_components/CopyButton";
 import ModalLeaveJoin from "~~/app/organizations/_components/ModalLeaveJoin";
+import UserBalance from "~~/app/organizations/_components/UserBalance";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -101,6 +102,7 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
             <tr>
               <th>Name</th>
               <th>Token Info</th>
+              <th>Your Balance</th>
               <th>Admins</th>
               <th>Users</th>
               <th>Actions</th>
@@ -118,6 +120,13 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
                 <td className="flex items-center">
                   {org.tokenSymbols}
                   <CopyButton address={org.tokenAddress} onCopy={handleCopy} />
+                </td>
+                <td>
+                  {org.tokenSymbols}
+                  <CopyButton address={org.tokenAddress} onCopy={handleCopy} />
+                </td>
+                <td>
+                  <UserBalance orgId={org.id} />
                 </td>
                 <td>{org.adminCount.toString()}</td>
                 <td>{org.userCount.toString()}</td>
