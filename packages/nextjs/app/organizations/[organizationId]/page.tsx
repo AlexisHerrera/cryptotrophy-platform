@@ -76,7 +76,7 @@ const OrganizationPage: React.FC = () => {
   return (
     <div className="p-4">
       <div className="relative flex items-center justify-center">
-        <button className="btn btn-secondary absolute left-0" onClick={() => router.back()}>
+        <button className="btn btn-secondary absolute left-0" onClick={() => router.push("/organizations")}>
           Back
         </button>
         <h1 className="text-4xl text-center text-gray-700 font-mono grayscale mb-4 dark:text-gray-300">

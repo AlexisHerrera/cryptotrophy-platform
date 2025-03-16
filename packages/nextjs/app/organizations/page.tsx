@@ -39,7 +39,12 @@ const Organizations: React.FC = () => {
           </button>
         </div>
       ) : (
-        <OrganizationTable organizationsData={organizationsData} />
+        <div className="p-4">
+          <button className="btn btn-secondary absolute left-3" onClick={() => router.push("/")}>
+            Back
+          </button>
+          <OrganizationTable organizationsData={organizationsData} />
+        </div>
       )}
     </MotionDiv>
   );
