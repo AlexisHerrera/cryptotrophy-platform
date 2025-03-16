@@ -39,9 +39,12 @@ const Organizations: React.FC = () => {
           </button>
         </div>
       ) : (
-        <div className="p-4">
-          <button className="btn btn-secondary absolute left-3" onClick={() => router.push("/")}>
+        <div className="p-4 relative">
+          <button className="btn btn-secondary absolute left-3 top-3" onClick={() => router.push("/")}>
             Back
+          </button>
+          <button className="btn bg-green-300 absolute right-32 top-3" onClick={() => router.push("/market")}>
+            Go to Market
           </button>
           <OrganizationTable organizationsData={organizationsData} />
         </div>
