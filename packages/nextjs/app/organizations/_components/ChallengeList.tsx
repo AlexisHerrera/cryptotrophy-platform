@@ -5,9 +5,9 @@ import ClaimChallengeOnChainModal from "./ClaimChallengeOnChainModal";
 import ClaimChallengeTwoStepModal from "./ClaimChallengeTwoStepModal";
 import { formatUnits } from "ethers";
 import { decodeBytes32String } from "ethers";
-import AdminSetChallengeValidator from "~~/app/(cryptotrophy)/organizations/_components/AdminSetChallengeValidator";
-import ClaimChallengeBasic from "~~/app/(cryptotrophy)/organizations/_components/ClaimChallengeBasic";
-import MockExternalValidatorResponse from "~~/app/(cryptotrophy)/organizations/_components/MockExternalValidatorResponse";
+import AdminSetChallengeValidator from "~~/app/organizations/_components/AdminSetChallengeValidator";
+import ClaimChallengeBasic from "~~/app/organizations/_components/ClaimChallengeBasic";
+import MockExternalValidatorResponse from "~~/app/organizations/_components/MockExternalValidatorResponse";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
 
@@ -30,7 +30,6 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
   } | null>(null);
   const [mockValidatorResponse, setMockValidatorResponse] = useState<{ id: bigint; validatorUID: string } | null>(null);
   console.log("SelectedChallengeId", selectedChallenge?.id);
-  console.log("SelectedChallengeId", selectedChallenge?.validatorUID);
 
   // Hook para obtener los detalles de los desafíos
   const { data, isLoading } = useScaffoldReadContract({

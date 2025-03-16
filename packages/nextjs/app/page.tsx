@@ -38,18 +38,18 @@ const Home: NextPage = () => {
             <button
               className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition duration-200 hover:scale-105"
               onClick={() => {
-                router.push("/organizations");
+                router.push("/create-organization");
               }}
             >
-              Backoffice
+              Create Organization
             </button>
             <button
               className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition duration-200 hover:scale-105"
               onClick={() => {
-                router.push("/home");
+                router.push("/organizations");
               }}
             >
-              TrophyApp
+              Join Organization
             </button>
           </div>
         </main>

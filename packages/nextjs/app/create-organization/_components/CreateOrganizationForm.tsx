@@ -4,9 +4,9 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Interface } from "ethers";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
-import Step1OrganizationData from "~~/app/(cryptotrophy)/create-organization/_components/steps/Step1OrganizationData";
-import Step2EthereumBacking from "~~/app/(cryptotrophy)/create-organization/_components/steps/Step2EthereumBacking";
-import Step3ReviewData from "~~/app/(cryptotrophy)/create-organization/_components/steps/Step3ReviewData";
+import Step1OrganizationData from "~~/app/create-organization/_components/steps/Step1OrganizationData";
+import Step2EthereumBacking from "~~/app/create-organization/_components/steps/Step2EthereumBacking";
+import Step3ReviewData from "~~/app/create-organization/_components/steps/Step3ReviewData";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 export interface CreateOrganizationFormProps {
