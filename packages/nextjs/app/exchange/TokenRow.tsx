@@ -2,21 +2,20 @@ import React, { useEffect } from "react";
 import { ethers } from "ethers";
 import { formatEther } from "viem";
 import { useReadContract } from "wagmi";
+import { TokenData } from "~~/app/exchange/page";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-
-// Ajusta la ruta según corresponda
 
 interface TokenRowProps {
   tokenAddress: string;
   tokenSymbol: string;
   userAddress: string;
+  setModalData: (tokenData: TokenData) => void;
 }
 
-const TokenRow = ({ tokenAddress, tokenSymbol, userAddress }: TokenRowProps) => {
+const TokenRow = ({ tokenAddress, tokenSymbol, userAddress, setModalData }: TokenRowProps) => {
   const { targetNetwork } = useTargetNetwork();
   const { data: deployedContract } = useDeployedContractInfo("OrganizationToken");
-  // Lee el balance del usuario en el contrato token
   const {
     data: balance,
     isFetching: balanceFetching,
@@ -30,7 +29,6 @@ const TokenRow = ({ tokenAddress, tokenSymbol, userAddress }: TokenRowProps) => 
     query: { retry: false },
   });
 
-  // Lee el exchange rate actual
   const {
     data: exchangeRate,
     isFetching: rateFetching,
@@ -45,7 +43,6 @@ const TokenRow = ({ tokenAddress, tokenSymbol, userAddress }: TokenRowProps) => 
 
   const isLoading = balanceFetching || rateFetching;
 
-  // Calcula el balance en ETH: se asume que exchangeRate es tokens por ETH.
   let balanceInETH = "0";
   if (!isLoading && balance && exchangeRate) {
     const formattedBalance = parseFloat(formatEther(balance as bigint));
@@ -55,7 +52,6 @@ const TokenRow = ({ tokenAddress, tokenSymbol, userAddress }: TokenRowProps) => 
     }
   }
 
-  // Refresca los valores cada vez que se renderiza el componente
   useEffect(() => {
     refetchBalance();
     refetchRate();
@@ -68,8 +64,19 @@ const TokenRow = ({ tokenAddress, tokenSymbol, userAddress }: TokenRowProps) => 
       <td>{isLoading || !exchangeRate ? "Loading..." : exchangeRate.toString()}</td>
       <td>{isLoading ? "Loading..." : balanceInETH}</td>
       <td>
-        {/* Botón Redeem: por ahora no realiza ninguna acción */}
-        <button className="btn btn-primary">Redeem</button>
+        <button
+          className="btn btn-primary"
+          onClick={() =>
+            setModalData({
+              tokenAddress,
+              tokenSymbol,
+              balance: balance as bigint,
+              exchangeRate: exchangeRate as bigint,
+            })
+          }
+        >
+          Redeem
+        </button>
       </td>
     </tr>
   );

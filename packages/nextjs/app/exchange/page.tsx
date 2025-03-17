@@ -1,13 +1,22 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import TokenRow from "./TokenRow";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
+import ExchangeModal from "~~/app/exchange/ExchangeModal";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+
+export interface TokenData {
+  tokenAddress: string;
+  tokenSymbol: string;
+  balance: bigint;
+  exchangeRate: bigint;
+}
 
 const ExchangePage = () => {
   const { address } = useAccount();
+  const [tokenData, setTokenData] = useState<TokenData | null>(null);
   const { data: organizationsData, isLoading: orgLoading } = useScaffoldReadContract({
     contractName: "OrganizationManager",
     functionName: "listOrganizationsWithDetails",
@@ -41,10 +50,12 @@ const ExchangePage = () => {
                 tokenAddress={tokenAddress}
                 tokenSymbol={tokenSymbols[index]}
                 userAddress={userAddress}
+                setModalData={data => setTokenData(data)}
               />
             ))}
           </tbody>
         </table>
+        {tokenData !== null && <ExchangeModal tokenData={tokenData} onClose={() => setTokenData(null)} />}
       </div>
     </div>
   );
