@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import TokenRow from "./TokenRow";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
@@ -21,7 +22,7 @@ const ExchangePage = () => {
     contractName: "OrganizationManager",
     functionName: "listOrganizationsWithDetails",
   });
-
+  const router = useRouter();
   const userAddress = address || ethers.ZeroAddress;
 
   if (orgLoading || !organizationsData) {
@@ -32,6 +33,9 @@ const ExchangePage = () => {
 
   return (
     <div className="p-4">
+      <button className="btn btn-secondary absolute left-3 top-3" onClick={() => router.push("/organizations")}>
+        Back
+      </button>
       <div className="container mx-auto p-4 max-w-4xl">
         <table className="table table-zebra border border-gray-200 shadow-lg">
           <thead>

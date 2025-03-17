@@ -61,19 +61,25 @@ const TokenRow = ({ tokenAddress, tokenSymbol, userAddress, setModalData }: Toke
     <tr>
       <td>{tokenSymbol}</td>
       <td>{isLoading || balance === undefined ? "Loading..." : formatEther(balance as bigint)}</td>
-      <td>{isLoading || !exchangeRate ? "Loading..." : exchangeRate.toString()}</td>
+      <td>{isLoading || !exchangeRate ? "Loading..." : 1 / parseFloat(exchangeRate.toString())}</td>
       <td>{isLoading ? "Loading..." : balanceInETH}</td>
       <td>
         <button
           className="btn btn-primary"
-          onClick={() =>
+          onClick={() => {
+            console.log("Redeem", {
+              tokenAddress,
+              tokenSymbol,
+              balance: balance as bigint,
+              exchangeRate: exchangeRate as bigint,
+            });
             setModalData({
               tokenAddress,
               tokenSymbol,
               balance: balance as bigint,
               exchangeRate: exchangeRate as bigint,
-            })
-          }
+            });
+          }}
         >
           Redeem
         </button>
