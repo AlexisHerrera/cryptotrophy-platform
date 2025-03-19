@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import CopyButton from "~~/app/organizations/_components/CopyButton";
-import ModalLeaveJoin from "~~/app/organizations/_components/ModalLeaveJoin";
-import UserBalance from "~~/app/organizations/_components/UserBalance";
+import CopyButton from "~~/app/(cryptotrophy)/organizations/_components/CopyButton";
+import ModalLeaveJoin from "~~/app/(cryptotrophy)/organizations/_components/ModalLeaveJoin";
+import UserBalance from "~~/app/(cryptotrophy)/organizations/_components/UserBalance";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 

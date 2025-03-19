@@ -3547,7 +3547,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     RandomValidator: {
-      address: "0x09635F643e140090A9A8Dcd712eD6285858ceBef",
+      address: "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
       abi: [
         {
           inputs: [
