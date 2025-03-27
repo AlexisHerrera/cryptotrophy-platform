@@ -2,11 +2,11 @@ import React from "react";
 import { useAccount } from "wagmi";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 
-interface Step3ReviewDataProps {
+interface StepReviewDataProps {
   formData: {
     organizationName: string;
     admins: string[];
-    users: string[];
+    customerBaseUID: string;
     tokenSymbol: string;
     initialMint: string;
     ethBacking: string;
@@ -18,7 +18,7 @@ export const formatEthBacking = (value: string): string => {
   return ethValue >= 0.001 ? `${ethValue} ETH` : `${value} wei`;
 };
 
-const Step3ReviewData: React.FC<Step3ReviewDataProps> = ({ formData }) => {
+const StepReviewData: React.FC<StepReviewDataProps> = ({ formData }) => {
   const { address } = useAccount();
   return (
     <div className="space-y-6">
@@ -47,15 +47,7 @@ const Step3ReviewData: React.FC<Step3ReviewDataProps> = ({ formData }) => {
       </div>
 
       <div>
-        <strong>Users:</strong>
-        <div className="flex flex-wrap gap-2 mt-2">
-          {formData.users.map((user, index) => (
-            <div key={index} className="flex items-center gap-2 bg-gray-100 p-2 rounded-lg shadow">
-              <BlockieAvatar address={user} size={32} />
-              <span className="text-sm">{`${user.slice(0, 6)}...${user.slice(-4)}`}</span>
-            </div>
-          ))}
-        </div>
+        <strong>Customer Base: </strong> {formData.customerBaseUID}
       </div>
 
       <div>
@@ -73,4 +65,4 @@ const Step3ReviewData: React.FC<Step3ReviewDataProps> = ({ formData }) => {
   );
 };
 
-export default Step3ReviewData;
+export default StepReviewData;
