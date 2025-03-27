@@ -30,7 +30,7 @@ const Organizations: React.FC = () => {
   // Leer organizaciones desde el contrato
   const { data: organizationsData, isLoading } = useScaffoldReadContract({
     contractName: "OrganizationManager",
-    functionName: "listOrganizationsWithDetails",
+    functionName: "listAdministratedOrganizations",
   });
 
   // Funciones para unirse o salir
@@ -66,38 +66,6 @@ const Organizations: React.FC = () => {
 
   // Obtener los elementos de la página actual
   const paginatedOrganizations = organizations.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-  const handleJoin = async (organization: Organization) => {
-    try {
-      setLoadingAction(true);
-      await joinOrganization({
-        functionName: "joinOrganization",
-        args: [organization.id],
-      });
-      //notification.success(`Successfully joined ${organization.name}!`);
-      setSelectedOrganization(null);
-    } catch (error) {
-      console.error("Error joining organization:", error);
-    } finally {
-      setLoadingAction(false);
-    }
-  };
-
-  const handleLeave = async (organization: Organization) => {
-    try {
-      setLoadingAction(true);
-      await leaveOrganization({
-        functionName: "leaveOrganization",
-        args: [organization.id],
-      });
-      //notification.success(`Successfully left ${organization.name}!`);
-      setSelectedOrganization(null);
-    } catch (error) {
-      console.error("Error leaving organization:", error);
-    } finally {
-      setLoadingAction(false);
-    }
-  };
 
   const handleCopy = () => {
     notification.success("Token address copied!");
@@ -137,29 +105,7 @@ const Organizations: React.FC = () => {
                   </td>
                   <td>{org.adminCount.toString()}</td>
                   <td>{org.userCount.toString()}</td>
-                  <td>
-                    {org.isMember ? (
-                      <button
-                        className="btn btn-warning"
-                        onClick={() => {
-                          setSelectedOrganization(org);
-                          setIsModalOpen(true);
-                        }}
-                      >
-                        Leave
-                      </button>
-                    ) : (
-                      <button
-                        className="btn btn-primary"
-                        onClick={() => {
-                          setSelectedOrganization(org);
-                          setIsModalOpen(true);
-                        }}
-                      >
-                        Join
-                      </button>
-                    )}
-                  </td>
+                  <td></td>
                 </tr>
               ))}
             </tbody>
@@ -184,25 +130,6 @@ const Organizations: React.FC = () => {
             Next
           </button>
         </div>
-
-        <ModalLeaveJoin
-          title={selectedOrganization?.isMember ? "Leave Organization" : "Join Organization"}
-          message={`Are you sure you want to ${selectedOrganization?.isMember ? "leave" : "join"} ${
-            selectedOrganization?.name
-          }?`}
-          isOpen={isModalOpen}
-          isLoading={loadingAction}
-          onAccept={async () => {
-            if (selectedOrganization === null) return;
-            if (selectedOrganization?.isMember) {
-              await handleLeave(selectedOrganization);
-            } else {
-              await handleJoin(selectedOrganization);
-            }
-            setIsModalOpen(false);
-          }}
-          onCancel={() => setIsModalOpen(false)}
-        />
       </div>
     </MotionDiv>
   );
