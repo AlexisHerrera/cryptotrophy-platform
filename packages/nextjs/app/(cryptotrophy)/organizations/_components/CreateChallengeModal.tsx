@@ -22,7 +22,7 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
     prizeAmount: "",
     startTime: defaultStartTime,
     endTime: defaultEndTime,
-    maxWinners: "1",
+    maxWinners: "",
   });
 
   const [maxPrizeAmount, setMaxPrizeAmount] = useState<bigint | null>(null);
@@ -76,7 +76,10 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
   };
 
   const isCreateButtonDisabled =
-    !maxPrizeAmount || !formData.prizeAmount || parseUnits(formData.prizeAmount, DECIMALS_TOKEN) > maxPrizeAmount;
+    !maxPrizeAmount ||
+    !formData.prizeAmount ||
+    !formData.maxWinners ||
+    parseUnits(formData.prizeAmount, DECIMALS_TOKEN) > maxPrizeAmount;
 
   return (
     <Modal onClose={onClose}>
