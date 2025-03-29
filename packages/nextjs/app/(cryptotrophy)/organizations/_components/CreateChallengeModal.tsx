@@ -61,8 +61,8 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
     const { description, prizeAmount, startTime, endTime, maxWinners } = formData;
     try {
       const prizeAmountInBaseUnits = parseUnits(prizeAmount, DECIMALS_TOKEN);
-      const startTimestamp = BigInt(Math.floor(new Date(formData.startTime).getTime() / 1000));
-      const endTimestamp = BigInt(Math.floor(new Date(formData.endTime).getTime() / 1000));
+      const startTimestamp = BigInt(Math.floor(new Date(startTime).getTime() / 1000));
+      const endTimestamp = BigInt(Math.floor(new Date(endTime).getTime() / 1000));
 
       await challengeManager({
         functionName: "createChallenge",
