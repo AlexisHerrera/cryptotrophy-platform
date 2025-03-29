@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import CreatePrizeModal from "./_components/CreatePrizeModal";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
+import { BackButton } from "~~/components/common/BackButton";
 import { useEthersSigner } from "~~/hooks/ethers/useEthersSigner";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
@@ -118,84 +119,84 @@ const PrizeCenter: React.FC = () => {
   }));
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl">
-      <button className="btn btn-secondary absolute left-3" onClick={() => router.push("/organizations")}>
-        Back
-      </button>
-      <h1 className="text-4xl text-gray-700 font-mono grayscale mb-4 dark:text-gray-300 text-center">Prize Center</h1>
+    <div className="flex justify-between">
+      <BackButton />
+      <div className="container mx-auto p-4 max-w-4xl">
+        <h1 className="text-4xl text-gray-700 font-mono grayscale mb-4 dark:text-gray-300 text-center">Prize Center</h1>
 
-      <div className="mb-4 text-center">
-        <span className="font-bold">Your Balance:</span>{" "}
-        {ethers.formatUnits(balanceData ? balanceData[0] : 0n, DECIMALS_TOKEN)}{" "}
-        {balanceData ? balanceData[1] : "Tokens"}
-      </div>
+        <div className="mb-4 text-center">
+          <span className="font-bold">Your Balance:</span>{" "}
+          {ethers.formatUnits(balanceData ? balanceData[0] : 0n, DECIMALS_TOKEN)}{" "}
+          {balanceData ? balanceData[1] : "Tokens"}
+        </div>
 
-      <div className="flex justify-center mb-6">
-        <button className="btn btn-primary" onClick={() => setIsCreateModalOpen(true)}>
-          Create Prize
-        </button>
-      </div>
+        <div className="flex justify-center mb-6">
+          <button className="btn btn-primary" onClick={() => setIsCreateModalOpen(true)}>
+            Create Prize
+          </button>
+        </div>
 
-      <div className="overflow-x-auto">
-        <table className="table table-zebra w-full border border-gray-300">
-          <thead>
-            <tr>
-              <th>Prize ID</th>
-              <th>Name</th>
-              <th>Price (tokens)</th>
-              <th>Stock</th>
-              <th>Claim</th>
-            </tr>
-          </thead>
-          <tbody>
-            {prizes.length === 0 ? (
+        <div className="overflow-x-auto">
+          <table className="table table-zebra w-full border border-gray-300">
+            <thead>
               <tr>
-                <td colSpan={5} className="text-center">
-                  No prizes found.
-                </td>
+                <th>Prize ID</th>
+                <th>Name</th>
+                <th>Price (tokens)</th>
+                <th>Stock</th>
+                <th>Claim</th>
               </tr>
-            ) : (
-              prizes.map(prize => (
-                <tr key={prize.id.toString()}>
-                  <td>{prize.id.toString()}</td>
-                  <td>{prize.name}</td>
-                  <td>{ethers.formatUnits(prize.price, 18)}</td>
-                  <td>{prize.stock.toString()}</td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        min={1}
-                        placeholder="Qty"
-                        className="input input-bordered w-20"
-                        value={claimAmounts[prize.id.toString()] || ""}
-                        onChange={e =>
-                          setClaimAmounts(prev => ({
-                            ...prev,
-                            [prize.id.toString()]: e.target.value,
-                          }))
-                        }
-                      />
-                      <button className="btn btn-secondary" onClick={() => handleClaim(prize.id)}>
-                        Claim
-                      </button>
-                    </div>
+            </thead>
+            <tbody>
+              {prizes.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="text-center">
+                    No prizes found.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ) : (
+                prizes.map(prize => (
+                  <tr key={prize.id.toString()}>
+                    <td>{prize.id.toString()}</td>
+                    <td>{prize.name}</td>
+                    <td>{ethers.formatUnits(prize.price, 18)}</td>
+                    <td>{prize.stock.toString()}</td>
+                    <td>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          min={1}
+                          placeholder="Qty"
+                          className="input input-bordered w-20"
+                          value={claimAmounts[prize.id.toString()] || ""}
+                          onChange={e =>
+                            setClaimAmounts(prev => ({
+                              ...prev,
+                              [prize.id.toString()]: e.target.value,
+                            }))
+                          }
+                        />
+                        <button className="btn btn-secondary" onClick={() => handleClaim(prize.id)}>
+                          Claim
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
-      <CreatePrizeModal
-        orgId={organizationId}
-        isOpen={isCreateModalOpen}
-        onClose={async () => {
-          setIsCreateModalOpen(false);
-          await refetchPrizes();
-        }}
-      />
+        <CreatePrizeModal
+          orgId={organizationId}
+          isOpen={isCreateModalOpen}
+          onClose={async () => {
+            setIsCreateModalOpen(false);
+            await refetchPrizes();
+          }}
+        />
+      </div>
     </div>
   );
 };

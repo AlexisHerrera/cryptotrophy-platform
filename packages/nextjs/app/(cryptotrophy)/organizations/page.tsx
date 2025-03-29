@@ -4,6 +4,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import OrganizationTable from "~~/app/(cryptotrophy)/organizations/_components/OrganizationTable";
 import { MotionDiv } from "~~/app/motions/use-motion";
+import { BackButton } from "~~/components/common/BackButton";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 const Organizations: React.FC = () => {
@@ -39,14 +40,12 @@ const Organizations: React.FC = () => {
           </button>
         </div>
       ) : (
-        <div className="p-4 relative">
-          <button className="btn btn-secondary absolute left-3 top-3" onClick={() => router.push("/")}>
-            Back
-          </button>
-          <button className="btn bg-green-300 absolute right-32 top-3" onClick={() => router.push("/exchange")}>
+        <div className="flex justify-between">
+          <BackButton />
+          <OrganizationTable organizationsData={organizationsData} />
+          <button className="btn bg-green-300" onClick={() => router.push("/exchange")}>
             Go to Market
           </button>
-          <OrganizationTable organizationsData={organizationsData} />
         </div>
       )}
     </MotionDiv>

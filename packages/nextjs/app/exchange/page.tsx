@@ -6,6 +6,7 @@ import TokenRow from "./TokenRow";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 import ExchangeModal from "~~/app/exchange/ExchangeModal";
+import { BackButton } from "~~/components/common/BackButton";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 export interface TokenData {
@@ -32,10 +33,8 @@ const ExchangePage = () => {
   const [, , tokenSymbols, tokenAddresses] = organizationsData;
 
   return (
-    <div className="p-4">
-      <button className="btn btn-secondary absolute left-3 top-3" onClick={() => router.push("/organizations")}>
-        Back
-      </button>
+    <div className="flex justify-between p-4">
+      <BackButton />
       <div className="container mx-auto p-4 max-w-4xl">
         <table className="table table-zebra border border-gray-200 shadow-lg">
           <thead>

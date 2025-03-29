@@ -6,6 +6,7 @@ import AdminPanel from "~~/app/(cryptotrophy)/organizations/_components/AdminPan
 import ChallengeList from "~~/app/(cryptotrophy)/organizations/_components/ChallengeList";
 import CreateChallengeModal from "~~/app/(cryptotrophy)/organizations/_components/CreateChallengeModal";
 import Modal from "~~/components/Modal";
+import { BackButton } from "~~/components/common/BackButton";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 interface OrganizationDetails {
@@ -74,53 +75,53 @@ const OrganizationPage: React.FC = () => {
   }
 
   return (
-    <div className="p-4">
-      <div className="relative flex items-center justify-center">
-        <button className="btn btn-secondary absolute left-0" onClick={() => router.push("/organizations")}>
-          Back
-        </button>
-        <h1 className="text-4xl text-center text-gray-700 font-mono grayscale mb-4 dark:text-gray-300">
-          {organization.name}
-        </h1>
-      </div>
+    <div className="flex justify-between">
+      <BackButton />
+      <div className="max-w-4xl mx-auto">
+        <div className="relative flex items-center justify-center">
+          <h1 className="text-4xl text-center text-gray-700 font-mono grayscale mb-4 dark:text-gray-300">
+            {organization.name}
+          </h1>
+        </div>
 
-      <div className="text-center">
-        <div className="flex justify-center gap-4 mb-4">
-          {organization.userIsAdmin && (
-            <div className="flex gap-4">
-              <button className="btn btn-primary" onClick={() => setShowCreateChallengeModal(true)}>
-                Create Challenge
-              </button>
-              <button className="btn btn-secondary" onClick={() => setShowAdminPanelModal(true)}>
-                Open Admin Panel
+        <div className="text-center">
+          <div className="flex justify-center gap-4 mb-4">
+            {organization.userIsAdmin && (
+              <div className="flex gap-4">
+                <button className="btn btn-primary" onClick={() => setShowCreateChallengeModal(true)}>
+                  Create Challenge
+                </button>
+                <button className="btn btn-secondary" onClick={() => setShowAdminPanelModal(true)}>
+                  Open Admin Panel
+                </button>
+              </div>
+            )}
+            <div>
+              <button
+                className="btn bg-amber-400 dark:text-gray-800 dark:btn-warning"
+                onClick={() => router.push(`/organizations/${organization.id}/prizes`)}
+              >
+                Prize Center
               </button>
             </div>
-          )}
-          <div>
-            <button
-              className="btn bg-amber-400 dark:text-gray-800 dark:btn-warning"
-              onClick={() => router.push(`/organizations/${organization.id}/prizes`)}
-            >
-              Prize Center
-            </button>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl font-semibold mb-4">Active Challenges</h2>
+            <ChallengeList challengeIds={challengeIds ?? []} orgId={BigInt(organizationId as string)} />
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-4">Active Challenges</h2>
-          <ChallengeList challengeIds={challengeIds ?? []} orgId={BigInt(organizationId as string)} />
-        </div>
+        {showCreateChallengeModal && (
+          <CreateChallengeModal organizationId={organization.id} onClose={() => setShowCreateChallengeModal(false)} />
+        )}
+
+        {showAdminPanelModal && (
+          <Modal onClose={() => setShowAdminPanelModal(false)}>
+            <AdminPanel organizationId={organization.id} addAdmin={addAdmin} addUser={addUser} />
+          </Modal>
+        )}
       </div>
-
-      {showCreateChallengeModal && (
-        <CreateChallengeModal organizationId={organization.id} onClose={() => setShowCreateChallengeModal(false)} />
-      )}
-
-      {showAdminPanelModal && (
-        <Modal onClose={() => setShowAdminPanelModal(false)}>
-          <AdminPanel organizationId={organization.id} addAdmin={addAdmin} addUser={addUser} />
-        </Modal>
-      )}
     </div>
   );
 };
