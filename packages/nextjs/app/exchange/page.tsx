@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import TokenRow from "./TokenRow";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
