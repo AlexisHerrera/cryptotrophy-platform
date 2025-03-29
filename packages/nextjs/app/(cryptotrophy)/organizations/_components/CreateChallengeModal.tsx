@@ -10,11 +10,18 @@ interface CreateChallengeModalProps {
 }
 
 const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizationId, onClose }) => {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  const defaultStartTime = now.toISOString().slice(0, 16);
+
+  const oneWeekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const defaultEndTime = oneWeekLater.toISOString().slice(0, 16);
+
   const [formData, setFormData] = useState({
     description: "",
     prizeAmount: "",
-    startTime: "",
-    endTime: "",
+    startTime: defaultStartTime,
+    endTime: defaultEndTime,
     maxWinners: "1",
   });
 
@@ -54,17 +61,12 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
     const { description, prizeAmount, startTime, endTime, maxWinners } = formData;
     try {
       const prizeAmountInBaseUnits = parseUnits(prizeAmount, DECIMALS_TOKEN);
+      const startTimestamp = BigInt(Math.floor(new Date(formData.startTime).getTime() / 1000));
+      const endTimestamp = BigInt(Math.floor(new Date(formData.endTime).getTime() / 1000));
 
       await challengeManager({
         functionName: "createChallenge",
-        args: [
-          organizationId,
-          description,
-          prizeAmountInBaseUnits,
-          BigInt(new Date(startTime).getTime() / 1000),
-          BigInt(new Date(endTime).getTime() / 1000),
-          BigInt(maxWinners),
-        ],
+        args: [organizationId, description, prizeAmountInBaseUnits, startTimestamp, endTimestamp, BigInt(maxWinners)],
       });
       alert("Challenge created successfully!");
       onClose();
@@ -72,18 +74,6 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizatio
       console.error("Error creating challenge:", error);
     }
   };
-
-  // Set default dates
-  useEffect(() => {
-    const now = new Date();
-    const oneWeekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-    setFormData(prev => ({
-      ...prev,
-      startTime: now.toISOString().slice(0, 16),
-      endTime: oneWeekLater.toISOString().slice(0, 16),
-    }));
-  }, []);
 
   const isCreateButtonDisabled =
     !maxPrizeAmount || !formData.prizeAmount || parseUnits(formData.prizeAmount, DECIMALS_TOKEN) > maxPrizeAmount;
