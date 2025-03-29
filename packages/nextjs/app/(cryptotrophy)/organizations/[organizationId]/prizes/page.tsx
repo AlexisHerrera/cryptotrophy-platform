@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import CreatePrizeModal from "./_components/CreatePrizeModal";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
@@ -18,7 +18,6 @@ const PrizeCenter: React.FC = () => {
   const signer = useEthersSigner();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [claimAmounts, setClaimAmounts] = useState<{ [prizeId: string]: string }>({});
-  const router = useRouter();
 
   const {
     data: prizesData,

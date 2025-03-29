@@ -23,7 +23,6 @@ const ExchangePage = () => {
     contractName: "OrganizationManager",
     functionName: "listOrganizationsWithDetails",
   });
-  const router = useRouter();
   const userAddress = address || ethers.ZeroAddress;
 
   if (orgLoading || !organizationsData) {
