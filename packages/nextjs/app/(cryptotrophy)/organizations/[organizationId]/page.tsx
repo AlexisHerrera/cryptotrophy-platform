@@ -75,13 +75,16 @@ const OrganizationPage: React.FC = () => {
 
   return (
     <div className="p-4">
-      <button className="btn btn-secondary mb-4" onClick={() => router.back()}>
-        Back
-      </button>
+      <div className="relative flex items-center justify-center">
+        <button className="btn btn-secondary absolute left-0" onClick={() => router.push("/organizations")}>
+          Back
+        </button>
+        <h1 className="text-4xl text-center text-gray-700 font-mono grayscale mb-4 dark:text-gray-300">
+          {organization.name}
+        </h1>
+      </div>
 
       <div className="text-center">
-        <h1 className="text-4xl text-gray-700 font-mono grayscale mb-4 dark:text-gray-300">{organization.name}</h1>
-
         <div className="flex justify-center gap-4 mb-4">
           {organization.userIsAdmin && (
             <div className="flex gap-4">

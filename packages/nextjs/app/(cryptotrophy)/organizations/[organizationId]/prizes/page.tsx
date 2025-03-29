@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import CreatePrizeModal from "./_components/CreatePrizeModal";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
@@ -17,6 +17,7 @@ const PrizeCenter: React.FC = () => {
   const signer = useEthersSigner();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [claimAmounts, setClaimAmounts] = useState<{ [prizeId: string]: string }>({});
+  const router = useRouter();
 
   const {
     data: prizesData,
@@ -118,6 +119,9 @@ const PrizeCenter: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
+      <button className="btn btn-secondary absolute left-3" onClick={() => router.push("/organizations")}>
+        Back
+      </button>
       <h1 className="text-4xl text-gray-700 font-mono grayscale mb-4 dark:text-gray-300 text-center">Prize Center</h1>
 
       <div className="mb-4 text-center">
