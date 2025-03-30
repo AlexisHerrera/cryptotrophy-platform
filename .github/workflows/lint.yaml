@@ -27,15 +27,6 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: yarn
 
-      - name: Install SSH Key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: 'github.com'
-
-      - name: Test SSH connection to GitHub
-        run: ssh -v -T git@github.com
-
       - name: Install dependencies
         run: yarn install --immutable
       
