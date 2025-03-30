@@ -34,7 +34,7 @@ jobs:
           known_hosts: 'github.com'
 
       - name: Test SSH connection to GitHub
-        run: ssh -T git@github.com
+        run: ssh -v -T git@github.com
 
       - name: Install dependencies
         run: yarn install --immutable
