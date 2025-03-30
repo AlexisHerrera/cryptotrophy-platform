@@ -62,7 +62,7 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
     notification.success("Token address copied!");
   };
   return (
-    <div className="p-4">
+    <div className="mx-auto p-4 max-w-4xl">
       <div className="container mx-auto p-4 max-w-4xl">
         <table className="table table-zebra border border-gray-200 shadow-lg">
           <thead>

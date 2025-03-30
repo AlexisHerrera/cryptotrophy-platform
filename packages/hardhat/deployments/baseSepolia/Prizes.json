@@ -1,0 +1,288 @@
+{
+  "address": "0x32Ce67E1301D594ee7fF2Ea2b8990e728aEC96D5",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "contract IOrganizationManager",
+          "name": "_orgManager",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "orgId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "prizeId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "claimPrize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "orgId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "price",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "stock",
+          "type": "uint256"
+        }
+      ],
+      "name": "createPrize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "orgId",
+          "type": "uint256"
+        }
+      ],
+      "name": "listPrizes",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "ids",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "string[]",
+          "name": "names",
+          "type": "string[]"
+        },
+        {
+          "internalType": "string[]",
+          "name": "descriptions",
+          "type": "string[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "prices",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "stocks",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "orgManager",
+      "outputs": [
+        {
+          "internalType": "contract IOrganizationManager",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x5cec80a1c42bf0de9bb5fa604b63fa299c30f7006d6ce11f31537226911a5d3f",
+  "receipt": {
+    "to": null,
+    "from": "0x6875548D549dB2D6D99B29E0BA6ea7f7C53739D1",
+    "contractAddress": "0x32Ce67E1301D594ee7fF2Ea2b8990e728aEC96D5",
+    "transactionIndex": 37,
+    "gasUsed": "875224",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0xe1fa6ce2713cbacbac71d635cfd48d1e7ee52433cfd242585a36e648b7a60f03",
+    "transactionHash": "0x5cec80a1c42bf0de9bb5fa604b63fa299c30f7006d6ce11f31537226911a5d3f",
+    "logs": [],
+    "blockNumber": 23789593,
+    "cumulativeGasUsed": "9049815",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x3E02c8f6066e0A046EE9772ffd6E359dAD0745fB"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "2c923584b09c25d8082f9fac83f4c8db",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.20+commit.a1b79de6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract IOrganizationManager\",\"name\":\"_orgManager\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"orgId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"prizeId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"claimPrize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"orgId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"stock\",\"type\":\"uint256\"}],\"name\":\"createPrize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"orgId\",\"type\":\"uint256\"}],\"name\":\"listPrizes\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"ids\",\"type\":\"uint256[]\"},{\"internalType\":\"string[]\",\"name\":\"names\",\"type\":\"string[]\"},{\"internalType\":\"string[]\",\"name\":\"descriptions\",\"type\":\"string[]\"},{\"internalType\":\"uint256[]\",\"name\":\"prices\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256[]\",\"name\":\"stocks\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"orgManager\",\"outputs\":[{\"internalType\":\"contract IOrganizationManager\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"claimPrize(uint256,uint256,uint256)\":{\"details\":\"El usuario debe haber aprobado previamente a este contrato (`Prizes`)      para gastar `amount * price` tokens de la organizaci\\u00f3n.\",\"params\":{\"amount\":\"Cantidad de unidades que se reclaman\",\"orgId\":\"ID de la organizaci\\u00f3n\",\"prizeId\":\"\\u00cdndice del premio (retornado por listPrizes)\"}},\"createPrize(uint256,string,string,uint256,uint256)\":{\"params\":{\"description\":\"Descripci\\u00f3n del premio\",\"name\":\"Nombre del premio\",\"orgId\":\"ID de la organizaci\\u00f3n\",\"price\":\"Precio (en tokens de la organizaci\\u00f3n) para reclamar 1 unidad\",\"stock\":\"Cantidad inicial de unidades disponibles de este premio\"}},\"listPrizes(uint256)\":{\"details\":\"Retorna un array de structs `Prize` pero en Solidity 0.8.x se puede usar     sin problema mientras las strings sean memoria.     Tambi\\u00e9n retornamos el `prizeId` como \\u00edndice para que el front lo identifique.\",\"params\":{\"orgId\":\"ID de la organizaci\\u00f3n\"},\"returns\":{\"descriptions\":\"Lista de descripciones\",\"ids\":\"Lista de IDs (\\u00edndices) de cada premio\",\"names\":\"Lista de nombres\",\"prices\":\"Lista de precios\",\"stocks\":\"Lista de stocks\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"claimPrize(uint256,uint256,uint256)\":{\"notice\":\"Reclama `amount` unidades de un premio (paga en tokens de la org).\"},\"createPrize(uint256,string,string,uint256,uint256)\":{\"notice\":\"Crea un nuevo premio para la organizaci\\u00f3n `orgId`.\"},\"listPrizes(uint256)\":{\"notice\":\"Lista todos los premios de una organizaci\\u00f3n, incluyendo su ID e informaci\\u00f3n.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Prizes/Prizes.sol\":\"Prizes\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (token/ERC20/IERC20.sol)\\n\\npragma solidity ^0.8.20;\\n\\n/**\\n * @dev Interface of the ERC20 standard as defined in the EIP.\\n */\\ninterface IERC20 {\\n    /**\\n     * @dev Emitted when `value` tokens are moved from one account (`from`) to\\n     * another (`to`).\\n     *\\n     * Note that `value` may be zero.\\n     */\\n    event Transfer(address indexed from, address indexed to, uint256 value);\\n\\n    /**\\n     * @dev Emitted when the allowance of a `spender` for an `owner` is set by\\n     * a call to {approve}. `value` is the new allowance.\\n     */\\n    event Approval(address indexed owner, address indexed spender, uint256 value);\\n\\n    /**\\n     * @dev Returns the value of tokens in existence.\\n     */\\n    function totalSupply() external view returns (uint256);\\n\\n    /**\\n     * @dev Returns the value of tokens owned by `account`.\\n     */\\n    function balanceOf(address account) external view returns (uint256);\\n\\n    /**\\n     * @dev Moves a `value` amount of tokens from the caller's account to `to`.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transfer(address to, uint256 value) external returns (bool);\\n\\n    /**\\n     * @dev Returns the remaining number of tokens that `spender` will be\\n     * allowed to spend on behalf of `owner` through {transferFrom}. This is\\n     * zero by default.\\n     *\\n     * This value changes when {approve} or {transferFrom} are called.\\n     */\\n    function allowance(address owner, address spender) external view returns (uint256);\\n\\n    /**\\n     * @dev Sets a `value` amount of tokens as the allowance of `spender` over the\\n     * caller's tokens.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * IMPORTANT: Beware that changing an allowance with this method brings the risk\\n     * that someone may use both the old and the new allowance by unfortunate\\n     * transaction ordering. One possible solution to mitigate this race\\n     * condition is to first reduce the spender's allowance to 0 and set the\\n     * desired value afterwards:\\n     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729\\n     *\\n     * Emits an {Approval} event.\\n     */\\n    function approve(address spender, uint256 value) external returns (bool);\\n\\n    /**\\n     * @dev Moves a `value` amount of tokens from `from` to `to` using the\\n     * allowance mechanism. `value` is then deducted from the caller's\\n     * allowance.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transferFrom(address from, address to, uint256 value) external returns (bool);\\n}\\n\",\"keccak256\":\"0xc6a8ff0ea489379b61faa647490411b80102578440ab9d84e9a957cc12164e70\",\"license\":\"MIT\"},\"contracts/Organization/IOrganizationManager.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.10;\\n\\ninterface IOrganizationManager {\\n    function isAdmin(uint256 _orgId, address _user) external view returns (bool);\\n    function isUser(uint256 _orgId, address _user) external view returns (bool);\\n    function getTokenOfOrg(uint256 _orgId) external view returns (address);\\n    function getBalanceOfOrg(uint256 _orgId) external view returns (uint256);\\n    function getBalanceOfUser(uint256 _orgId, address _user) external view returns (uint256, string memory);\\n    function transferTokensTo(uint256 _orgId, address _destAddress, uint256 _amount) external;\\n}\\n\",\"keccak256\":\"0x55b68a72e66096cb2a6e7203f6d589422928d11486633a9897e7cab806e56cc1\",\"license\":\"MIT\"},\"contracts/Prizes/Prizes.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.10;\\n\\nimport \\\"../Organization/IOrganizationManager.sol\\\";\\nimport \\\"@openzeppelin/contracts/token/ERC20/IERC20.sol\\\";\\n\\ncontract Prizes {\\n    // -------------------------------------------------------------------------\\n    // ESTRUCTURAS Y ALMACENAMIENTO\\n    // -------------------------------------------------------------------------\\n\\n    struct Prize {\\n        // Como se pide: name, description, price, stock\\n        string name;\\n        string description;\\n        uint256 price;\\n        uint256 stock;\\n    }\\n\\n    // prizesByOrg[orgId] => array din\\u00e1mico de premios de esa organizaci\\u00f3n\\n    mapping(uint256 => Prize[]) private prizesByOrg;\\n\\n    // Referencia al OrganizationManager para verificar admins y miembros,\\n    // y para obtener el token de la org.\\n    IOrganizationManager public orgManager;\\n\\n    // -------------------------------------------------------------------------\\n    // CONSTRUCTOR\\n    // -------------------------------------------------------------------------\\n\\n    constructor(IOrganizationManager _orgManager) {\\n        orgManager = _orgManager;\\n    }\\n\\n    // -------------------------------------------------------------------------\\n    // MODIFICADORES\\n    // -------------------------------------------------------------------------\\n\\n    /// @dev Verifica si msg.sender es admin en la org correspondiente\\n    modifier onlyOrgAdmin(uint256 orgId) {\\n        require(\\n            orgManager.isAdmin(orgId, msg.sender),\\n            \\\"Prizes: caller is not an admin of this org\\\"\\n        );\\n        _;\\n    }\\n\\n    /// @dev Verifica si msg.sender es miembro o admin de la org\\n    modifier onlyOrgMember(uint256 orgId) {\\n        require(\\n            orgManager.isUser(orgId, msg.sender) || orgManager.isAdmin(orgId, msg.sender),\\n            \\\"Prizes: caller is not a member or admin of this org\\\"\\n        );\\n        _;\\n    }\\n\\n    // -------------------------------------------------------------------------\\n    // FUNCIONES PRINCIPALES\\n    // -------------------------------------------------------------------------\\n\\n    /// @notice Crea un nuevo premio para la organizaci\\u00f3n `orgId`.\\n    /// @param orgId ID de la organizaci\\u00f3n\\n    /// @param name Nombre del premio\\n    /// @param description Descripci\\u00f3n del premio\\n    /// @param price Precio (en tokens de la organizaci\\u00f3n) para reclamar 1 unidad\\n    /// @param stock Cantidad inicial de unidades disponibles de este premio\\n    function createPrize(\\n        uint256 orgId,\\n        string calldata name,\\n        string calldata description,\\n        uint256 price,\\n        uint256 stock\\n    )\\n    external\\n    onlyOrgAdmin(orgId)\\n    {\\n        // Almacenar el nuevo premio\\n        prizesByOrg[orgId].push(Prize({\\n            name: name,\\n            description: description,\\n            price: price,\\n            stock: stock\\n        }));\\n    }\\n\\n    /// @notice Lista todos los premios de una organizaci\\u00f3n, incluyendo su ID e informaci\\u00f3n.\\n    /// @dev Retorna un array de structs `Prize` pero en Solidity 0.8.x se puede usar\\n    ///     sin problema mientras las strings sean memoria.\\n    ///     Tambi\\u00e9n retornamos el `prizeId` como \\u00edndice para que el front lo identifique.\\n    /// @param orgId ID de la organizaci\\u00f3n\\n    /// @return ids Lista de IDs (\\u00edndices) de cada premio\\n    /// @return names Lista de nombres\\n    /// @return descriptions Lista de descripciones\\n    /// @return prices Lista de precios\\n    /// @return stocks Lista de stocks\\n    function listPrizes(uint256 orgId)\\n    external\\n    view\\n    returns (\\n        uint256[] memory ids,\\n        string[] memory names,\\n        string[] memory descriptions,\\n        uint256[] memory prices,\\n        uint256[] memory stocks\\n    )\\n    {\\n        Prize[] storage prizes = prizesByOrg[orgId];\\n        uint256 length = prizes.length;\\n\\n        ids = new uint256[](length);\\n        names = new string[](length);\\n        descriptions = new string[](length);\\n        prices = new uint256[](length);\\n        stocks = new uint256[](length);\\n\\n        for (uint256 i = 0; i < length; i++) {\\n            Prize storage p = prizes[i];\\n            ids[i] = i;  // El ID es simplemente el \\u00edndice en el array\\n            names[i] = p.name;\\n            descriptions[i] = p.description;\\n            prices[i] = p.price;\\n            stocks[i] = p.stock;\\n        }\\n    }\\n\\n    /// @notice Reclama `amount` unidades de un premio (paga en tokens de la org).\\n    /// @dev El usuario debe haber aprobado previamente a este contrato (`Prizes`)\\n    ///      para gastar `amount * price` tokens de la organizaci\\u00f3n.\\n    /// @param orgId ID de la organizaci\\u00f3n\\n    /// @param prizeId \\u00cdndice del premio (retornado por listPrizes)\\n    /// @param amount Cantidad de unidades que se reclaman\\n    function claimPrize(uint256 orgId, uint256 prizeId, uint256 amount)\\n    external\\n    onlyOrgMember(orgId)\\n    {\\n        require(amount > 0, \\\"Prizes: amount must be > 0\\\");\\n\\n        Prize storage p = prizesByOrg[orgId][prizeId];\\n        require(p.stock >= amount, \\\"Prizes: not enough stock\\\");\\n\\n        // Costo total en tokens\\n        uint256 cost = p.price * amount;\\n\\n        // Obtener la direcci\\u00f3n del token de la organizaci\\u00f3n\\n        address tokenAddress = orgManager.getTokenOfOrg(orgId);\\n        require(tokenAddress != address(0), \\\"Prizes: invalid token for org\\\");\\n\\n        // Transferir tokens desde el usuario a este contrato (requiere approve)\\n        IERC20(tokenAddress).transferFrom(msg.sender, address(this), cost);\\n\\n        // Disminuir el stock\\n        p.stock -= amount;\\n\\n        // Opcionalmente: \\\"quemar\\\" tokens o lo que se desee hacer con esos tokens\\n        // Si se pueden quemar:\\n        // CompanyToken(tokenAddress).burn(cost);\\n        // O transferir a una direcci\\u00f3n sin clave:\\n        // IERC20(tokenAddress).transfer(address(0xdead), cost);\\n    }\\n}\\n\",\"keccak256\":\"0x3048e1a9b8142d6857b445270fb5575424ae39bfee130af8ae10a6a52947505a\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50604051610f00380380610f0083398101604081905261002f91610054565b600180546001600160a01b0319166001600160a01b0392909216919091179055610084565b60006020828403121561006657600080fd5b81516001600160a01b038116811461007d57600080fd5b9392505050565b610e6d806100936000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c80632e42b0cd146100515780637d96da001461007e57806394119830146100a9578063f6c94230146100be575b600080fd5b61006461005f3660046109ca565b6100d1565b604051610075959493929190610aa6565b60405180910390f35b600154610091906001600160a01b031681565b6040516001600160a01b039091168152602001610075565b6100bc6100b7366004610b5c565b61045d565b005b6100bc6100cc366004610be5565b61062b565b600081815260208190526040902080546060918291829182918291908067ffffffffffffffff81111561010657610106610c11565b60405190808252806020026020018201604052801561012f578160200160208202803683370190505b5096508067ffffffffffffffff81111561014b5761014b610c11565b60405190808252806020026020018201604052801561017e57816020015b60608152602001906001900390816101695790505b5095508067ffffffffffffffff81111561019a5761019a610c11565b6040519080825280602002602001820160405280156101cd57816020015b60608152602001906001900390816101b85790505b5094508067ffffffffffffffff8111156101e9576101e9610c11565b604051908082528060200260200182016040528015610212578160200160208202803683370190505b5093508067ffffffffffffffff81111561022e5761022e610c11565b604051908082528060200260200182016040528015610257578160200160208202803683370190505b50925060005b8181101561045157600083828154811061027957610279610c27565b906000526020600020906004020190508189838151811061029c5761029c610c27565b6020908102919091010152805481906102b490610c3d565b80601f01602080910402602001604051908101604052809291908181526020018280546102e090610c3d565b801561032d5780601f106103025761010080835404028352916020019161032d565b820191906000526020600020905b81548152906001019060200180831161031057829003601f168201915b505050505088838151811061034457610344610c27565b602002602001018190525080600101805461035e90610c3d565b80601f016020809104026020016040519081016040528092919081815260200182805461038a90610c3d565b80156103d75780601f106103ac576101008083540402835291602001916103d7565b820191906000526020600020905b8154815290600101906020018083116103ba57829003601f168201915b50505050508783815181106103ee576103ee610c27565b6020026020010181905250806002015486838151811061041057610410610c27565b602002602001018181525050806003015485838151811061043357610433610c27565b6020908102919091010152508061044981610c8d565b91505061025d565b50505091939590929450565b60015460405163146a291160e01b81526004810189905233602482015288916001600160a01b03169063146a291190604401602060405180830381865afa1580156104ac573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906104d09190610ca6565b6105345760405162461bcd60e51b815260206004820152602a60248201527f5072697a65733a2063616c6c6572206973206e6f7420616e2061646d696e206f604482015269662074686973206f726760b01b60648201526084015b60405180910390fd5b600080898152602001908152602001600020604051806080016040528089898080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250505090825250604080516020601f8a018190048102820181019092528881529181019190899089908190840183828082843760009201829052509385525050506020808301889052604090920186905283546001810185559381522081519192600402019081906105f59082610d1e565b506020820151600182019061060a9082610d1e565b50604082015181600201556060820151816003015550505050505050505050565b6001546040516306652f0360e11b81526004810185905233602482015284916001600160a01b031690630cca5e0690604401602060405180830381865afa15801561067a573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061069e9190610ca6565b80610717575060015460405163146a291160e01b8152600481018390523360248201526001600160a01b039091169063146a291190604401602060405180830381865afa1580156106f3573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906107179190610ca6565b61077f5760405162461bcd60e51b815260206004820152603360248201527f5072697a65733a2063616c6c6572206973206e6f742061206d656d626572206f604482015272722061646d696e206f662074686973206f726760681b606482015260840161052b565b600082116107cf5760405162461bcd60e51b815260206004820152601a60248201527f5072697a65733a20616d6f756e74206d757374206265203e2030000000000000604482015260640161052b565b60008481526020819052604081208054859081106107ef576107ef610c27565b9060005260206000209060040201905082816003015410156108535760405162461bcd60e51b815260206004820152601860248201527f5072697a65733a206e6f7420656e6f7567682073746f636b0000000000000000604482015260640161052b565b60008382600201546108659190610dde565b600154604051631bc7046d60e01b8152600481018990529192506000916001600160a01b0390911690631bc7046d90602401602060405180830381865afa1580156108b4573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906108d89190610dfb565b90506001600160a01b0381166109305760405162461bcd60e51b815260206004820152601d60248201527f5072697a65733a20696e76616c696420746f6b656e20666f72206f7267000000604482015260640161052b565b6040516323b872dd60e01b8152336004820152306024820152604481018390526001600160a01b038216906323b872dd906064016020604051808303816000875af1158015610983573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906109a79190610ca6565b50848360030160008282546109bc9190610e24565b909155505050505050505050565b6000602082840312156109dc57600080fd5b5035919050565b600081518084526020808501945080840160005b83811015610a13578151875295820195908201906001016109f7565b509495945050505050565b600082825180855260208086019550808260051b8401018186016000805b85811015610a9857601f1980888603018b5283518051808752845b81811015610a72578281018901518882018a01528801610a57565b5086810188018590529b87019b601f019091169094018501935091840191600101610a3c565b509198975050505050505050565b60a081526000610ab960a08301886109e3565b8281036020840152610acb8188610a1e565b90508281036040840152610adf8187610a1e565b90508281036060840152610af381866109e3565b90508281036080840152610b0781856109e3565b98975050505050505050565b60008083601f840112610b2557600080fd5b50813567ffffffffffffffff811115610b3d57600080fd5b602083019150836020828501011115610b5557600080fd5b9250929050565b600080600080600080600060a0888a031215610b7757600080fd5b87359650602088013567ffffffffffffffff80821115610b9657600080fd5b610ba28b838c01610b13565b909850965060408a0135915080821115610bbb57600080fd5b50610bc88a828b01610b13565b989b979a5095989597966060870135966080013595509350505050565b600080600060608486031215610bfa57600080fd5b505081359360208301359350604090920135919050565b634e487b7160e01b600052604160045260246000fd5b634e487b7160e01b600052603260045260246000fd5b600181811c90821680610c5157607f821691505b602082108103610c7157634e487b7160e01b600052602260045260246000fd5b50919050565b634e487b7160e01b600052601160045260246000fd5b600060018201610c9f57610c9f610c77565b5060010190565b600060208284031215610cb857600080fd5b81518015158114610cc857600080fd5b9392505050565b601f821115610d1957600081815260208120601f850160051c81016020861015610cf65750805b601f850160051c820191505b81811015610d1557828155600101610d02565b5050505b505050565b815167ffffffffffffffff811115610d3857610d38610c11565b610d4c81610d468454610c3d565b84610ccf565b602080601f831160018114610d815760008415610d695750858301515b600019600386901b1c1916600185901b178555610d15565b600085815260208120601f198616915b82811015610db057888601518255948401946001909101908401610d91565b5085821015610dce5787850151600019600388901b60f8161c191681555b5050505050600190811b01905550565b8082028115828204841417610df557610df5610c77565b92915050565b600060208284031215610e0d57600080fd5b81516001600160a01b0381168114610cc857600080fd5b81810381811115610df557610df5610c7756fea2646970667358221220db549e6f12757cd39029e3419077b8ad78e41d638e3d90e79cda4807f2910d4c64736f6c63430008140033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c80632e42b0cd146100515780637d96da001461007e57806394119830146100a9578063f6c94230146100be575b600080fd5b61006461005f3660046109ca565b6100d1565b604051610075959493929190610aa6565b60405180910390f35b600154610091906001600160a01b031681565b6040516001600160a01b039091168152602001610075565b6100bc6100b7366004610b5c565b61045d565b005b6100bc6100cc366004610be5565b61062b565b600081815260208190526040902080546060918291829182918291908067ffffffffffffffff81111561010657610106610c11565b60405190808252806020026020018201604052801561012f578160200160208202803683370190505b5096508067ffffffffffffffff81111561014b5761014b610c11565b60405190808252806020026020018201604052801561017e57816020015b60608152602001906001900390816101695790505b5095508067ffffffffffffffff81111561019a5761019a610c11565b6040519080825280602002602001820160405280156101cd57816020015b60608152602001906001900390816101b85790505b5094508067ffffffffffffffff8111156101e9576101e9610c11565b604051908082528060200260200182016040528015610212578160200160208202803683370190505b5093508067ffffffffffffffff81111561022e5761022e610c11565b604051908082528060200260200182016040528015610257578160200160208202803683370190505b50925060005b8181101561045157600083828154811061027957610279610c27565b906000526020600020906004020190508189838151811061029c5761029c610c27565b6020908102919091010152805481906102b490610c3d565b80601f01602080910402602001604051908101604052809291908181526020018280546102e090610c3d565b801561032d5780601f106103025761010080835404028352916020019161032d565b820191906000526020600020905b81548152906001019060200180831161031057829003601f168201915b505050505088838151811061034457610344610c27565b602002602001018190525080600101805461035e90610c3d565b80601f016020809104026020016040519081016040528092919081815260200182805461038a90610c3d565b80156103d75780601f106103ac576101008083540402835291602001916103d7565b820191906000526020600020905b8154815290600101906020018083116103ba57829003601f168201915b50505050508783815181106103ee576103ee610c27565b6020026020010181905250806002015486838151811061041057610410610c27565b602002602001018181525050806003015485838151811061043357610433610c27565b6020908102919091010152508061044981610c8d565b91505061025d565b50505091939590929450565b60015460405163146a291160e01b81526004810189905233602482015288916001600160a01b03169063146a291190604401602060405180830381865afa1580156104ac573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906104d09190610ca6565b6105345760405162461bcd60e51b815260206004820152602a60248201527f5072697a65733a2063616c6c6572206973206e6f7420616e2061646d696e206f604482015269662074686973206f726760b01b60648201526084015b60405180910390fd5b600080898152602001908152602001600020604051806080016040528089898080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250505090825250604080516020601f8a018190048102820181019092528881529181019190899089908190840183828082843760009201829052509385525050506020808301889052604090920186905283546001810185559381522081519192600402019081906105f59082610d1e565b506020820151600182019061060a9082610d1e565b50604082015181600201556060820151816003015550505050505050505050565b6001546040516306652f0360e11b81526004810185905233602482015284916001600160a01b031690630cca5e0690604401602060405180830381865afa15801561067a573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061069e9190610ca6565b80610717575060015460405163146a291160e01b8152600481018390523360248201526001600160a01b039091169063146a291190604401602060405180830381865afa1580156106f3573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906107179190610ca6565b61077f5760405162461bcd60e51b815260206004820152603360248201527f5072697a65733a2063616c6c6572206973206e6f742061206d656d626572206f604482015272722061646d696e206f662074686973206f726760681b606482015260840161052b565b600082116107cf5760405162461bcd60e51b815260206004820152601a60248201527f5072697a65733a20616d6f756e74206d757374206265203e2030000000000000604482015260640161052b565b60008481526020819052604081208054859081106107ef576107ef610c27565b9060005260206000209060040201905082816003015410156108535760405162461bcd60e51b815260206004820152601860248201527f5072697a65733a206e6f7420656e6f7567682073746f636b0000000000000000604482015260640161052b565b60008382600201546108659190610dde565b600154604051631bc7046d60e01b8152600481018990529192506000916001600160a01b0390911690631bc7046d90602401602060405180830381865afa1580156108b4573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906108d89190610dfb565b90506001600160a01b0381166109305760405162461bcd60e51b815260206004820152601d60248201527f5072697a65733a20696e76616c696420746f6b656e20666f72206f7267000000604482015260640161052b565b6040516323b872dd60e01b8152336004820152306024820152604481018390526001600160a01b038216906323b872dd906064016020604051808303816000875af1158015610983573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906109a79190610ca6565b50848360030160008282546109bc9190610e24565b909155505050505050505050565b6000602082840312156109dc57600080fd5b5035919050565b600081518084526020808501945080840160005b83811015610a13578151875295820195908201906001016109f7565b509495945050505050565b600082825180855260208086019550808260051b8401018186016000805b85811015610a9857601f1980888603018b5283518051808752845b81811015610a72578281018901518882018a01528801610a57565b5086810188018590529b87019b601f019091169094018501935091840191600101610a3c565b509198975050505050505050565b60a081526000610ab960a08301886109e3565b8281036020840152610acb8188610a1e565b90508281036040840152610adf8187610a1e565b90508281036060840152610af381866109e3565b90508281036080840152610b0781856109e3565b98975050505050505050565b60008083601f840112610b2557600080fd5b50813567ffffffffffffffff811115610b3d57600080fd5b602083019150836020828501011115610b5557600080fd5b9250929050565b600080600080600080600060a0888a031215610b7757600080fd5b87359650602088013567ffffffffffffffff80821115610b9657600080fd5b610ba28b838c01610b13565b909850965060408a0135915080821115610bbb57600080fd5b50610bc88a828b01610b13565b989b979a5095989597966060870135966080013595509350505050565b600080600060608486031215610bfa57600080fd5b505081359360208301359350604090920135919050565b634e487b7160e01b600052604160045260246000fd5b634e487b7160e01b600052603260045260246000fd5b600181811c90821680610c5157607f821691505b602082108103610c7157634e487b7160e01b600052602260045260246000fd5b50919050565b634e487b7160e01b600052601160045260246000fd5b600060018201610c9f57610c9f610c77565b5060010190565b600060208284031215610cb857600080fd5b81518015158114610cc857600080fd5b9392505050565b601f821115610d1957600081815260208120601f850160051c81016020861015610cf65750805b601f850160051c820191505b81811015610d1557828155600101610d02565b5050505b505050565b815167ffffffffffffffff811115610d3857610d38610c11565b610d4c81610d468454610c3d565b84610ccf565b602080601f831160018114610d815760008415610d695750858301515b600019600386901b1c1916600185901b178555610d15565b600085815260208120601f198616915b82811015610db057888601518255948401946001909101908401610d91565b5085821015610dce5787850151600019600388901b60f8161c191681555b5050505050600190811b01905550565b8082028115828204841417610df557610df5610c77565b92915050565b600060208284031215610e0d57600080fd5b81516001600160a01b0381168114610cc857600080fd5b81810381811115610df557610df5610c7756fea2646970667358221220db549e6f12757cd39029e3419077b8ad78e41d638e3d90e79cda4807f2910d4c64736f6c63430008140033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "claimPrize(uint256,uint256,uint256)": {
+        "details": "El usuario debe haber aprobado previamente a este contrato (`Prizes`)      para gastar `amount * price` tokens de la organización.",
+        "params": {
+          "amount": "Cantidad de unidades que se reclaman",
+          "orgId": "ID de la organización",
+          "prizeId": "Índice del premio (retornado por listPrizes)"
+        }
+      },
+      "createPrize(uint256,string,string,uint256,uint256)": {
+        "params": {
+          "description": "Descripción del premio",
+          "name": "Nombre del premio",
+          "orgId": "ID de la organización",
+          "price": "Precio (en tokens de la organización) para reclamar 1 unidad",
+          "stock": "Cantidad inicial de unidades disponibles de este premio"
+        }
+      },
+      "listPrizes(uint256)": {
+        "details": "Retorna un array de structs `Prize` pero en Solidity 0.8.x se puede usar     sin problema mientras las strings sean memoria.     También retornamos el `prizeId` como índice para que el front lo identifique.",
+        "params": {
+          "orgId": "ID de la organización"
+        },
+        "returns": {
+          "descriptions": "Lista de descripciones",
+          "ids": "Lista de IDs (índices) de cada premio",
+          "names": "Lista de nombres",
+          "prices": "Lista de precios",
+          "stocks": "Lista de stocks"
+        }
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "claimPrize(uint256,uint256,uint256)": {
+        "notice": "Reclama `amount` unidades de un premio (paga en tokens de la org)."
+      },
+      "createPrize(uint256,string,string,uint256,uint256)": {
+        "notice": "Crea un nuevo premio para la organización `orgId`."
+      },
+      "listPrizes(uint256)": {
+        "notice": "Lista todos los premios de una organización, incluyendo su ID e información."
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 3210,
+        "contract": "contracts/Prizes/Prizes.sol:Prizes",
+        "label": "prizesByOrg",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_mapping(t_uint256,t_array(t_struct(Prize)3204_storage)dyn_storage)"
+      },
+      {
+        "astId": 3213,
+        "contract": "contracts/Prizes/Prizes.sol:Prizes",
+        "label": "orgManager",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_contract(IOrganizationManager)1959"
+      }
+    ],
+    "types": {
+      "t_array(t_struct(Prize)3204_storage)dyn_storage": {
+        "base": "t_struct(Prize)3204_storage",
+        "encoding": "dynamic_array",
+        "label": "struct Prizes.Prize[]",
+        "numberOfBytes": "32"
+      },
+      "t_contract(IOrganizationManager)1959": {
+        "encoding": "inplace",
+        "label": "contract IOrganizationManager",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_uint256,t_array(t_struct(Prize)3204_storage)dyn_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct Prizes.Prize[])",
+        "numberOfBytes": "32",
+        "value": "t_array(t_struct(Prize)3204_storage)dyn_storage"
+      },
+      "t_string_storage": {
+        "encoding": "bytes",
+        "label": "string",
+        "numberOfBytes": "32"
+      },
+      "t_struct(Prize)3204_storage": {
+        "encoding": "inplace",
+        "label": "struct Prizes.Prize",
+        "members": [
+          {
+            "astId": 3197,
+            "contract": "contracts/Prizes/Prizes.sol:Prizes",
+            "label": "name",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 3199,
+            "contract": "contracts/Prizes/Prizes.sol:Prizes",
+            "label": "description",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 3201,
+            "contract": "contracts/Prizes/Prizes.sol:Prizes",
+            "label": "price",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 3203,
+            "contract": "contracts/Prizes/Prizes.sol:Prizes",
+            "label": "stock",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256"
+          }
+        ],
+        "numberOfBytes": "128"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}
