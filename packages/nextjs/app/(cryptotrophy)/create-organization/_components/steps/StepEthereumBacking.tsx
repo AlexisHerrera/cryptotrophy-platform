@@ -2,6 +2,7 @@ import React from "react";
 import { CreateOrganizationFormProps } from "~~/app/(cryptotrophy)/create-organization/_components/CreateOrganizationForm";
 import FormInput from "~~/app/(cryptotrophy)/create-organization/_components/FormInput";
 import { IntegerInput, IntegerVariant } from "~~/components/scaffold-eth";
+import { DECIMALS_TOKEN } from "~~/settings";
 
 interface StepEthereumBackingProps {
   formData: {
@@ -13,6 +14,14 @@ interface StepEthereumBackingProps {
 }
 
 const StepEthereumBacking: React.FC<StepEthereumBackingProps> = ({ formData, handleInputChange }) => {
+  const getEthAmount = (wei: string): number => {
+    const weiValue = Number(wei);
+    if (isNaN(weiValue)) return 0;
+    return weiValue / Math.pow(10, DECIMALS_TOKEN);
+  };
+  const ethAmount = getEthAmount(formData.ethBacking);
+  const formattedEth = ethAmount > 0 && ethAmount < 0.0001 ? ethAmount.toExponential() : ethAmount.toFixed(4);
+
   return (
     <div>
       <FormInput
@@ -36,6 +45,7 @@ const StepEthereumBacking: React.FC<StepEthereumBackingProps> = ({ formData, han
           placeholder="Enter ETH backing amount"
           variant={IntegerVariant.UINT256}
         />
+        <p className="mt-2 ml-4 text-sm text-gray-500">{formattedEth} ETH</p>
       </div>
     </div>
   );
