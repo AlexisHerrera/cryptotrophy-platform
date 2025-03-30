@@ -3,16 +3,18 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Interface } from "ethers";
+import { encodeBytes32String } from "ethers";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
-import Step1OrganizationData from "~~/app/(cryptotrophy)/create-organization/_components/steps/Step1OrganizationData";
-import Step2EthereumBacking from "~~/app/(cryptotrophy)/create-organization/_components/steps/Step2EthereumBacking";
-import Step3ReviewData from "~~/app/(cryptotrophy)/create-organization/_components/steps/Step3ReviewData";
+import StepCustomerBase from "~~/app/(cryptotrophy)/create-organization/_components/steps/StepCustomerBase";
+import StepEthereumBacking from "~~/app/(cryptotrophy)/create-organization/_components/steps/StepEthereumBacking";
+import StepOrganizationData from "~~/app/(cryptotrophy)/create-organization/_components/steps/StepOrganizationData";
+import StepReviewData from "~~/app/(cryptotrophy)/create-organization/_components/steps/StepReviewData";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 export interface CreateOrganizationFormProps {
   organizationName: string;
   admins: string[];
-  users: string[];
+  customerBaseUID: string;
   tokenSymbol: string;
   initialMint: string;
   ethBacking: string;
@@ -23,7 +25,7 @@ const CreateOrganizationForm = () => {
   const [organizationForm, setOrganizationForm] = useState<CreateOrganizationFormProps>({
     organizationName: "",
     admins: [],
-    users: [],
+    customerBaseUID: "",
     tokenSymbol: "",
     initialMint: "1000",
     ethBacking: "0",
@@ -62,11 +64,11 @@ const CreateOrganizationForm = () => {
     setCurrentStep(step);
   };
 
-  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 3));
+  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 4));
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
   const handleSubmit = async () => {
-    const { organizationName, tokenSymbol, initialMint, ethBacking, admins, users } = organizationForm;
+    const { organizationName, tokenSymbol, initialMint, ethBacking, admins, customerBaseUID } = organizationForm;
 
     if (!organizationName || !tokenSymbol) {
       alert("Please fill all required fields.");
@@ -76,9 +78,17 @@ const CreateOrganizationForm = () => {
     try {
       setLoading(true);
 
+      const encodedCustomerBaseUID = encodeBytes32String(customerBaseUID);
       const tx = await createOrganization({
         functionName: "createOrganization",
-        args: [organizationName, tokenSymbol, BigInt(initialMint), BigInt(ethBacking), admins, users],
+        args: [
+          organizationName,
+          tokenSymbol,
+          BigInt(initialMint),
+          BigInt(ethBacking),
+          admins,
+          encodedCustomerBaseUID as `0x${string}`,
+        ],
         value: BigInt(ethBacking),
       });
 
@@ -100,7 +110,7 @@ const CreateOrganizationForm = () => {
       <h2 className="text-3xl font-bold text-center mb-6">Create Your Organization</h2>
 
       <ul className="steps steps-horizontal mb-8 space-x-3">
-        {["Organization Data", "Ethereum Backing", "Review"].map((label, index) => (
+        {["Organization Data", "Customer Base", "Ethereum Backing", "Review"].map((label, index) => (
           <li
             key={index}
             className={`step cursor-pointer ${currentStep > index ? "step-primary" : ""}`}
@@ -112,10 +122,11 @@ const CreateOrganizationForm = () => {
       </ul>
 
       {currentStep === 1 && (
-        <Step1OrganizationData formData={organizationForm} handleInputChange={handleInputChange} address={address} />
+        <StepOrganizationData formData={organizationForm} handleInputChange={handleInputChange} address={address} />
       )}
-      {currentStep === 2 && <Step2EthereumBacking formData={organizationForm} handleInputChange={handleInputChange} />}
-      {currentStep === 3 && <Step3ReviewData formData={organizationForm} />}
+      {currentStep === 2 && <StepCustomerBase formData={organizationForm} handleInputChange={handleInputChange} />}
+      {currentStep === 3 && <StepEthereumBacking formData={organizationForm} handleInputChange={handleInputChange} />}
+      {currentStep === 4 && <StepReviewData formData={organizationForm} />}
 
       <div className="mt-6 flex justify-center gap-6">
         {currentStep > 1 && (
@@ -123,7 +134,7 @@ const CreateOrganizationForm = () => {
             Previous
           </button>
         )}
-        {currentStep < 3 ? (
+        {currentStep < 4 ? (
           <button className="btn btn-primary" onClick={nextStep}>
             Next
           </button>

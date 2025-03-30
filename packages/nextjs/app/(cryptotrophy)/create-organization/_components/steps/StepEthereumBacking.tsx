@@ -3,7 +3,7 @@ import { CreateOrganizationFormProps } from "~~/app/(cryptotrophy)/create-organi
 import FormInput from "~~/app/(cryptotrophy)/create-organization/_components/FormInput";
 import { IntegerInput, IntegerVariant } from "~~/components/scaffold-eth";
 
-interface Step2EthereumBackingProps {
+interface StepEthereumBackingProps {
   formData: {
     tokenSymbol: string;
     initialMint: string;
@@ -12,7 +12,7 @@ interface Step2EthereumBackingProps {
   handleInputChange: (field: keyof CreateOrganizationFormProps, value: string | string[]) => void;
 }
 
-const Step2EthereumBacking: React.FC<Step2EthereumBackingProps> = ({ formData, handleInputChange }) => {
+const StepEthereumBacking: React.FC<StepEthereumBackingProps> = ({ formData, handleInputChange }) => {
   return (
     <div>
       <FormInput
@@ -41,4 +41,4 @@ const Step2EthereumBacking: React.FC<Step2EthereumBackingProps> = ({ formData, h
   );
 };
 
-export default Step2EthereumBacking;
+export default StepEthereumBacking;

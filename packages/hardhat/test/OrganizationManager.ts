@@ -2,9 +2,10 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers as ethersHardhat } from "hardhat";
 import { ethers } from "ethers";
+import { encodeBytes32String } from "ethers";
 
 // Importa los tipos de TypeChain (ajusta según tu configuración)
-import { OrganizationManager, ChallengeManager } from "../typechain-types";
+import { OrganizationManager, ChallengeManager, OnChainCustomerBase } from "../typechain-types";
 
 describe("OrganizationManager (with real ChallengeManager)", function () {
   // ----------------------------------------------------------------
@@ -23,9 +24,21 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
     const challengeManager = (await ChallengeManagerFactory.deploy(orgManager.getAddress())) as ChallengeManager;
     await challengeManager.waitForDeployment();
 
+    // Deploy OnChainCustomerBase
+    const OnChainCustomerBaseFactory = await ethersHardhat.getContractFactory("OnChainCustomerBase");
+    const onChainCustomerBase = (await OnChainCustomerBaseFactory.deploy(
+      orgManager.getAddress(),
+    )) as OnChainCustomerBase;
+    await onChainCustomerBase.waitForDeployment();
+
+    // Add OnChainCustomerBase to organization contract.
+    const onChainCustomerBaseUID = hre.ethers.encodeBytes32String("OnChainCustomerBaseV1");
+    await orgManager.registerCustomerBase(onChainCustomerBaseUID, onChainCustomerBase.getAddress());
+
     return {
       orgManager,
       challengeManager,
+      onChainCustomerBase,
       owner,
       admin1,
       admin2,
@@ -57,18 +70,27 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
   // ----------------------------------------------------------------
   describe("createOrganization", function () {
     it("Should create a new organization successfully (with enough ETH backing)", async function () {
-      const { orgManager, owner, admin1, admin2, user1, user2 } = await loadFixture(deployCoreContractsFixture);
+      const { orgManager, owner, admin1, admin2 } = await loadFixture(deployCoreContractsFixture);
 
       const name = "MyOrg";
       const symbol = "MOG";
       const initialSupply = 1000;
       const initialEthBacking = ethers.parseEther("1");
       const admins = [admin1.address, admin2.address];
-      const users = [user1.address, user2.address];
+      const onChainCustomerBaseUID = "";
+      const encodedCustomerBaseUID = encodeBytes32String(onChainCustomerBaseUID);
 
-      const tx = await orgManager.createOrganization(name, symbol, initialSupply, initialEthBacking, admins, users, {
-        value: initialEthBacking,
-      });
+      const tx = await orgManager.createOrganization(
+        name,
+        symbol,
+        initialSupply,
+        initialEthBacking,
+        admins,
+        encodedCustomerBaseUID,
+        {
+          value: initialEthBacking,
+        },
+      );
       const receipt = await tx.wait();
 
       // Obtenemos el topic del evento:
@@ -100,14 +122,11 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
       expect(details.admins).to.include(owner.address);
       expect(details.admins).to.include(admin1.address);
       expect(details.admins).to.include(admin2.address);
-      expect(details.users).to.include(user1.address);
-      expect(details.users).to.include(user2.address);
       expect(orgBalance).to.equal(ethers.parseUnits(initialSupply.toString(), tokenDecimals));
       expect(await tokenContract.totalSupply()).to.equal(orgBalance);
       expect(await tokenContract.balanceOf(orgManager.getAddress())).to.equal(orgBalance);
       expect(details.token).to.equal(token);
       expect(await orgManager.isAdmin(orgId, admin1.address)).to.equal(true);
-      expect(await orgManager.isUser(orgId, user1.address)).to.equal(true);
 
       // Validamos que el ETH que posee la org sea lo que se envió
       expect(tokenETHBalance).to.equal(initialEthBacking);
@@ -115,6 +134,7 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
 
     it("Should revert if not enough ETH is sent for initial backing", async function () {
       const { orgManager } = await loadFixture(deployCoreContractsFixture);
+      const encodedCustomerBaseUID = encodeBytes32String("");
 
       await expect(
         orgManager.createOrganization(
@@ -123,7 +143,7 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
           1000,
           ethers.parseEther("5"), // se pide 5 ETH
           [],
-          [],
+          encodedCustomerBaseUID,
           { value: ethers.parseEther("1") }, // solo 1 ETH enviado
         ),
       ).to.be.revertedWith("Insufficient ETH backing");
@@ -136,7 +156,8 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
   describe("Admin and User Management", function () {
     async function createOrgFixture() {
       const f = await deployCoreContractsFixture();
-      const { orgManager, admin1, user1, user2 } = f;
+      const { orgManager, onChainCustomerBase, admin1 } = f;
+      const encodedCustomerBaseUID = encodeBytes32String("OnChainCustomerBaseV1");
 
       // Creamos una organización de prueba
       const tx = await orgManager.createOrganization(
@@ -145,7 +166,7 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
         1000,
         ethers.parseEther("1"),
         [admin1.address], // admin extra
-        [user1.address, user2.address], // algunos users
+        encodedCustomerBaseUID, // customer base
         { value: ethers.parseEther("1") },
       );
       const receipt = await tx.wait();
@@ -160,6 +181,8 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
 
       // Extraemos orgId
       const orgId = decoded.orgId;
+
+      await onChainCustomerBase.setAdmin(orgId, admin1.address);
 
       return { ...f, orgId };
     }
@@ -181,21 +204,22 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
     });
 
     it("addUser: Should add a new user if called by admin", async function () {
-      const { orgManager, orgId, admin1, notAdmin } = await loadFixture(createOrgFixture);
+      const { orgManager, onChainCustomerBase, orgId, admin1, notAdmin } = await loadFixture(createOrgFixture);
 
       // Añadimos a "notAdmin" como user
-      await orgManager.connect(admin1).addUser(orgId, notAdmin.address);
 
-      const details = await orgManager.getOrganizationDetails(orgId);
-      expect(details.users).to.include(notAdmin.address);
+      await onChainCustomerBase.connect(admin1).addCustomer(orgId, notAdmin.address);
+
       expect(await orgManager.isUser(orgId, notAdmin.address)).to.equal(true);
     });
 
     it("addUser: Should revert if called by non-admin", async function () {
-      const { orgManager, orgId, user1, notAdmin } = await loadFixture(createOrgFixture);
+      const { onChainCustomerBase, orgId, user1, notAdmin } = await loadFixture(createOrgFixture);
 
       // user1 no es admin
-      await expect(orgManager.connect(user1).addUser(orgId, notAdmin.address)).to.be.revertedWith("Not an admin");
+      await expect(onChainCustomerBase.connect(user1).addCustomer(orgId, notAdmin.address)).to.be.revertedWith(
+        "Not membership administrator",
+      );
     });
   });
 
@@ -206,6 +230,7 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
     async function createEmptyOrgFixture() {
       const f = await deployCoreContractsFixture();
       const { orgManager } = f;
+      const encodedCustomerBaseUID = encodeBytes32String("OnChainCustomerBaseV1");
 
       const tx = await orgManager.createOrganization(
         "EmptyOrg",
@@ -213,7 +238,7 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
         1000,
         ethers.parseEther("0.5"),
         [], // no admins extra => solo el creador
-        [], // no users
+        encodedCustomerBaseUID, // customer base
         { value: ethers.parseEther("0.5") },
       );
       const receipt = await tx.wait();
@@ -225,39 +250,41 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
       return { ...f, orgId };
     }
 
-    it("joinOrganization: Should allow a new user to join if not already a member", async function () {
-      const { orgManager, orgId, user1 } = await loadFixture(createEmptyOrgFixture);
+    it("joinMembership: Should allow a new user to join if not already a member", async function () {
+      const { orgManager, onChainCustomerBase, orgId, user1 } = await loadFixture(createEmptyOrgFixture);
 
-      await orgManager.connect(user1).joinOrganization(orgId);
+      await onChainCustomerBase.connect(user1).joinMembership(orgId);
       expect(await orgManager.isUser(orgId, user1.address)).to.be.equal(true);
     });
 
-    it("joinOrganization: Should revert if already a member", async function () {
-      const { orgManager, orgId, user1 } = await loadFixture(createEmptyOrgFixture);
+    it("joinMembership: Should not fail if already a member", async function () {
+      const { onChainCustomerBase, orgId, user1 } = await loadFixture(createEmptyOrgFixture);
 
       // user1 se une
-      await orgManager.connect(user1).joinOrganization(orgId);
+      await onChainCustomerBase.connect(user1).joinMembership(orgId);
 
       // segunda vez debe fallar
-      await expect(orgManager.connect(user1).joinOrganization(orgId)).to.be.revertedWith("Already a member");
+      expect(await onChainCustomerBase.connect(user1).joinMembership(orgId)).to.not.be.revertedWithoutReason();
     });
 
-    it("leaveOrganization: Should allow a user to leave", async function () {
-      const { orgManager, orgId, user1 } = await loadFixture(createEmptyOrgFixture);
+    it("leaveMembership: Should allow a user to leave", async function () {
+      const { orgManager, onChainCustomerBase, orgId, user1 } = await loadFixture(createEmptyOrgFixture);
 
       // Primero se une
-      await orgManager.connect(user1).joinOrganization(orgId);
+      await onChainCustomerBase.connect(user1).joinMembership(orgId);
       expect(await orgManager.isUser(orgId, user1.address)).to.be.equal(true);
 
       // Ahora se va
-      await orgManager.connect(user1).leaveOrganization(orgId);
+      await onChainCustomerBase.connect(user1).leaveMembership(orgId);
       expect(await orgManager.isUser(orgId, user1.address)).to.be.equal(false);
     });
 
-    it("leaveOrganization: Should revert if caller is not a user", async function () {
-      const { orgManager, orgId, user1 } = await loadFixture(createEmptyOrgFixture);
+    it("leaveMembership: Should revert if caller is not a user", async function () {
+      const { onChainCustomerBase, orgId, user1 } = await loadFixture(createEmptyOrgFixture);
       // user1 no se ha unido
-      await expect(orgManager.connect(user1).leaveOrganization(orgId)).to.be.revertedWith("Not a user");
+      await expect(onChainCustomerBase.connect(user1).leaveMembership(orgId)).to.be.revertedWith(
+        "Not membership customer",
+      );
     });
   });
 
@@ -267,16 +294,17 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
   describe("Organization data queries", function () {
     async function multipleOrgsFixture() {
       const f = await deployCoreContractsFixture();
-      const { orgManager, admin1, user1, user2 } = f;
+      const { orgManager, admin1, admin2 } = f;
 
       // OrgA
+      const encodedCustomerBaseUID = encodeBytes32String("");
       let tx = await orgManager.createOrganization(
         "OrgA",
         "ORGA",
         1000,
         ethers.parseEther("1"),
         [admin1.address],
-        [user1.address],
+        encodedCustomerBaseUID, // customer base
         { value: ethers.parseEther("1") },
       );
       await tx.wait();
@@ -287,8 +315,8 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
         "ORGB",
         500,
         ethers.parseEther("0.5"),
-        [], // solo el creador (owner) será admin
-        [user2.address],
+        [admin2.address], // solo el creador (owner) será admin
+        encodedCustomerBaseUID, // customer base
         { value: ethers.parseEther("0.5") },
       );
       await tx.wait();
@@ -302,16 +330,16 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
       expect(orgIds.length).to.be.gte(2);
     });
 
-    it("listOrganizationsWithDetails should list only orgs where msg.sender is member/admin", async function () {
-      const { orgManager, user1, user2 } = await loadFixture(multipleOrgsFixture);
+    it("listAdministratedOrganizations should list only orgs where msg.sender is admin", async function () {
+      const { orgManager, admin1, admin2 } = await loadFixture(multipleOrgsFixture);
 
       // user1 es miembro de OrgA pero no de OrgB
-      let result = await orgManager.connect(user1).listOrganizationsWithDetails();
+      let result = await orgManager.connect(admin1).listAdministratedOrganizations();
       expect(result.orgIds.length).to.equal(1);
       expect(result.names[0]).to.equal("OrgA");
 
       // user2 es miembro de OrgB pero no de OrgA
-      result = await orgManager.connect(user2).listOrganizationsWithDetails();
+      result = await orgManager.connect(admin2).listAdministratedOrganizations();
       expect(result.orgIds.length).to.equal(1);
       expect(result.names[0]).to.equal("OrgB");
     });
@@ -322,13 +350,11 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
 
       const detailsA = await orgManager.getOrganizationDetails(orgIds[0]);
       expect(detailsA.name).to.equal("OrgA");
-      expect(detailsA.admins.length).to.be.gte(2); // owner y admin1
-      expect(detailsA.users.length).to.equal(1); // user1
+      expect(detailsA.admins.length).to.equal(2); // admin1 and owner
 
       const detailsB = await orgManager.getOrganizationDetails(orgIds[1]);
       expect(detailsB.name).to.equal("OrgB");
-      expect(detailsB.admins.length).to.equal(1); // solo owner
-      expect(detailsB.users.length).to.equal(1); // user2
+      expect(detailsB.admins.length).to.equal(2); // admin1 and owner
     });
   });
 
@@ -342,13 +368,14 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
       const { orgManager, admin1 } = f;
 
       // Crear una organización con supply 1000
+      const encodedCustomerBaseUID = encodeBytes32String("");
       const tx = await orgManager.createOrganization(
         "OrgWithTokens",
         "OWT",
         1000,
         ethers.parseEther("1"),
         [admin1.address], // admin extra
-        [], // no users
+        encodedCustomerBaseUID, // no users
         { value: ethers.parseEther("1") },
       );
       const receipt = await tx.wait();
