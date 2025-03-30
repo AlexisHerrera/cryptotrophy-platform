@@ -118,7 +118,6 @@ interface MockExternalOffchainValidatorProps {
 }
 
 const MockExternalValidatorFulfill: React.FC<MockExternalOffchainValidatorProps> = ({
-  orgId,
   challengeId,
   onClose,
   validatorUID,
@@ -127,7 +126,7 @@ const MockExternalValidatorFulfill: React.FC<MockExternalOffchainValidatorProps>
   const [formData, setFormData] = useState<Record<string, string>>({});
 
   const [validatorContractName, mockContractName, executeExternalFulfill, FulfillForm] = initMockConfig(validatorUID);
-  const { writeContractAsync: mockWriteContract } = useScaffoldWriteContract(mockContractName);
+  const { writeContractAsync: mockWriteContract } = useScaffoldWriteContract(mockContractName as any);
 
   const { data: lastRequestId } = useScaffoldReadContract({
     contractName: validatorContractName,
