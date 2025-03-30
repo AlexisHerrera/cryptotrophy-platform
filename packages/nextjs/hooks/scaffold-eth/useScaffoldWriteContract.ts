@@ -32,11 +32,14 @@ export const useScaffoldWriteContract = <TContractName extends ContractName>(
   const wagmiContractWrite = useWriteContract(writeContractParams);
 
   const { data: deployedContractData } = useDeployedContractInfo(contractName);
+  type ExtendedVariables<
+    TFunctionName extends ExtractAbiFunctionNames<ContractAbi<TContractName>, "nonpayable" | "payable">,
+  > = ScaffoldWriteContractVariables<TContractName, TFunctionName> & { contractAddress?: string };
 
   const sendContractWriteAsyncTx = async <
     TFunctionName extends ExtractAbiFunctionNames<ContractAbi<TContractName>, "nonpayable" | "payable">,
   >(
-    variables: ScaffoldWriteContractVariables<TContractName, TFunctionName>,
+    variables: ExtendedVariables<TFunctionName>,
     options?: ScaffoldWriteContractOptions,
   ) => {
     if (!deployedContractData) {
@@ -55,14 +58,17 @@ export const useScaffoldWriteContract = <TContractName extends ContractName>(
 
     try {
       setIsMining(true);
+      const { contractAddress: overrideAddress, ...restVariables } = variables;
+      const contractAddressToUse = overrideAddress || deployedContractData.address;
+
       const { blockConfirmations, onBlockConfirmation, ...mutateOptions } = options || {};
       const makeWriteWithParams = () =>
         wagmiContractWrite.writeContractAsync(
           {
             abi: deployedContractData.abi as Abi,
-            address: deployedContractData.address,
+            address: contractAddressToUse,
             account: address,
-            ...variables,
+            ...restVariables,
           } as WriteContractVariables<Abi, string, any[], Config, number>,
           mutateOptions as
             | MutateOptions<
