@@ -4364,7 +4364,7 @@ const deployedContracts = {
   },
   84532: {
     ChallengeManager: {
-      address: "0x8F2468BA4d45160802Db71fA6aCfcD7d583578BA",
+      address: "0x2633F9Fe97ab4B5437F20eCEe511B587b7BC5cC6",
       abi: [
         {
           inputs: [
@@ -5237,6 +5237,143 @@ const deployedContracts = {
         transferOwnership: "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol",
       },
     },
+    OnChainCustomerBase: {
+      address: "0x7B6A13337F10Db4605a6445C4255bF7F7fe8DB23",
+      abi: [
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_membershipId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_customer",
+              type: "address",
+            },
+          ],
+          name: "addCustomer",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_membershipId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_admin",
+              type: "address",
+            },
+          ],
+          name: "initialize",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_membershipId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_customer",
+              type: "address",
+            },
+          ],
+          name: "isCustomer",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_membershipId",
+              type: "uint256",
+            },
+          ],
+          name: "joinMembership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_membershipId",
+              type: "uint256",
+            },
+          ],
+          name: "leaveMembership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "memberships",
+          outputs: [
+            {
+              internalType: "address",
+              name: "admin",
+              type: "address",
+            },
+            {
+              internalType: "bool",
+              name: "exists",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_membershipId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_admin",
+              type: "address",
+            },
+          ],
+          name: "setAdmin",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {
+        initialize: "contracts/Organization/ICustomerBase.sol",
+        isCustomer: "contracts/Organization/ICustomerBase.sol",
+      },
+    },
     OnChainValidator: {
       address: "0xd5774d0F7128608Af3581Ed179aaB59626E612B2",
       abi: [
@@ -5363,7 +5500,7 @@ const deployedContracts = {
       },
     },
     OrganizationManager: {
-      address: "0x3E02c8f6066e0A046EE9772ffd6E359dAD0745fB",
+      address: "0x3D62f41b126c7722b2019a0c66Cd2540136CcEA4",
       abi: [
         {
           anonymous: false,
@@ -5411,24 +5548,6 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_user",
-              type: "address",
-            },
-          ],
-          name: "addUser",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
               internalType: "string",
               name: "_name",
               type: "string",
@@ -5454,9 +5573,9 @@ const deployedContracts = {
               type: "address[]",
             },
             {
-              internalType: "address[]",
-              name: "_users",
-              type: "address[]",
+              internalType: "bytes32",
+              name: "_customerBaseUID",
+              type: "bytes32",
             },
           ],
           name: "createOrganization",
@@ -5468,6 +5587,25 @@ const deployedContracts = {
             },
           ],
           stateMutability: "payable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          name: "customerBaseRegistry",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -5549,9 +5687,9 @@ const deployedContracts = {
               type: "address[]",
             },
             {
-              internalType: "address[]",
-              name: "users",
-              type: "address[]",
+              internalType: "bytes32",
+              name: "customerBaseUID",
+              type: "bytes32",
             },
             {
               internalType: "bool",
@@ -5581,6 +5719,25 @@ const deployedContracts = {
               internalType: "address",
               name: "",
               type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+          ],
+          name: "hasUsers",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
             },
           ],
           stateMutability: "view",
@@ -5623,30 +5780,6 @@ const deployedContracts = {
               type: "address",
             },
           ],
-          name: "isMember",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_user",
-              type: "address",
-            },
-          ],
           name: "isUser",
           outputs: [
             {
@@ -5659,29 +5792,46 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [
+          inputs: [],
+          name: "listAdministratedOrganizations",
+          outputs: [
             {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
+              internalType: "uint256[]",
+              name: "orgIds",
+              type: "uint256[]",
+            },
+            {
+              internalType: "string[]",
+              name: "names",
+              type: "string[]",
+            },
+            {
+              internalType: "string[]",
+              name: "tokenSymbols",
+              type: "string[]",
+            },
+            {
+              internalType: "address[]",
+              name: "tokenAddresses",
+              type: "address[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "adminCounts",
+              type: "uint256[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "customerCounts",
+              type: "uint256[]",
+            },
+            {
+              internalType: "bool[]",
+              name: "isMembers",
+              type: "bool[]",
             },
           ],
-          name: "joinOrganization",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-          ],
-          name: "leaveOrganization",
-          outputs: [],
-          stateMutability: "nonpayable",
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -5728,7 +5878,7 @@ const deployedContracts = {
             },
             {
               internalType: "uint256[]",
-              name: "userCounts",
+              name: "customerCounts",
               type: "uint256[]",
             },
             {
@@ -5798,12 +5948,40 @@ const deployedContracts = {
               type: "address",
             },
             {
+              internalType: "bytes32",
+              name: "customerBaseUID",
+              type: "bytes32",
+            },
+            {
+              internalType: "address",
+              name: "customerBaseAddr",
+              type: "address",
+            },
+            {
               internalType: "bool",
               name: "exists",
               type: "bool",
             },
           ],
           stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "_customerBaseUID",
+              type: "bytes32",
+            },
+            {
+              internalType: "address",
+              name: "_customerBaseAddress",
+              type: "address",
+            },
+          ],
+          name: "registerCustomerBase",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -5841,7 +6019,7 @@ const deployedContracts = {
       },
     },
     OrganizationToken: {
-      address: "0x7a0Daf7b7243EDF3381959aeCeBaF27210fDEf71",
+      address: "0xe18B6d95eE9DC1D1a63252263d41b33cA40DEDAA",
       abi: [
         {
           inputs: [
@@ -6405,7 +6583,7 @@ const deployedContracts = {
       },
     },
     Prizes: {
-      address: "0x32Ce67E1301D594ee7fF2Ea2b8990e728aEC96D5",
+      address: "0x47e828081FCa317d6fE4d88DE34C6CaE271798D3",
       abi: [
         {
           inputs: [
@@ -7058,7 +7236,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     ValidatorRegistry: {
-      address: "0xfDCD6d77B625fc7AE253621A93B2aE88c19bb536",
+      address: "0x29390150271e258D38d72a883E17037C3DC42601",
       abi: [
         {
           inputs: [
