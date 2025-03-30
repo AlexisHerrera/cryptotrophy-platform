@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { useAccount } from "wagmi";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 interface ClaimRewardButtonProps {
