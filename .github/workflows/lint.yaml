@@ -27,6 +27,12 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: yarn
 
+      - name: Add github.com to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
       - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
