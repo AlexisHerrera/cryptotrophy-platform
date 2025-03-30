@@ -118,7 +118,6 @@ interface MockExternalOffchainValidatorProps {
 }
 
 const MockExternalValidatorFulfill: React.FC<MockExternalOffchainValidatorProps> = ({
-  orgId,
   challengeId,
   onClose,
   validatorUID,
