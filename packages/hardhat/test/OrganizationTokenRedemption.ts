@@ -2,6 +2,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers as ethersHardhat } from "hardhat";
 import { ethers } from "ethers";
+import { encodeBytes32String } from "ethers";
 
 import { OrganizationManager, OrganizationToken } from "../typechain-types";
 
@@ -13,8 +14,20 @@ describe("Organization Token Redemption", function () {
     const orgManager = (await OrgManagerFactory.deploy()) as OrganizationManager;
     await orgManager.waitForDeployment();
 
+    // Deploy OnChainCustomerBase
+    const OnChainCustomerBaseFactory = await ethersHardhat.getContractFactory("OnChainCustomerBase");
+    const onChainCustomerBase = (await OnChainCustomerBaseFactory.deploy(
+      orgManager.getAddress(),
+    )) as OnChainCustomerBase;
+    await onChainCustomerBase.waitForDeployment();
+
+    // Add OnChainCustomerBase to organization contract.
+    const onChainCustomerBaseUID = hre.ethers.encodeBytes32String("OnChainCustomerBaseV1");
+    await orgManager.registerCustomerBase(onChainCustomerBaseUID, onChainCustomerBase.getAddress());
+
     return {
       orgManager,
+      onChainCustomerBase,
       owner,
       user1,
       user2,
@@ -22,13 +35,14 @@ describe("Organization Token Redemption", function () {
   }
 
   async function deployOrganization(orgManager: OrganizationManager, initialSupply: number, initialEthBacking: bigint) {
+    const encodedCustomerBaseUID = encodeBytes32String("OnChainCustomerBaseV1");
     const tx = await orgManager.createOrganization(
       "TestOrg",
       "TST",
       initialSupply,
       initialEthBacking,
       [], // no extra admins
-      [], // no initial users
+      encodedCustomerBaseUID, // Customer Base
       { value: initialEthBacking },
     );
 

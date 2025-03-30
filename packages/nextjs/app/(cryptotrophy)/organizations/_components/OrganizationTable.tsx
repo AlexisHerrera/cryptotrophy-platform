@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import AdminPanel from "~~/app/(cryptotrophy)/organizations/_components/AdminPanel";
 import CopyButton from "~~/app/(cryptotrophy)/organizations/_components/CopyButton";
-import ModalLeaveJoin from "~~/app/(cryptotrophy)/organizations/_components/ModalLeaveJoin";
 import UserBalance from "~~/app/(cryptotrophy)/organizations/_components/UserBalance";
+import Modal from "~~/components/Modal";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -32,10 +33,8 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
   const [selectedOrganization, setSelectedOrganization] = useState<Organization | null>(null);
 
   // Funciones para unirse o salir
-  const { writeContractAsync: joinOrganization } = useScaffoldWriteContract("OrganizationManager");
-  const { writeContractAsync: leaveOrganization } = useScaffoldWriteContract("OrganizationManager");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [loadingAction, setLoadingAction] = useState(false);
+  const { writeContractAsync: addAdmin } = useScaffoldWriteContract("OrganizationManager");
+  const [showAdminPanelModal, setShowAdminPanelModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -58,38 +57,6 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
 
   // Obtener los elementos de la página actual
   const paginatedOrganizations = organizations.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-  const handleJoin = async (organization: Organization) => {
-    try {
-      setLoadingAction(true);
-      await joinOrganization({
-        functionName: "joinOrganization",
-        args: [organization.id],
-      });
-      //notification.success(`Successfully joined ${organization.name}!`);
-      setSelectedOrganization(null);
-    } catch (error) {
-      console.error("Error joining organization:", error);
-    } finally {
-      setLoadingAction(false);
-    }
-  };
-
-  const handleLeave = async (organization: Organization) => {
-    try {
-      setLoadingAction(true);
-      await leaveOrganization({
-        functionName: "leaveOrganization",
-        args: [organization.id],
-      });
-      //notification.success(`Successfully left ${organization.name}!`);
-      setSelectedOrganization(null);
-    } catch (error) {
-      console.error("Error leaving organization:", error);
-    } finally {
-      setLoadingAction(false);
-    }
-  };
 
   const handleCopy = () => {
     notification.success("Token address copied!");
@@ -127,25 +94,15 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
                 <td>{org.adminCount.toString()}</td>
                 <td>{org.userCount.toString()}</td>
                 <td>
-                  {org.isMember ? (
-                    <button
-                      className="btn btn-warning"
-                      onClick={() => {
-                        setSelectedOrganization(org);
-                        setIsModalOpen(true);
-                      }}
-                    >
-                      Leave
-                    </button>
-                  ) : (
+                  {org.isMember && (
                     <button
                       className="btn btn-primary"
                       onClick={() => {
                         setSelectedOrganization(org);
-                        setIsModalOpen(true);
+                        setShowAdminPanelModal(true);
                       }}
                     >
-                      Join
+                      Admin
                     </button>
                   )}
                 </td>
@@ -174,24 +131,11 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
         </button>
       </div>
 
-      <ModalLeaveJoin
-        title={selectedOrganization?.isMember ? "Leave Organization" : "Join Organization"}
-        message={`Are you sure you want to ${selectedOrganization?.isMember ? "leave" : "join"} ${
-          selectedOrganization?.name
-        }?`}
-        isOpen={isModalOpen}
-        isLoading={loadingAction}
-        onAccept={async () => {
-          if (selectedOrganization === null) return;
-          if (selectedOrganization?.isMember) {
-            await handleLeave(selectedOrganization);
-          } else {
-            await handleJoin(selectedOrganization);
-          }
-          setIsModalOpen(false);
-        }}
-        onCancel={() => setIsModalOpen(false)}
-      />
+      {showAdminPanelModal && selectedOrganization !== null && (
+        <Modal onClose={() => setShowAdminPanelModal(false)}>
+          <AdminPanel organizationId={selectedOrganization.id} addAdmin={addAdmin} />
+        </Modal>
+      )}
     </div>
   );
 };

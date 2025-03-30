@@ -11,7 +11,7 @@ const Organizations: React.FC = () => {
   // Leer organizaciones desde el contrato
   const { data: organizationsData, isLoading } = useScaffoldReadContract({
     contractName: "OrganizationManager",
-    functionName: "listOrganizationsWithDetails",
+    functionName: "listAdministratedOrganizations",
   });
   const router = useRouter();
 

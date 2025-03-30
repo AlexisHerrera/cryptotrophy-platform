@@ -3,12 +3,10 @@ import React, { useState } from "react";
 interface AdminPanelProps {
   organizationId: bigint;
   addAdmin: any;
-  addUser: any;
 }
 
-const AdminPanel: React.FC<AdminPanelProps> = ({ organizationId, addAdmin, addUser }) => {
+const AdminPanel: React.FC<AdminPanelProps> = ({ organizationId, addAdmin }) => {
   const [adminAddress, setAdminAddress] = useState("");
-  const [userAddress, setUserAddress] = useState("");
 
   const handleAddAdmin = async () => {
     try {
@@ -20,19 +18,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ organizationId, addAdmin, addUs
       setAdminAddress("");
     } catch (error) {
       console.error("Error adding admin:", error);
-    }
-  };
-
-  const handleAddUser = async () => {
-    try {
-      await addUser({
-        functionName: "addUser",
-        args: [organizationId, userAddress],
-      });
-      alert("User added successfully!");
-      setUserAddress("");
-    } catch (error) {
-      console.error("Error adding user:", error);
     }
   };
 
@@ -51,19 +36,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ organizationId, addAdmin, addUs
           />
           <button className="btn btn-primary mt-2" onClick={handleAddAdmin}>
             Add Admin
-          </button>
-        </div>
-        <div>
-          <h3 className="font-bold">Add User</h3>
-          <input
-            type="text"
-            placeholder="User Address"
-            value={userAddress}
-            onChange={e => setUserAddress(e.target.value)}
-            className="input input-bordered w-full"
-          />
-          <button className="btn btn-primary mt-2" onClick={handleAddUser}>
-            Add User
           </button>
         </div>
       </div>

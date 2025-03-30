@@ -3,17 +3,16 @@ import AddressManager from "~~/app/(cryptotrophy)/create-organization/_component
 import { CreateOrganizationFormProps } from "~~/app/(cryptotrophy)/create-organization/_components/CreateOrganizationForm";
 import FormInput from "~~/app/(cryptotrophy)/create-organization/_components/FormInput";
 
-interface Step1OrganizationDataProps {
+interface StepOrganizationDataProps {
   formData: {
     organizationName: string;
     admins: string[];
-    users: string[];
   };
   handleInputChange: (field: keyof CreateOrganizationFormProps, value: string | string[]) => void;
   address: string | undefined;
 }
 
-const Step1OrganizationData: React.FC<Step1OrganizationDataProps> = ({ formData, handleInputChange, address }) => {
+const StepOrganizationData: React.FC<StepOrganizationDataProps> = ({ formData, handleInputChange, address }) => {
   return (
     <div>
       <FormInput
@@ -30,12 +29,8 @@ const Step1OrganizationData: React.FC<Step1OrganizationDataProps> = ({ formData,
           defaultAddress={address}
         />
       </div>
-      <div className="form-control">
-        <label className="label text-lg">Add Users</label>
-        <AddressManager addresses={formData.users} setAddresses={users => handleInputChange("users", users)} />
-      </div>
     </div>
   );
 };
 
-export default Step1OrganizationData;
+export default StepOrganizationData;
