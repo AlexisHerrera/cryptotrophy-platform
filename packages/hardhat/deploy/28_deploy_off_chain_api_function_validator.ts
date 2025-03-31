@@ -34,7 +34,7 @@ const deployOffChainApiValidator: DeployFunction = async function (hre: HardhatR
 
   const sourcePath = path.resolve(__dirname, "../chainlinkcode/apifunctionvalidator.js");
   const source = readFileSync(sourcePath, "utf8");
-  const subscriptionId = 2345;
+  const subscriptionId = 297;
 
   await deploy("OffChainApiValidator", {
     from: deployer,
