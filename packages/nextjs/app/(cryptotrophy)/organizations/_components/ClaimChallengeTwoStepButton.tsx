@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ValidatorContractName } from "./KnownValidators";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
@@ -59,22 +59,22 @@ const ClaimChallengeTwoStepButton: React.FC<ClaimRewardButtonProps> = ({
     args: [challengeId],
   });
 
-  const fetchValidationState = async () => {
+  const fetchValidationState = useCallback(async () => {
     try {
       const { data: validatorResponse } = await validatorHook.refetch();
       const contractState = validatorResponse === undefined ? "NOSTATE" : JSON.parse(validatorResponse)["state"];
-      if (validationState != contractState) {
+      if (validationState !== contractState) {
         setValidationState(contractState);
       }
       return contractState;
     } catch (error) {
       console.error("Error fetching validation state:", error);
     }
-  };
+  }, [validatorHook, validationState]);
 
   useEffect(() => {
     void fetchValidationState();
-    // Empty dependency array ensures this runs only once after mount.
+    // Ahora fetchValidationState es estable y no se redefinirá en cada render
   }, [fetchValidationState]);
 
   const handlePreValidation = async () => {
