@@ -63,7 +63,9 @@ const ClaimChallengeTwoStepButton: React.FC<ClaimRewardButtonProps> = ({
     try {
       const { data: validatorResponse } = await validatorHook.refetch();
       const contractState = validatorResponse === undefined ? "NOSTATE" : JSON.parse(validatorResponse)["state"];
-      setValidationState(contractState);
+      if (validationState != contractState) {
+        setValidationState(contractState);
+      }
       return contractState;
     } catch (error) {
       console.error("Error fetching validation state:", error);
@@ -73,7 +75,7 @@ const ClaimChallengeTwoStepButton: React.FC<ClaimRewardButtonProps> = ({
   useEffect(() => {
     fetchValidationState();
     // Empty dependency array ensures this runs only once after mount.
-  });
+  }, []);
 
   const handlePreValidation = async () => {
     if (validatorConfig !== undefined) {
