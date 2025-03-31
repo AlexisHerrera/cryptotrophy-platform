@@ -31,6 +31,7 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
   const { writeContractAsync: validatorRegistry } = useScaffoldWriteContract("ValidatorRegistry");
   const { writeContractAsync: onChainValidator } = useScaffoldWriteContract("OnChainValidator");
   const { writeContractAsync: offChainValidator } = useScaffoldWriteContract("OffChainValidator");
+  const { writeContractAsync: OffChainApiValidator } = useScaffoldWriteContract("OffChainApiValidator");
 
   const handleSetValidator = async () => {
     try {
@@ -56,6 +57,13 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
         console.log("Set config", formData.url, formData.path);
         // Configure url and path for challenge.
         await offChainValidator({
+          functionName: "setConfig",
+          args: [challengeId, formData.url, formData.path],
+        });
+      } else if (selectedAlgorithm === "OffChainValidatorV2") {
+        console.log("Set config", formData.url, formData.path);
+        // Configure url and path for challenge.
+        await OffChainApiValidator({
           functionName: "setConfig",
           args: [challengeId, formData.url, formData.path],
         });
@@ -107,6 +115,7 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
             <option value="">Sin Validar</option>
             <option value="OnChainValidatorV1">On Chain</option>
             <option value="OffChainValidatorV1">Off Chain</option>
+            <option value="OffChainValidatorV2">Off Chain (Function)</option>
             <option value="RandomValidatorV1">Random</option>
           </select>
         </div>
@@ -124,7 +133,7 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
             </>
           )}
 
-          {selectedAlgorithm === "OffChainValidatorV1" && (
+          {(selectedAlgorithm === "OffChainValidatorV1" || selectedAlgorithm === "OffChainValidatorV2") && (
             <>
               <textarea
                 name="url"
