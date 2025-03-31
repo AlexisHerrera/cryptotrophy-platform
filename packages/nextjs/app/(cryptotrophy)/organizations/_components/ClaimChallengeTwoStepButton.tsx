@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { ValidatorContractName } from "./KnownValidators";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
@@ -8,7 +9,7 @@ import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 interface ClaimRewardButtonProps {
   challengeId: bigint;
-  contractName: "OffChainValidator" | "RandomValidator";
+  contractName: ValidatorContractName;
   // Optional configuration for backoff
   backoffConfig?: {
     maxAttempts: number;

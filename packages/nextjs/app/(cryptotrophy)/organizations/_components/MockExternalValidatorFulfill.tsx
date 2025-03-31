@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ValidatorContractName } from "./KnownValidators";
 import Modal from "~~/components/Modal";
 import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
@@ -95,8 +96,8 @@ const RandomFulfillForm: React.FC<CreateFulfillFormProps> = ({ formData, setForm
 function initMockConfig(
   validatorUID: string,
 ): [
-  "OffChainValidator" | "RandomValidator",
-  "OracleMock" | "ChainlinkVrfCoordinatorMock",
+  ValidatorContractName,
+  "OracleMock" | "ChainlinkVrfCoordinatorMock" | "RouterMock",
   ExecuteExternalFulfillFunction,
   React.FC<CreateFulfillFormProps>,
 ] {
@@ -104,6 +105,8 @@ function initMockConfig(
     return ["RandomValidator", "ChainlinkVrfCoordinatorMock", executeExternalRandomFulfill, RandomFulfillForm];
   } else if (validatorUID == "OffChainValidatorV1") {
     return ["OffChainValidator", "OracleMock", executeExternalOffchainFulfill, OffchainFulfillForm];
+  } else if (validatorUID == "OffChainValidatorV2") {
+    return ["OffChainApiValidator", "RouterMock", executeExternalOffchainFulfill, OffchainFulfillForm];
   }
   throw new Error("Unknown validatorUID.");
 }
