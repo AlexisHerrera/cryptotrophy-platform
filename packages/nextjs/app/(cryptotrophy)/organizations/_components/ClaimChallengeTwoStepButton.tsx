@@ -73,9 +73,9 @@ const ClaimChallengeTwoStepButton: React.FC<ClaimRewardButtonProps> = ({
   };
 
   useEffect(() => {
-    fetchValidationState();
+    void fetchValidationState();
     // Empty dependency array ensures this runs only once after mount.
-  }, []);
+  }, [fetchValidationState]);
 
   const handlePreValidation = async () => {
     if (validatorConfig !== undefined) {
