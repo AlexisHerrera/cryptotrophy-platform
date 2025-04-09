@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+import "hardhat/console.sol";
 import "./OrganizationToken.sol";
 import "../Challenges/IChallengeManager.sol";
 import {IOrganizationManager} from "./IOrganizationManager.sol";
+import {ICustomerBase} from "./ICustomerBase.sol";
 
 contract OrganizationManager is IOrganizationManager {
 	// Estructuras
@@ -10,12 +12,17 @@ contract OrganizationManager is IOrganizationManager {
 		uint256 id;
 		string name;
 		address token;
+
+        bytes32 customerBaseUID;
+		address customerBaseAddr;
+
 		mapping(address => bool) adminExists;
-		mapping(address => bool) userExists;
 		address[] admins;
-		address[] users;
 		bool exists;
 	}
+
+	// Supported customer bases
+    mapping(bytes32 => address) public customerBaseRegistry;
 
 	// Atributos
 	uint256 public orgCount;
@@ -34,11 +41,6 @@ contract OrganizationManager is IOrganizationManager {
 	// Modificadores
 	modifier onlyAdmin(uint256 orgId) {
 		require(organizations[orgId].adminExists[msg.sender], "Not an admin");
-		_;
-	}
-
-	modifier onlyUser(uint256 orgId) {
-		require(organizations[orgId].userExists[msg.sender], "Not a user");
 		_;
 	}
 
@@ -84,7 +86,7 @@ contract OrganizationManager is IOrganizationManager {
 		uint256 _initialSupply,
 		uint256 _initialEthBacking,
 		address[] memory _admins,
-		address[] memory _users
+        bytes32 _customerBaseUID
 	) public payable returns (uint256) {
 		require(msg.value >= _initialEthBacking, "Insufficient ETH backing");
 
@@ -110,6 +112,8 @@ contract OrganizationManager is IOrganizationManager {
 		org.name = _name;
 		org.token = address(token);
 		org.exists = true;
+		org.customerBaseUID = _customerBaseUID;
+		org.customerBaseAddr = customerBaseRegistry[_customerBaseUID];
 
 		// Por default, el creador de la organización es admin
 		_addAdmin(orgId, msg.sender);
@@ -117,8 +121,10 @@ contract OrganizationManager is IOrganizationManager {
 		for (uint256 i = 0; i < _admins.length; i++) {
 			_addAdmin(orgId, _admins[i]);
 		}
-		for (uint256 i = 0; i < _users.length; i++) {
-			_addUser(orgId, _users[i]);
+
+		if (org.customerBaseAddr != address(0x0)) {
+			ICustomerBase customerBase = ICustomerBase(org.customerBaseAddr);
+			customerBase.initialize(org.id, msg.sender);
 		}
 
 		organizationIds.push(orgId);
@@ -138,17 +144,6 @@ contract OrganizationManager is IOrganizationManager {
 		_addAdmin(_orgId, _admin);
 	}
 
-	function _addUser(uint256 _orgId, address _user) internal {
-		if (!organizations[_orgId].userExists[_user]) {
-			organizations[_orgId].userExists[_user] = true;
-			organizations[_orgId].users.push(_user);
-		}
-	}
-
-	/// @notice Agrega un usuario a una organización
-	function addUser(uint256 _orgId, address _user) public onlyAdmin(_orgId) {
-		_addUser(_orgId, _user);
-	}
 
 	// Implementación de las funciones de la interfaz
 
@@ -159,30 +154,63 @@ contract OrganizationManager is IOrganizationManager {
 		return org.adminExists[_user];
 	}
 
-	/// @notice Verifica si una dirección es miembro de una organización
-	function isUser(uint256 _orgId, address _user) external view override returns (bool) {
-		Organization storage org = organizations[_orgId];
-		require(org.exists, "Organization does not exist");
-		return org.userExists[_user];
-	}
-
 	/// @notice Lista todas las organizaciones
 	function listOrganizations() public view returns (uint256[] memory) {
 		return organizationIds;
 	}
 
-	/// @notice Salir de una organización
-	function leaveOrganization(uint256 _orgId) public onlyUser(_orgId) {
+    function hasUsers(uint256 _orgId) external view returns (bool) {
 		Organization storage org = organizations[_orgId];
-		org.userExists[msg.sender] = false;
+		return org.customerBaseAddr != address(0x0);
+	}
 
-		// Remover al usuario de la lista de usuarios
-		address[] storage users = org.users;
-		for (uint256 i = 0; i < users.length; i++) {
-			if (users[i] == msg.sender) {
-				users[i] = users[users.length - 1];
-				users.pop();
-				break;
+    function isUser(uint256 _orgId, address _user) external view returns (bool) {
+		Organization storage org = organizations[_orgId];
+		require(org.exists, "Organization does handle user membership");
+		ICustomerBase customerBase = ICustomerBase(org.customerBaseAddr);
+		return customerBase.isCustomer(org.id, _user);
+	}
+
+	// @notice Devuelve las organizaciones a las que el sender pertenece como admin o usuario, incluyendo nombre y dirección del token
+	function listAdministratedOrganizations() public view returns (
+		uint256[] memory orgIds,
+		string[] memory names,
+		string[] memory tokenSymbols,
+		address[] memory tokenAddresses,
+		uint256[] memory adminCounts,
+		uint256[] memory customerCounts,
+		bool[] memory isMembers
+	) {
+		uint256 count = 0;
+		for (uint256 i = 0; i < orgCount; i++) {
+			if (organizations[i].adminExists[msg.sender]) {
+				count++;
+			}
+		}
+
+		orgIds = new uint256[](count);
+		names = new string[](count);
+		tokenSymbols = new string[](count);
+		tokenAddresses = new address[](count);
+		adminCounts = new uint256[](count);
+		customerCounts = new uint256[](count);
+		isMembers = new bool[](count);
+
+		uint256 index = 0;
+
+		for (uint256 i = 0; i < orgCount; i++) {
+			if (organizations[i].adminExists[msg.sender]) {
+				Organization storage org = organizations[i];
+				orgIds[index] = org.id;
+				names[index] = org.name;
+
+				tokenSymbols[index] = ERC20(org.token).symbol();
+				tokenAddresses[index] = org.token;
+
+				adminCounts[index] = org.admins.length;
+				customerCounts[index] = 0;
+				isMembers[index] = true;
+				index++;
 			}
 		}
 	}
@@ -194,13 +222,17 @@ contract OrganizationManager is IOrganizationManager {
 		string[] memory tokenSymbols,
 		address[] memory tokenAddresses,
 		uint256[] memory adminCounts,
-		uint256[] memory userCounts,
+		uint256[] memory customerCounts,
 		bool[] memory isMembers
 	) {
 		uint256 count = 0;
 		for (uint256 i = 0; i < orgCount; i++) {
-			if (organizations[i].adminExists[msg.sender] || organizations[i].userExists[msg.sender]) {
-				count++;
+			Organization storage org = organizations[i];
+			if (org.customerBaseAddr != address(0x0)) {
+				ICustomerBase customerBase = ICustomerBase(org.customerBaseAddr);
+				if (customerBase.isCustomer(org.id, msg.sender)) {
+					count++;
+				}
 			}
 		}
 
@@ -209,24 +241,27 @@ contract OrganizationManager is IOrganizationManager {
 		tokenSymbols = new string[](count);
 		tokenAddresses = new address[](count);
 		adminCounts = new uint256[](count);
-		userCounts = new uint256[](count);
+		customerCounts = new uint256[](count);
 		isMembers = new bool[](count);
 
 		uint256 index = 0;
 
 		for (uint256 i = 0; i < orgCount; i++) {
-			if (organizations[i].adminExists[msg.sender] || organizations[i].userExists[msg.sender]) {
-				Organization storage org = organizations[i];
-				orgIds[index] = org.id;
-				names[index] = org.name;
+			Organization storage org = organizations[i];
+			if (org.customerBaseAddr != address(0x0)) {
+				ICustomerBase customerBase = ICustomerBase(org.customerBaseAddr);
+				if (customerBase.isCustomer(org.id, msg.sender)) {
+					orgIds[index] = org.id;
+					names[index] = org.name;
 
-				tokenSymbols[index] = ERC20(org.token).symbol();
-				tokenAddresses[index] = org.token;
+					tokenSymbols[index] = ERC20(org.token).symbol();
+					tokenAddresses[index] = org.token;
 
-				adminCounts[index] = org.admins.length;
-				userCounts[index] = org.users.length;
-				isMembers[index] = org.userExists[msg.sender] || org.adminExists[msg.sender];
-				index++;
+					adminCounts[index] = org.admins.length;
+					customerCounts[index] = 0;
+					isMembers[index] = true;
+					index++;
+				}
 			}
 		}
 	}
@@ -237,7 +272,7 @@ contract OrganizationManager is IOrganizationManager {
 		string memory name,
 		address token,
 		address[] memory admins,
-		address[] memory users,
+		bytes32 customerBaseUID,
 		bool userIsAdmin,
 		bool userIsMember
 	) {
@@ -248,22 +283,16 @@ contract OrganizationManager is IOrganizationManager {
 		name = org.name;
 		token = org.token;
 		admins = org.admins;
-		users = org.users;
+		customerBaseUID = org.customerBaseUID;
 		userIsAdmin = org.adminExists[msg.sender];
-		userIsMember = org.userExists[msg.sender];
+		userIsMember = false;
+		if (org.customerBaseAddr != address(0x0)) {
+			ICustomerBase customerBase = ICustomerBase(org.customerBaseAddr);
+			userIsMember = customerBase.isCustomer(org.id, msg.sender);
+		}
 	}
 
-	/// @notice Verifica si una dirección es miembro de una organización
-	function isMember(uint256 _orgId, address _user) public view returns (bool) {
-		Organization storage org = organizations[_orgId];
-		return org.userExists[_user];
-	}
-
-	/// @notice Unirse a una organización
-	function joinOrganization(uint256 _orgId) public {
-		require(organizations[_orgId].exists, "Organization does not exist");
-		require(!organizations[_orgId].userExists[msg.sender], "Already a member");
-
-		_addUser(_orgId, msg.sender);
-	}
+    function registerCustomerBase(bytes32 _customerBaseUID, address _customerBaseAddress) public {
+        customerBaseRegistry[_customerBaseUID] = _customerBaseAddress;
+    }
 }

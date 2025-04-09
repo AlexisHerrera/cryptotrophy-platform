@@ -49,7 +49,7 @@ contract Prizes {
     modifier onlyOrgMember(uint256 orgId) {
         require(
             orgManager.isUser(orgId, msg.sender) || orgManager.isAdmin(orgId, msg.sender),
-            "Prizes: caller is not a member or admin of this org"
+            "Prizes: caller is not a member of this org"
         );
         _;
     }

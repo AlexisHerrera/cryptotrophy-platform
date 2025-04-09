@@ -122,7 +122,9 @@ contract ChallengeManager is IChallengeManager {
     ) external { // TODO: check only user
         Challenge storage challenge = challenges[_challengeId];
         // Si se utiliza el modificador, no es necesario verificar estas condiciones
-        require(orgManager.isUser(challenge.orgId, msg.sender), "Not a user");
+        if (orgManager.hasUsers(challenge.orgId)) {
+            require(orgManager.isUser(challenge.orgId, msg.sender), "Not a user");
+        }
         require(challenge.exists, "Challenge does not exist");
         require(challenge.active, "Challenge not active");
         require(

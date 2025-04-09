@@ -15,9 +15,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Link href="/create-organization" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">
               Create Organization
             </Link>
-            <Link href="/competitions" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">
-              Register Algorithm
-            </Link>
+            {/*<Link href="/competitions" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">*/}
+            {/*  Register Algorithm*/}
+            {/*</Link>*/}
           </nav>
 
           <Navbar />

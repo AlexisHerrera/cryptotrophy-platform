@@ -5,6 +5,7 @@ import AdminSetChallengeValidator from "./AdminSetChallengeValidator";
 import ClaimChallengeBasicButton from "./ClaimChallengeBasicButton";
 import ClaimChallengeOnChainModal from "./ClaimChallengeOnChainModal";
 import ClaimChallengeTwoStepButton from "./ClaimChallengeTwoStepButton";
+import { ValidatorContractName, getContractName } from "./KnownValidators";
 import MockExternalValidatorFulfill from "./MockExternalValidatorFulfill";
 import { formatUnits } from "ethers";
 import { decodeBytes32String } from "ethers";
@@ -25,11 +26,7 @@ const ActiveChallengeWrapper: React.FC<ActiveChallengeWrapperProps> = ({ challen
 // Creates the correct button type depending on validatorUID
 
 function createClaimChallengeButton(orgId: bigint, challengeId: bigint, validatorUID: string) {
-  const twoStepContractNameMap: Record<string, "OffChainValidator" | "RandomValidator"> = {
-    OffChainValidatorV1: "OffChainValidator",
-    RandomValidatorV1: "RandomValidator",
-  };
-  const contractName: "OffChainValidator" | "RandomValidator" = twoStepContractNameMap[validatorUID];
+  const contractName: ValidatorContractName = getContractName(validatorUID);
   if (contractName) {
     return <ClaimChallengeTwoStepButton challengeId={challengeId} contractName={contractName} />;
   } else {
