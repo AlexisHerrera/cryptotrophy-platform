@@ -1,7 +1,7 @@
 import React from "react";
-import AddressManager from "~~/app/(cryptotrophy)/create-organization/_components/AddressManager";
-import { CreateOrganizationFormProps } from "~~/app/(cryptotrophy)/create-organization/_components/CreateOrganizationForm";
-import FormInput from "~~/app/(cryptotrophy)/create-organization/_components/FormInput";
+import AddressManager from "~~/app/backoffice/create-organization/_components/AddressManager";
+import { CreateOrganizationFormProps } from "~~/app/backoffice/create-organization/_components/CreateOrganizationForm";
+import FormInput from "~~/app/backoffice/create-organization/_components/FormInput";
 
 interface StepOrganizationDataProps {
   formData: {

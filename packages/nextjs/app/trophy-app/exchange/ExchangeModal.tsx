@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { formatEther, parseEther } from "viem";
-import { TokenData } from "~~/app/exchange/page";
+import { TokenData } from "~~/app/trophy-app/exchange/page";
 import Modal from "~~/components/Modal";
 import { IntegerInput, IntegerVariant } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";

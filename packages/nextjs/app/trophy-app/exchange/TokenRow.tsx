@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { ethers } from "ethers";
 import { formatEther } from "viem";
 import { useReadContract } from "wagmi";
-import { TokenData } from "~~/app/exchange/page";
+import { TokenData } from "~~/app/trophy-app/exchange/page";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 

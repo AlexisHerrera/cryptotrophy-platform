@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { Interface } from "ethers";
 import { encodeBytes32String } from "ethers";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
-import StepCustomerBase from "~~/app/(cryptotrophy)/create-organization/_components/steps/StepCustomerBase";
-import StepEthereumBacking from "~~/app/(cryptotrophy)/create-organization/_components/steps/StepEthereumBacking";
-import StepOrganizationData from "~~/app/(cryptotrophy)/create-organization/_components/steps/StepOrganizationData";
-import StepReviewData from "~~/app/(cryptotrophy)/create-organization/_components/steps/StepReviewData";
+import StepCustomerBase from "~~/app/backoffice/create-organization/_components/steps/StepCustomerBase";
+import StepEthereumBacking from "~~/app/backoffice/create-organization/_components/steps/StepEthereumBacking";
+import StepOrganizationData from "~~/app/backoffice/create-organization/_components/steps/StepOrganizationData";
+import StepReviewData from "~~/app/backoffice/create-organization/_components/steps/StepReviewData";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 export interface CreateOrganizationFormProps {

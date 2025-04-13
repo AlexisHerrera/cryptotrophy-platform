@@ -1,6 +1,6 @@
 import React from "react";
-import { CreateOrganizationFormProps } from "~~/app/(cryptotrophy)/create-organization/_components/CreateOrganizationForm";
-import FormInput from "~~/app/(cryptotrophy)/create-organization/_components/FormInput";
+import { CreateOrganizationFormProps } from "~~/app/backoffice/create-organization/_components/CreateOrganizationForm";
+import FormInput from "~~/app/backoffice/create-organization/_components/FormInput";
 import { IntegerInput, IntegerVariant } from "~~/components/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
 

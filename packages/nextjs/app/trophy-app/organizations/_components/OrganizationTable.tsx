@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminPanel from "~~/app/(cryptotrophy)/organizations/_components/AdminPanel";
-import CopyButton from "~~/app/(cryptotrophy)/organizations/_components/CopyButton";
-import UserBalance from "~~/app/(cryptotrophy)/organizations/_components/UserBalance";
+import AdminPanel from "~~/app/trophy-app/organizations/_components/AdminPanel";
+import CopyButton from "~~/app/trophy-app/organizations/_components/CopyButton";
+import UserBalance from "~~/app/trophy-app/organizations/_components/UserBalance";
 import Modal from "~~/components/Modal";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
@@ -32,7 +32,6 @@ interface IOrganizationTable {
 const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.ReactElement => {
   const [selectedOrganization, setSelectedOrganization] = useState<Organization | null>(null);
 
-  // Funciones para unirse o salir
   const { writeContractAsync: addAdmin } = useScaffoldWriteContract("OrganizationManager");
   const [showAdminPanelModal, setShowAdminPanelModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,7 +71,6 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
               <th>Your Balance</th>
               <th>Admins</th>
               <th>Users</th>
-              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -80,7 +78,7 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
               <tr key={org.id.toString()} className="hover">
                 <td
                   className="cursor-pointer font-bold"
-                  onClick={() => router.push(`/organizations/${org.id.toString()}`)}
+                  onClick={() => router.push(`/trophy-app/organizations/${org.id.toString()}`)}
                 >
                   {org.name}
                 </td>
@@ -93,19 +91,19 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
                 </td>
                 <td>{org.adminCount.toString()}</td>
                 <td>{org.userCount.toString()}</td>
-                <td>
-                  {org.isMember && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => {
-                        setSelectedOrganization(org);
-                        setShowAdminPanelModal(true);
-                      }}
-                    >
-                      Admin
-                    </button>
-                  )}
-                </td>
+                {/*<td>*/}
+                {/*  {org.isMember && (*/}
+                {/*    <button*/}
+                {/*      className="btn btn-primary"*/}
+                {/*      onClick={() => {*/}
+                {/*        setSelectedOrganization(org);*/}
+                {/*        setShowAdminPanelModal(true);*/}
+                {/*      }}*/}
+                {/*    >*/}
+                {/*      Admin*/}
+                {/*    </button>*/}
+                {/*  )}*/}
+                {/*</td>*/}
               </tr>
             ))}
           </tbody>
@@ -131,11 +129,11 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
         </button>
       </div>
 
-      {showAdminPanelModal && selectedOrganization !== null && (
-        <Modal onClose={() => setShowAdminPanelModal(false)}>
-          <AdminPanel organizationId={selectedOrganization.id} addAdmin={addAdmin} />
-        </Modal>
-      )}
+      {/*{showAdminPanelModal && selectedOrganization !== null && (*/}
+      {/*  <Modal onClose={() => setShowAdminPanelModal(false)}>*/}
+      {/*    <AdminPanel organizationId={selectedOrganization.id} addAdmin={addAdmin} />*/}
+      {/*  </Modal>*/}
+      {/*)}*/}
     </div>
   );
 };

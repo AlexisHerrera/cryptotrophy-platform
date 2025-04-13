@@ -3,10 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { decodeBytes32String } from "ethers";
-import AdminPanel from "~~/app/(cryptotrophy)/organizations/_components/AdminPanel";
-import ChallengeList from "~~/app/(cryptotrophy)/organizations/_components/ChallengeList";
-import CreateChallengeModal from "~~/app/(cryptotrophy)/organizations/_components/CreateChallengeModal";
-import ManageCustomersModal from "~~/app/(cryptotrophy)/organizations/_components/ManageCustomersModal";
+import AdminPanel from "~~/app/trophy-app/organizations/_components/AdminPanel";
+import ChallengeList from "~~/app/trophy-app/organizations/_components/ChallengeList";
+import CreateChallengeModal from "~~/app/trophy-app/organizations/_components/CreateChallengeModal";
+import ManageCustomersModal from "~~/app/trophy-app/organizations/_components/ManageCustomersModal";
 import Modal from "~~/components/Modal";
 import { BackButton } from "~~/components/common/BackButton";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -89,16 +89,16 @@ const OrganizationPage: React.FC = () => {
 
         <div className="text-center">
           <div className="flex justify-center gap-4 mb-4">
-            {organization.userIsAdmin && (
-              <div className="flex gap-4">
-                <button className="btn btn-primary" onClick={() => setShowCreateChallengeModal(true)}>
-                  Create Challenge
-                </button>
-                <button className="btn btn-secondary" onClick={() => setShowAdminPanelModal(true)}>
-                  Open Admin Panel
-                </button>
-              </div>
-            )}
+            {/*{organization.userIsAdmin && (*/}
+            {/*  <div className="flex gap-4">*/}
+            {/*    <button className="btn btn-primary" onClick={() => setShowCreateChallengeModal(true)}>*/}
+            {/*      Create Challenge*/}
+            {/*    </button>*/}
+            {/*    <button className="btn btn-secondary" onClick={() => setShowAdminPanelModal(true)}>*/}
+            {/*      Open Admin Panel*/}
+            {/*    </button>*/}
+            {/*  </div>*/}
+            {/*)}*/}
             {organization.customerBaseUID == "OnChainCustomerBaseV1" && organization.userIsAdmin && (
               <div className="flex gap-4">
                 <button className="btn btn-primary" onClick={() => setShowManageCustomersModal(true)}>
@@ -109,7 +109,7 @@ const OrganizationPage: React.FC = () => {
             <div>
               <button
                 className="btn bg-amber-400 dark:text-gray-800 dark:btn-warning"
-                onClick={() => router.push(`/organizations/${organization.id}/prizes`)}
+                onClick={() => router.push(`/trophy-app/organizations/${organization.id}/prizes`)}
               >
                 Prize Center
               </button>

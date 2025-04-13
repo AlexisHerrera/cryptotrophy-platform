@@ -129,11 +129,11 @@ const PrizeCenter: React.FC = () => {
           {balanceData ? balanceData[1] : "Tokens"}
         </div>
 
-        <div className="flex justify-center mb-6">
-          <button className="btn btn-primary" onClick={() => setIsCreateModalOpen(true)}>
-            Create Prize
-          </button>
-        </div>
+        {/*<div className="flex justify-center mb-6">*/}
+        {/*  <button className="btn btn-primary" onClick={() => setIsCreateModalOpen(true)}>*/}
+        {/*    Create Prize*/}
+        {/*  </button>*/}
+        {/*</div>*/}
 
         <div className="overflow-x-auto">
           <table className="table table-zebra w-full border border-gray-300">

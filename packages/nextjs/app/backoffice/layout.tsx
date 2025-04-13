@@ -1,6 +1,6 @@
 // app/layout.tsx
 import Link from "next/link";
-import Navbar from "~~/app/(cryptotrophy)/_components/Navbar";
+import Navbar from "~~/app/backoffice/_components/Navbar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

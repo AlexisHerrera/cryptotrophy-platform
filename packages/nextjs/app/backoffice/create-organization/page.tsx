@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import CreateOrganizationForm from "~~/app/(cryptotrophy)/create-organization/_components/CreateOrganizationForm";
+import CreateOrganizationForm from "~~/app/backoffice/create-organization/_components/CreateOrganizationForm";
 import { MotionDiv } from "~~/app/motions/use-motion";
 import { BackButton } from "~~/components/common/BackButton";
 

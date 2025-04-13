@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import TokenRow from "./TokenRow";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
-import ExchangeModal from "~~/app/exchange/ExchangeModal";
+import ExchangeModal from "~~/app/trophy-app/exchange/ExchangeModal";
 import { BackButton } from "~~/components/common/BackButton";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 

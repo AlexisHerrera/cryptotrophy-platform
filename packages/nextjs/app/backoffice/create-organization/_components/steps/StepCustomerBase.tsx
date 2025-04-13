@@ -1,5 +1,5 @@
 import React from "react";
-import { CreateOrganizationFormProps } from "~~/app/(cryptotrophy)/create-organization/_components/CreateOrganizationForm";
+import { CreateOrganizationFormProps } from "~~/app/backoffice/create-organization/_components/CreateOrganizationForm";
 
 interface StepCustomerBaseProps {
   formData: {

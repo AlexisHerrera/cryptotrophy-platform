@@ -2,13 +2,12 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import OrganizationTable from "~~/app/(cryptotrophy)/organizations/_components/OrganizationTable";
 import { MotionDiv } from "~~/app/motions/use-motion";
+import OrganizationTable from "~~/app/trophy-app/organizations/_components/OrganizationTable";
 import { BackButton } from "~~/components/common/BackButton";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 const Organizations: React.FC = () => {
-  // Leer organizaciones desde el contrato
   const { data: organizationsData, isLoading } = useScaffoldReadContract({
     contractName: "OrganizationManager",
     functionName: "listAdministratedOrganizations",
@@ -33,7 +32,7 @@ const Organizations: React.FC = () => {
           <button
             className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition duration-200 hover:scale-105"
             onClick={() => {
-              router.push("/");
+              router.push("/trophy-app");
             }}
           >
             Go back
@@ -43,9 +42,6 @@ const Organizations: React.FC = () => {
         <div className="flex justify-between">
           <BackButton />
           <OrganizationTable organizationsData={organizationsData} />
-          <button className="btn bg-green-300" onClick={() => router.push("/exchange")}>
-            Go to Market
-          </button>
         </div>
       )}
     </MotionDiv>
