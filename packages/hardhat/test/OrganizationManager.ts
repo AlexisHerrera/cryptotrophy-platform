@@ -26,13 +26,11 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
 
     // Deploy OnChainCustomerBase
     const OnChainCustomerBaseFactory = await ethersHardhat.getContractFactory("OnChainCustomerBase");
-    const onChainCustomerBase = (await OnChainCustomerBaseFactory.deploy(
-      orgManager.getAddress(),
-    )) as OnChainCustomerBase;
+    const onChainCustomerBase = (await OnChainCustomerBaseFactory.deploy()) as OnChainCustomerBase;
     await onChainCustomerBase.waitForDeployment();
 
     // Add OnChainCustomerBase to organization contract.
-    const onChainCustomerBaseUID = hre.ethers.encodeBytes32String("OnChainCustomerBaseV1");
+    const onChainCustomerBaseUID = encodeBytes32String("OnChainCustomerBaseV1");
     await orgManager.registerCustomerBase(onChainCustomerBaseUID, onChainCustomerBase.getAddress());
 
     return {

@@ -2,6 +2,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import hre from "hardhat";
 import { ethers as ethersHardhat } from "hardhat";
+import { ethers } from "ethers";
 
 describe("OnChainValidator contract", function () {
   async function deployOnChainValidatorFixture() {

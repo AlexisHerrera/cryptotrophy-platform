@@ -5,7 +5,13 @@ import { ethers } from "ethers";
 import { encodeBytes32String } from "ethers";
 
 // Importa los tipos de TypeChain (ajusta según tu configuración)
-import { OrganizationManager, Prizes, OrganizationManager__factory, Prizes__factory } from "../typechain-types";
+import {
+  OrganizationManager,
+  Prizes,
+  OrganizationManager__factory,
+  Prizes__factory,
+  OnChainCustomerBase,
+} from "../typechain-types";
 
 describe("Prizes contract", function () {
   // ----------------------------------------------------------------
@@ -24,13 +30,11 @@ describe("Prizes contract", function () {
 
     // Deploy OnChainCustomerBase
     const OnChainCustomerBaseFactory = await ethersHardhat.getContractFactory("OnChainCustomerBase");
-    const onChainCustomerBase = (await OnChainCustomerBaseFactory.deploy(
-      orgManager.getAddress(),
-    )) as OnChainCustomerBase;
+    const onChainCustomerBase = (await OnChainCustomerBaseFactory.deploy()) as OnChainCustomerBase;
     await onChainCustomerBase.waitForDeployment();
 
     // Add OnChainCustomerBase to organization contract.
-    const onChainCustomerBaseUID = hre.ethers.encodeBytes32String("OnChainCustomerBaseV1");
+    const onChainCustomerBaseUID = encodeBytes32String("OnChainCustomerBaseV1");
     await orgManager.registerCustomerBase(onChainCustomerBaseUID, onChainCustomerBase.getAddress());
 
     // 1B. Desplegamos Prizes apuntando al orgManager
