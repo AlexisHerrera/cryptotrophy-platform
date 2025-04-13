@@ -36,6 +36,34 @@ contract SecretValidator is IValidator {
 		return Strings.toString(validationId);
 	}
 
+	function decodeParams(
+		bytes calldata params
+	)
+		public
+		pure
+		returns (
+			uint[2] memory _pA,
+			uint[2][2] memory _pB,
+			uint[2] memory _pC,
+			uint256 publicHash
+		)
+	{
+		(_pA, _pB, _pC, publicHash) = abi.decode(
+			params,
+			(uint[2], uint[2][2], uint[2], uint256)
+		);
+	}
+
+	function getPublicSignals(
+		uint256 publicHash
+	) public view returns (uint256, uint256, uint256) {
+		return (uint256(uint160(msg.sender)), nonces[msg.sender], publicHash);
+	}
+
+	function getAddressAsField(address sender) public pure returns (uint256) {
+		return uint256(uint160(sender));
+	}
+
 	function validate(
 		uint256 validationId,
 		bytes calldata params
@@ -49,33 +77,8 @@ contract SecretValidator is IValidator {
 
 		require(config[validationId][publicHash], "Invalid hash");
 
-		return this.verifyProof(_pA, _pB, _pC, publicHash);
-	}
-
-	/// @notice Verify a proof
-	/// @param a The first element of the proof
-	/// @param b The second element of the proof
-	/// @param c The third element of the proof
-	/// @param publicHash The public hash to verify
-	function verifyProof(
-		uint[2] calldata a,
-		uint[2][2] calldata b,
-		uint[2] calldata c,
-		uint256 publicHash
-	) external view returns (bool) {
-		uint256 userNonce = nonces[msg.sender];
-
-		// Convert sender address to a field element
-		uint256 senderAsField = uint256(uint160(msg.sender));
-
-		// Verify proof (includes sender and userNonce)
 		require(
-			verifier.verifyProof(
-				a,
-				b,
-				c,
-				[senderAsField, userNonce, publicHash]
-			),
+			verifier.verifyProof(_pA, _pB, _pC, [publicHash]),
 			"Invalid proof"
 		);
 		return true;

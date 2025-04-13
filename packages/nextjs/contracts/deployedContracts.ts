@@ -1618,9 +1618,9 @@ const deployedContracts = {
               type: "uint256[2]",
             },
             {
-              internalType: "uint256[3]",
+              internalType: "uint256[1]",
               name: "_pubSignals",
-              type: "uint256[3]",
+              type: "uint256[1]",
             },
           ],
           name: "verifyProof",
@@ -4926,6 +4926,40 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [
+            {
+              internalType: "bytes",
+              name: "params",
+              type: "bytes",
+            },
+          ],
+          name: "decodeParams",
+          outputs: [
+            {
+              internalType: "uint256[2]",
+              name: "_pA",
+              type: "uint256[2]",
+            },
+            {
+              internalType: "uint256[2][2]",
+              name: "_pB",
+              type: "uint256[2][2]",
+            },
+            {
+              internalType: "uint256[2]",
+              name: "_pC",
+              type: "uint256[2]",
+            },
+            {
+              internalType: "uint256",
+              name: "publicHash",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "pure",
+          type: "function",
+        },
+        {
           inputs: [],
           name: "description",
           outputs: [
@@ -4936,6 +4970,25 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "sender",
+              type: "address",
+            },
+          ],
+          name: "getAddressAsField",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "pure",
           type: "function",
         },
         {
@@ -4955,6 +5008,35 @@ const deployedContracts = {
             },
           ],
           stateMutability: "pure",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "publicHash",
+              type: "uint256",
+            },
+          ],
+          name: "getPublicSignals",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -5045,40 +5127,6 @@ const deployedContracts = {
             },
           ],
           name: "validate",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256[2]",
-              name: "a",
-              type: "uint256[2]",
-            },
-            {
-              internalType: "uint256[2][2]",
-              name: "b",
-              type: "uint256[2][2]",
-            },
-            {
-              internalType: "uint256[2]",
-              name: "c",
-              type: "uint256[2]",
-            },
-            {
-              internalType: "uint256",
-              name: "publicHash",
-              type: "uint256",
-            },
-          ],
-          name: "verifyProof",
           outputs: [
             {
               internalType: "bool",

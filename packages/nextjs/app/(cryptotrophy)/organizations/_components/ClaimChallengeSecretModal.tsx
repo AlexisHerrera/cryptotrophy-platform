@@ -167,8 +167,6 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
   const [zkProof, setZkProof] = useState<any>(null);
   const [proofError, setProofError] = useState<string | null>(null);
 
-  const { address } = useAccount();
-
   // Use the hook with a state-dependent value
   const { data: isValidHash } = useScaffoldReadContract({
     contractName: "SecretValidator",
@@ -205,7 +203,7 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
   };
 
   // Generate input for ZK proof
-  const generateInput = async (secretStr: string, senderAddress: string, nonce = "0") => {
+  const generateInput = async (secretStr: string) => {
     try {
       // Initialize Poseidon
       const poseidon = await buildPoseidon();
@@ -213,17 +211,12 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
       // Convert string to numeric representation
       const secret = BigInt(Buffer.from(secretStr).reduce((acc, byte) => acc * 256n + BigInt(byte), 0n));
 
-      // Convert EVM address to uint160 (same as contract)
-      const sender = BigInt(senderAddress);
-
       // Calculate hash using Poseidon with 1 input (just the secret)
       const hash = poseidon([secret]);
 
       // Create input object - use the raw field element output from Poseidon
       const input = {
         secret: secret.toString(),
-        sender: sender.toString(),
-        nonce: nonce,
         publicHash: poseidon.F.toString(hash), // Convert to field element string
       };
 
@@ -297,7 +290,7 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
 
   // Function to handle the full proof generation process
   const handleGenerateProof = async () => {
-    if (!secretValue.trim() || !isSecretValid || !address) {
+    if (!secretValue.trim() || !isSecretValid) {
       return;
     }
 
@@ -306,7 +299,7 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
       setProofError(null);
 
       // Generate the input for the ZK proof
-      const input = await generateInput(secretValue.trim(), address, "0");
+      const input = await generateInput(secretValue.trim());
       console.log("ZK proof input generated:", input);
 
       try {
@@ -433,7 +426,7 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
 
         try {
           // Generate the input for the ZK proof
-          const input = await generateInput(secretValue.trim(), address || "", "0");
+          const input = await generateInput(secretValue.trim());
 
           // Generate the proof
           const { proof, publicSignals } = await generateProof(input);

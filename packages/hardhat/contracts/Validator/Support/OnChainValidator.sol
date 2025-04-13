@@ -41,6 +41,6 @@ contract OnChainValidator is IValidator {
         // console.log("_pC %i %i", _pC[0], _pC[1]);
         // console.log("_pubSignals %i", config[validationId]);
 
-        return verifier.verifyProof(_pA, _pB, _pC, [config[validationId], 0, 0]);
+        return verifier.verifyProof(_pA, _pB, _pC, [config[validationId]]);
     }
 }
