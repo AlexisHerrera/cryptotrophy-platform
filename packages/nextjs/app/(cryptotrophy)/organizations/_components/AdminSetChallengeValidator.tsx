@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { buildPoseidon } from "circomlibjs";
 import { encodeBytes32String } from "ethers";
 import Modal from "~~/components/Modal";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -32,6 +33,28 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
   const { writeContractAsync: onChainValidator } = useScaffoldWriteContract("OnChainValidator");
   const { writeContractAsync: offChainValidator } = useScaffoldWriteContract("OffChainValidator");
   const { writeContractAsync: OffChainApiValidator } = useScaffoldWriteContract("OffChainApiValidator");
+  const { writeContractAsync: secretValidator } = useScaffoldWriteContract("SecretValidator");
+
+  // Function to calculate the Poseidon hash of a string
+  const calculateSecretHash = async (secretStr: string): Promise<bigint> => {
+    // Skip empty strings
+    if (!secretStr.trim()) return 0n;
+
+    try {
+      const poseidon = await buildPoseidon();
+      // Convert string to numeric representation
+      const secret = BigInt(Buffer.from(secretStr).reduce((acc, byte) => acc * 256n + BigInt(byte), 0n));
+
+      // Calculate hash using Poseidon with 1 input (just the secret)
+      const hash = poseidon.F.toString(poseidon([secret]));
+      console.log(`Secret code "${secretStr}" hashed to: ${hash}`);
+      return BigInt(hash);
+    } catch (error) {
+      console.error("Error calculating hash:", error);
+      alert(`Failed to hash secret code: ${secretStr}`);
+      return 0n;
+    }
+  };
 
   const handleSetValidator = async () => {
     try {
@@ -66,6 +89,28 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
         await OffChainApiValidator({
           functionName: "setConfig",
           args: [challengeId, formData.url, formData.path],
+        });
+      } else if (selectedAlgorithm === "SecretValidatorV1") {
+        console.log("Processing secret codes", formData.secretCodes);
+        // Parse the secret codes from the textarea
+        const secretCodes = formData.secretCodes.split("\n").filter(line => line.trim() !== "");
+
+        // Calculate hashes for each secret code
+        const hashes = await Promise.all(secretCodes.map(code => calculateSecretHash(code.trim())));
+
+        // Filter out any failed hashes (0n)
+        const validHashes = hashes.filter(hash => hash !== 0n);
+
+        if (validHashes.length === 0) {
+          throw new Error("No valid secret codes provided");
+        }
+
+        console.log(`Adding ${validHashes.length} secret hashes to validator`);
+
+        // Add the valid hashes to the validator
+        await secretValidator({
+          functionName: "addValidHashes",
+          args: [challengeId, validHashes],
         });
       } else if (selectedAlgorithm === "RandomValidatorV1") {
         // PENDING CONFIGURATION
@@ -116,6 +161,7 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
             <option value="OnChainValidatorV1">On Chain</option>
             <option value="OffChainValidatorV1">Off Chain</option>
             <option value="OffChainValidatorV2">Off Chain (Function)</option>
+            <option value="SecretValidatorV1">Secret Codes</option>
             <option value="RandomValidatorV1">Random</option>
           </select>
         </div>
@@ -148,6 +194,22 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
                 value={formData.path}
                 onChange={handleInputChange}
                 className="textarea textarea-bordered w-full"
+              />
+            </>
+          )}
+
+          {selectedAlgorithm === "SecretValidatorV1" && (
+            <>
+              <div className="text-sm mb-2 text-info">
+                Enter each secret code on a new line. These will be hashed using Poseidon before being stored.
+              </div>
+              <textarea
+                name="secretCodes"
+                placeholder="Enter secret codes (one per line, e.g. SUMMER2024)"
+                value={formData.secretCodes}
+                onChange={handleInputChange}
+                className="textarea textarea-bordered w-full"
+                rows={5}
               />
             </>
           )}
