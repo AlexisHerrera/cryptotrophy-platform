@@ -32,27 +32,26 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
   const [validationSecret, setValidationSecret] = useState<string>("");
 
   // Use the hook with a state-dependent value
-  const { data: isValidHash } = useScaffoldReadContract({
+  const { data: isValidHash, isLoading: isLoadingHash } = useScaffoldReadContract({
     contractName: "SecretValidator",
     functionName: "config",
     args: [challengeId, currentHash],
   });
 
-  // Update both states immediately
+  // Update validation state when hash validation changes
   useEffect(() => {
     setIsSecretValid(!!isValidHash);
 
-    // If we have a pending validation, complete it
-    if (validationSecret && validatingHash) {
+    // If we're validating and hash loading has completed
+    if (validatingHash && !isLoadingHash) {
       if (!!isValidHash) {
         setValidationMessage("✅ Valid secret code!");
       } else {
         setValidationMessage("❌ Invalid secret code. Please try a different one.");
       }
       setValidatingHash(false);
-      setValidationSecret(""); // Clear pending validation
     }
-  }, [isValidHash, validationSecret, validatingHash]);
+  }, [isValidHash, isLoadingHash, validatingHash]);
 
   const { writeContractAsync: claimReward } = useScaffoldWriteContract("ChallengeManager");
 
@@ -99,25 +98,6 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
       return input;
     } catch (error) {
       console.error("Error generating input:", error);
-      throw error;
-    }
-  };
-
-  // Helper function to fetch and load files properly
-  const fetchBinaryFile = async (url: string): Promise<ArrayBuffer> => {
-    try {
-      console.log(`Fetching binary file from: ${url}`);
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
-      }
-
-      const arrayBuffer = await response.arrayBuffer();
-      console.log(`Successfully fetched ${url}, size: ${arrayBuffer.byteLength} bytes`);
-      return arrayBuffer;
-    } catch (error) {
-      console.error(`Error fetching ${url}:`, error);
       throw error;
     }
   };
@@ -213,10 +193,10 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
       return false;
     }
 
-    setValidatingHash(true);
-    setValidationMessage("Validating your secret code...");
-
     try {
+      setValidatingHash(true);
+      setValidationMessage("Validating your secret code...");
+
       // Calculate the hash of the secret code
       const secretHash = await calculateSecretHash(secretValue.trim());
       if (secretHash === 0n) {
@@ -225,13 +205,10 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
         return false;
       }
 
-      // Store the secret for the effect to handle when validation completes
-      setValidationSecret(secretValue.trim());
-
       // Update current hash - this will trigger the hook to refetch
       setCurrentHash(secretHash);
 
-      // The useEffect will handle the rest when isValidHash updates
+      // The useEffect will handle updating the validation message when isValidHash updates
       return true;
     } catch (error) {
       console.error("Error validating secret code:", error);
