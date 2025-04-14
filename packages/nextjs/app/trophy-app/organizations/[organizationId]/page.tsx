@@ -2,11 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { decodeBytes32String } from "ethers";
 import AdminPanel from "~~/app/trophy-app/organizations/_components/AdminPanel";
 import ChallengeList from "~~/app/trophy-app/organizations/_components/ChallengeList";
 import CreateChallengeModal from "~~/app/trophy-app/organizations/_components/CreateChallengeModal";
-import ManageCustomersModal from "~~/app/trophy-app/organizations/_components/ManageCustomersModal";
 import Modal from "~~/components/Modal";
 import { BackButton } from "~~/components/common/BackButton";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -16,9 +14,7 @@ interface OrganizationDetails {
   name: string;
   token: string;
   admins: string[];
-  customerBaseUID: string;
   userIsAdmin: boolean;
-  userIsMember: boolean;
 }
 
 const OrganizationPage: React.FC = () => {
@@ -28,7 +24,6 @@ const OrganizationPage: React.FC = () => {
   const [organization, setOrganization] = useState<OrganizationDetails | null>(null);
   const [showCreateChallengeModal, setShowCreateChallengeModal] = useState(false);
   const [showAdminPanelModal, setShowAdminPanelModal] = useState(false);
-  const [showManageCustomersModal, setShowManageCustomersModal] = useState(false);
 
   const { data: organizationData, isLoading: isLoadingOrganization } = useScaffoldReadContract({
     contractName: "OrganizationManager",
@@ -43,38 +38,28 @@ const OrganizationPage: React.FC = () => {
   });
 
   const { writeContractAsync: addAdmin } = useScaffoldWriteContract("OrganizationManager");
-  const { writeContractAsync: addCustomer } = useScaffoldWriteContract("OnChainCustomerBase");
 
   useEffect(() => {
     if (organizationData) {
-      const [id, name, token, admins, customerBaseUIDBytes, userIsAdmin, userIsMember] = organizationData as [
-        bigint,
-        string,
-        string,
-        string[],
-        `0x${string}`,
-        boolean,
-        boolean,
+      const [id, name, token, admins, userIsAdmin] = organizationData as [
+        bigint, // id
+        string, // name
+        string, // token
+        string[], // admins
+        boolean, // userIsAdmin
       ];
-      const customerBaseUID = decodeBytes32String(customerBaseUIDBytes);
       setOrganization({
         id,
         name,
         token,
         admins,
-        customerBaseUID,
         userIsAdmin: userIsAdmin,
-        userIsMember: userIsMember,
       });
     }
   }, [organizationData]);
 
   if (isLoadingOrganization || !organization) {
     return <span className="loading loading-spinner loading-lg"></span>;
-  }
-
-  if (!organization.userIsAdmin && !organization.userIsMember) {
-    return <p>You do not have access to this organization.</p>;
   }
 
   return (
@@ -99,13 +84,6 @@ const OrganizationPage: React.FC = () => {
             {/*    </button>*/}
             {/*  </div>*/}
             {/*)}*/}
-            {organization.customerBaseUID == "OnChainCustomerBaseV1" && organization.userIsAdmin && (
-              <div className="flex gap-4">
-                <button className="btn btn-primary" onClick={() => setShowManageCustomersModal(true)}>
-                  Manage Customers
-                </button>
-              </div>
-            )}
             <div>
               <button
                 className="btn bg-amber-400 dark:text-gray-800 dark:btn-warning"
@@ -124,12 +102,6 @@ const OrganizationPage: React.FC = () => {
 
         {showCreateChallengeModal && (
           <CreateChallengeModal organizationId={organization.id} onClose={() => setShowCreateChallengeModal(false)} />
-        )}
-
-        {showManageCustomersModal && (
-          <Modal onClose={() => setShowManageCustomersModal(false)}>
-            <ManageCustomersModal organizationId={organization.id} addCustomer={addCustomer} />
-          </Modal>
         )}
 
         {showAdminPanelModal && (

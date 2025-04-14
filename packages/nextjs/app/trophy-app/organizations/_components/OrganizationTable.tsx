@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminPanel from "~~/app/trophy-app/organizations/_components/AdminPanel";
 import CopyButton from "~~/app/trophy-app/organizations/_components/CopyButton";
 import UserBalance from "~~/app/trophy-app/organizations/_components/UserBalance";
-import Modal from "~~/components/Modal";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -13,8 +11,6 @@ interface Organization {
   tokenSymbols: string;
   tokenAddress: string;
   adminCount: bigint;
-  userCount: bigint;
-  isMember: boolean;
 }
 
 interface IOrganizationTable {
@@ -24,8 +20,6 @@ interface IOrganizationTable {
     readonly string[],
     readonly string[],
     readonly bigint[],
-    readonly bigint[],
-    readonly boolean[],
   ];
 }
 
@@ -39,7 +33,7 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
 
   const router = useRouter();
 
-  const [orgIds, names, tokenSymbols, tokenAddresses, adminCounts, userCounts, isMembers] = organizationsData;
+  const [orgIds, names, tokenSymbols, tokenAddresses, adminCounts] = organizationsData;
 
   const organizations: Organization[] = orgIds.map((id, index) => ({
     id,
@@ -47,8 +41,6 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
     tokenSymbols: tokenSymbols[index],
     tokenAddress: tokenAddresses[index],
     adminCount: adminCounts[index],
-    userCount: userCounts[index],
-    isMember: isMembers[index],
   }));
 
   // Calcular el total de páginas
@@ -70,7 +62,6 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
               <th>Token Info</th>
               <th>Your Balance</th>
               <th>Admins</th>
-              <th>Users</th>
             </tr>
           </thead>
           <tbody>
@@ -90,7 +81,6 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
                   <UserBalance orgId={org.id} />
                 </td>
                 <td>{org.adminCount.toString()}</td>
-                <td>{org.userCount.toString()}</td>
                 {/*<td>*/}
                 {/*  {org.isMember && (*/}
                 {/*    <button*/}

@@ -2715,143 +2715,6 @@ const deployedContracts = {
         transferOwnership: "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol",
       },
     },
-    OnChainCustomerBase: {
-      address: "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
-      abi: [
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_membershipId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_customer",
-              type: "address",
-            },
-          ],
-          name: "addCustomer",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_membershipId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_admin",
-              type: "address",
-            },
-          ],
-          name: "initialize",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_membershipId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_customer",
-              type: "address",
-            },
-          ],
-          name: "isCustomer",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_membershipId",
-              type: "uint256",
-            },
-          ],
-          name: "joinMembership",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_membershipId",
-              type: "uint256",
-            },
-          ],
-          name: "leaveMembership",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          name: "memberships",
-          outputs: [
-            {
-              internalType: "address",
-              name: "admin",
-              type: "address",
-            },
-            {
-              internalType: "bool",
-              name: "exists",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_membershipId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_admin",
-              type: "address",
-            },
-          ],
-          name: "setAdmin",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-      ],
-      inheritedFunctions: {
-        initialize: "contracts/Organization/ICustomerBase.sol",
-        isCustomer: "contracts/Organization/ICustomerBase.sol",
-      },
-    },
     OnChainValidator: {
       address: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
       abi: [
@@ -3102,11 +2965,6 @@ const deployedContracts = {
               name: "_admins",
               type: "address[]",
             },
-            {
-              internalType: "bytes32",
-              name: "_customerBaseUID",
-              type: "bytes32",
-            },
           ],
           name: "createOrganization",
           outputs: [
@@ -3117,25 +2975,6 @@ const deployedContracts = {
             },
           ],
           stateMutability: "payable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          name: "customerBaseRegistry",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
           type: "function",
         },
         {
@@ -3217,18 +3056,8 @@ const deployedContracts = {
               type: "address[]",
             },
             {
-              internalType: "bytes32",
-              name: "customerBaseUID",
-              type: "bytes32",
-            },
-            {
               internalType: "bool",
               name: "userIsAdmin",
-              type: "bool",
-            },
-            {
-              internalType: "bool",
-              name: "userIsMember",
               type: "bool",
             },
           ],
@@ -3261,25 +3090,6 @@ const deployedContracts = {
               name: "_orgId",
               type: "uint256",
             },
-          ],
-          name: "hasUsers",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
             {
               internalType: "address",
               name: "_user",
@@ -3287,30 +3097,6 @@ const deployedContracts = {
             },
           ],
           name: "isAdmin",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_user",
-              type: "address",
-            },
-          ],
-          name: "isUser",
           outputs: [
             {
               internalType: "bool",
@@ -3349,16 +3135,6 @@ const deployedContracts = {
               internalType: "uint256[]",
               name: "adminCounts",
               type: "uint256[]",
-            },
-            {
-              internalType: "uint256[]",
-              name: "customerCounts",
-              type: "uint256[]",
-            },
-            {
-              internalType: "bool[]",
-              name: "isMembers",
-              type: "bool[]",
             },
           ],
           stateMutability: "view",
@@ -3405,16 +3181,6 @@ const deployedContracts = {
               internalType: "uint256[]",
               name: "adminCounts",
               type: "uint256[]",
-            },
-            {
-              internalType: "uint256[]",
-              name: "customerCounts",
-              type: "uint256[]",
-            },
-            {
-              internalType: "bool[]",
-              name: "isMembers",
-              type: "bool[]",
             },
           ],
           stateMutability: "view",
@@ -3478,40 +3244,12 @@ const deployedContracts = {
               type: "address",
             },
             {
-              internalType: "bytes32",
-              name: "customerBaseUID",
-              type: "bytes32",
-            },
-            {
-              internalType: "address",
-              name: "customerBaseAddr",
-              type: "address",
-            },
-            {
               internalType: "bool",
               name: "exists",
               type: "bool",
             },
           ],
           stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "_customerBaseUID",
-              type: "bytes32",
-            },
-            {
-              internalType: "address",
-              name: "_customerBaseAddress",
-              type: "address",
-            },
-          ],
-          name: "registerCustomerBase",
-          outputs: [],
-          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -3542,9 +3280,7 @@ const deployedContracts = {
         getBalanceOfOrg: "contracts/Organization/IOrganizationManager.sol",
         getBalanceOfUser: "contracts/Organization/IOrganizationManager.sol",
         getTokenOfOrg: "contracts/Organization/IOrganizationManager.sol",
-        hasUsers: "contracts/Organization/IOrganizationManager.sol",
         isAdmin: "contracts/Organization/IOrganizationManager.sol",
-        isUser: "contracts/Organization/IOrganizationManager.sol",
         transferTokensTo: "contracts/Organization/IOrganizationManager.sol",
       },
     },
@@ -7140,9 +6876,7 @@ const deployedContracts = {
         getBalanceOfOrg: "contracts/Organization/IOrganizationManager.sol",
         getBalanceOfUser: "contracts/Organization/IOrganizationManager.sol",
         getTokenOfOrg: "contracts/Organization/IOrganizationManager.sol",
-        hasUsers: "contracts/Organization/IOrganizationManager.sol",
         isAdmin: "contracts/Organization/IOrganizationManager.sol",
-        isUser: "contracts/Organization/IOrganizationManager.sol",
         transferTokensTo: "contracts/Organization/IOrganizationManager.sol",
       },
     },

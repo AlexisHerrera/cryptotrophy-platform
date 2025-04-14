@@ -6,7 +6,6 @@ interface StepReviewDataProps {
   formData: {
     organizationName: string;
     admins: string[];
-    customerBaseUID: string;
     tokenSymbol: string;
     initialMint: string;
     ethBacking: string;
@@ -45,11 +44,6 @@ const StepReviewData: React.FC<StepReviewDataProps> = ({ formData }) => {
           ))}
         </div>
       </div>
-
-      <div>
-        <strong>Customer Base: </strong> {formData.customerBaseUID}
-      </div>
-
       <div>
         <strong>Token Symbol:</strong> {formData.tokenSymbol}
       </div>

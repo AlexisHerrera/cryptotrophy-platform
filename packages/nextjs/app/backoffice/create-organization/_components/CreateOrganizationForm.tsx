@@ -3,9 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Interface } from "ethers";
-import { encodeBytes32String } from "ethers";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
-import StepCustomerBase from "~~/app/backoffice/create-organization/_components/steps/StepCustomerBase";
 import StepEthereumBacking from "~~/app/backoffice/create-organization/_components/steps/StepEthereumBacking";
 import StepOrganizationData from "~~/app/backoffice/create-organization/_components/steps/StepOrganizationData";
 import StepReviewData from "~~/app/backoffice/create-organization/_components/steps/StepReviewData";
@@ -14,7 +12,6 @@ import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 export interface CreateOrganizationFormProps {
   organizationName: string;
   admins: string[];
-  customerBaseUID: string;
   tokenSymbol: string;
   initialMint: string;
   ethBacking: string;
@@ -25,7 +22,6 @@ const CreateOrganizationForm = () => {
   const [organizationForm, setOrganizationForm] = useState<CreateOrganizationFormProps>({
     organizationName: "",
     admins: [],
-    customerBaseUID: "",
     tokenSymbol: "",
     initialMint: "1000",
     ethBacking: "0",
@@ -51,7 +47,7 @@ const CreateOrganizationForm = () => {
         const organizationId = decodedLog.orgId;
         console.log("Organization ID:", organizationId.toString());
         // Redirigir a la página de la organización
-        router.push(`/organizations/${organizationId.toString()}`);
+        router.push(`/trophy-app/organizations/${organizationId.toString()}`);
       }
     }
   }, [receipt, router]);
@@ -68,7 +64,7 @@ const CreateOrganizationForm = () => {
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
   const handleSubmit = async () => {
-    const { organizationName, tokenSymbol, initialMint, ethBacking, admins, customerBaseUID } = organizationForm;
+    const { organizationName, tokenSymbol, initialMint, ethBacking, admins } = organizationForm;
 
     if (!organizationName || !tokenSymbol) {
       alert("Please fill all required fields.");
@@ -78,17 +74,9 @@ const CreateOrganizationForm = () => {
     try {
       setLoading(true);
 
-      const encodedCustomerBaseUID = encodeBytes32String(customerBaseUID);
       const tx = await createOrganization({
         functionName: "createOrganization",
-        args: [
-          organizationName,
-          tokenSymbol,
-          BigInt(initialMint),
-          BigInt(ethBacking),
-          admins,
-          encodedCustomerBaseUID as `0x${string}`,
-        ],
+        args: [organizationName, tokenSymbol, BigInt(initialMint), BigInt(ethBacking), admins],
         value: BigInt(ethBacking),
       });
 
@@ -110,7 +98,7 @@ const CreateOrganizationForm = () => {
       <h2 className="text-3xl font-bold text-center mb-6">Create Your Organization</h2>
 
       <ul className="steps steps-horizontal mb-8 space-x-3">
-        {["Organization Data", "Customer Base", "Ethereum Backing", "Review"].map((label, index) => (
+        {["Organization Data", "Ethereum Backing", "Review"].map((label, index) => (
           <li
             key={index}
             className={`step cursor-pointer ${currentStep > index ? "step-primary" : ""}`}
@@ -124,9 +112,8 @@ const CreateOrganizationForm = () => {
       {currentStep === 1 && (
         <StepOrganizationData formData={organizationForm} handleInputChange={handleInputChange} address={address} />
       )}
-      {currentStep === 2 && <StepCustomerBase formData={organizationForm} handleInputChange={handleInputChange} />}
-      {currentStep === 3 && <StepEthereumBacking formData={organizationForm} handleInputChange={handleInputChange} />}
-      {currentStep === 4 && <StepReviewData formData={organizationForm} />}
+      {currentStep === 2 && <StepEthereumBacking formData={organizationForm} handleInputChange={handleInputChange} />}
+      {currentStep === 3 && <StepReviewData formData={organizationForm} />}
 
       <div className="mt-6 flex justify-center gap-6">
         {currentStep > 1 && (
@@ -134,7 +121,7 @@ const CreateOrganizationForm = () => {
             Previous
           </button>
         )}
-        {currentStep < 4 ? (
+        {currentStep < 3 ? (
           <button className="btn btn-primary" onClick={nextStep}>
             Next
           </button>
