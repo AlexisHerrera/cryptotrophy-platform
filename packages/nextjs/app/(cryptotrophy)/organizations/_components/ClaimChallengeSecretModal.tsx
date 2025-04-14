@@ -166,6 +166,11 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
   const [generatingProof, setGeneratingProof] = useState(false);
   const [zkProof, setZkProof] = useState<any>(null);
   const [proofError, setProofError] = useState<string | null>(null);
+  // Add state for the proof modal
+  const [showProofModal, setShowProofModal] = useState(false);
+
+  // State to track if validation is in progress
+  const [validationSecret, setValidationSecret] = useState<string>("");
 
   // Use the hook with a state-dependent value
   const { data: isValidHash } = useScaffoldReadContract({
@@ -174,10 +179,21 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
     args: [challengeId, currentHash],
   });
 
-  // Update isSecretValid when isValidHash changes
+  // Update both states immediately
   useEffect(() => {
     setIsSecretValid(!!isValidHash);
-  }, [isValidHash]);
+
+    // If we have a pending validation, complete it
+    if (validationSecret && validatingHash) {
+      if (!!isValidHash) {
+        setValidationMessage("✅ Valid secret code!");
+      } else {
+        setValidationMessage("❌ Invalid secret code. Please try a different one.");
+      }
+      setValidatingHash(false);
+      setValidationSecret(""); // Clear pending validation
+    }
+  }, [isValidHash, validationSecret, validatingHash]);
 
   const { writeContractAsync: claimReward } = useScaffoldWriteContract("ChallengeManager");
 
@@ -331,27 +347,6 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
     }
   };
 
-  // Function to check if a hash is valid for this challenge
-  const checkIfHashIsValid = useCallback(
-    async (hash: bigint): Promise<boolean> => {
-      try {
-        // Update the state with the hash we want to check
-        setCurrentHash(hash);
-
-        // Delay slightly to ensure the hook has time to update and re-fetch
-        return new Promise(resolve => {
-          setTimeout(() => {
-            resolve(!!isValidHash);
-          }, 500);
-        });
-      } catch (error) {
-        console.error("Error checking hash validity:", error);
-        return false;
-      }
-    },
-    [isValidHash],
-  );
-
   // Validate the secret code before attempting to claim
   const validateSecretCode = async () => {
     if (!secretValue.trim()) {
@@ -367,25 +362,23 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
       const secretHash = await calculateSecretHash(secretValue.trim());
       if (secretHash === 0n) {
         setValidationMessage("Failed to hash the secret code");
+        setValidatingHash(false);
         return false;
       }
 
-      // Check if the hash is valid
-      const isValid = await checkIfHashIsValid(secretHash);
+      // Store the secret for the effect to handle when validation completes
+      setValidationSecret(secretValue.trim());
 
-      if (isValid) {
-        setValidationMessage("✅ Valid secret code!");
-        return true;
-      } else {
-        setValidationMessage("❌ Invalid secret code. Please try a different one.");
-        return false;
-      }
+      // Update current hash - this will trigger the hook to refetch
+      setCurrentHash(secretHash);
+
+      // The useEffect will handle the rest when isValidHash updates
+      return true;
     } catch (error) {
       console.error("Error validating secret code:", error);
-      setValidationMessage("Error validating secret code");
-      return false;
-    } finally {
+      setValidationMessage(`Error validating secret code: ${error instanceof Error ? error.message : String(error)}`);
       setValidatingHash(false);
+      return false;
     }
   };
 
@@ -557,26 +550,125 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
           {proofError && <div className="mt-2 p-2 bg-error/20 rounded text-error text-sm">{proofError}</div>}
 
           {zkProof && (
-            <div className="mt-2 p-2 bg-base-200 rounded text-sm overflow-auto max-h-40">
-              <pre>{JSON.stringify(zkProof.input, null, 2)}</pre>
-              <div className="text-success mt-2">✅ Proof generated successfully!</div>
+            <div className="mt-4 flex flex-col items-center bg-success/10 rounded-lg p-4 border border-success">
+              <div className="flex items-center gap-2 text-success font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Proof generated successfully!
+              </div>
+              <button className="btn btn-sm btn-primary mt-3" onClick={() => setShowProofModal(true)}>
+                View Proof Details
+              </button>
             </div>
           )}
         </div>
 
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-4 mt-6">
           <button className="btn btn-secondary" onClick={onClose} disabled={loading}>
             Cancel
           </button>
           <button
             className="btn btn-primary"
             onClick={handleClaim}
-            disabled={loading || validatingHash || !secretValue.trim()}
+            disabled={loading || validatingHash || !secretValue.trim() || !zkProof}
           >
             {loading ? "Claiming..." : "Claim Reward"}
           </button>
         </div>
       </div>
+
+      {/* Proof Modal */}
+      {showProofModal && zkProof && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+          <div className="bg-base-100 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+            <div className="p-4 border-b bg-base-200 flex justify-between items-center">
+              <h3 className="text-lg font-bold">Zero-Knowledge Proof</h3>
+              <button className="btn btn-sm btn-circle btn-ghost" onClick={() => setShowProofModal(false)}>
+                ✕
+              </button>
+            </div>
+
+            <div className="p-4 overflow-auto">
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="badge badge-primary">pi_a</div>
+                  <h4 className="font-medium">Proof Component A</h4>
+                </div>
+                <div className="bg-base-200 p-3 rounded-md overflow-x-auto text-xs font-mono">
+                  {zkProof.proof.pi_a.map((value: string, index: number) => (
+                    <div key={`pi_a_${index}`} className="mb-1 break-all">
+                      {value}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="badge badge-secondary">pi_b</div>
+                  <h4 className="font-medium">Proof Component B</h4>
+                </div>
+                <div className="bg-base-200 p-3 rounded-md overflow-x-auto text-xs font-mono">
+                  {zkProof.proof.pi_b.map((row: string[], rowIndex: number) => (
+                    <div key={`pi_b_row_${rowIndex}`} className="mb-2">
+                      {row.map((value: string, colIndex: number) => (
+                        <div key={`pi_b_${rowIndex}_${colIndex}`} className="mb-1 break-all">
+                          {value}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="badge badge-accent">pi_c</div>
+                  <h4 className="font-medium">Proof Component C</h4>
+                </div>
+                <div className="bg-base-200 p-3 rounded-md overflow-x-auto text-xs font-mono">
+                  {zkProof.proof.pi_c.map((value: string, index: number) => (
+                    <div key={`pi_c_${index}`} className="mb-1 break-all">
+                      {value}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {zkProof.publicSignals && (
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="badge badge-info">public</div>
+                    <h4 className="font-medium">Public Signals</h4>
+                  </div>
+                  <div className="bg-base-200 p-3 rounded-md overflow-x-auto text-xs font-mono">
+                    {Array.isArray(zkProof.publicSignals) ? (
+                      zkProof.publicSignals.map((value: string, index: number) => (
+                        <div key={`signal_${index}`} className="mb-1 break-all">
+                          {value}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="break-all">{JSON.stringify(zkProof.publicSignals)}</div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 border-t bg-base-200 flex justify-end">
+              <button className="btn btn-primary" onClick={() => setShowProofModal(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Modal>
   );
 };
