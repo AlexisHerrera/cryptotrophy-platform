@@ -34,8 +34,22 @@ contract ChallengeManager is IChallengeManager {
 
     IOrganizationManager public orgManager;
 
-    event ChallengeCreated(uint256 indexed challengeId, string description);
-    event RewardClaimed(uint256 indexed challengeId, address indexed user);
+    // events
+    event ChallengeCreated(
+        uint256 indexed challengeId
+        , string description
+        , uint256 startTime
+        , uint256 endTime
+        , uint256 maxWinners
+        , uint256 orgId
+        , uint256 prizeAmount
+    );
+    event RewardClaimed(
+        uint256 indexed challengeId
+        , address indexed user
+        , uint256 claimTime
+        , uint256 prizeAmountInBaseUnits
+    );
 
     constructor(address _orgManagerAddr) {
         orgManager = IOrganizationManager(_orgManagerAddr);
@@ -93,7 +107,15 @@ contract ChallengeManager is IChallengeManager {
         orgChallenges[_orgId].push(challengeId);
         challengeIds.push(challengeId);
 
-        emit ChallengeCreated(challengeId, _description);
+        emit ChallengeCreated(
+            challengeId
+            , _description
+            , _startTime
+            , _endTime
+            , _maxWinners
+            , _orgId
+            , _prizeAmount
+        );
     }
 
     function getChallengesByOrg(uint256 _orgId) public view returns (uint256[] memory) {
@@ -162,7 +184,7 @@ contract ChallengeManager is IChallengeManager {
         // Transferir tokens al ganador
         ERC20(orgToken).transfer(msg.sender, prizeAmountInBaseUnits);
 
-        emit RewardClaimed(_challengeId, msg.sender);
+        emit RewardClaimed(_challengeId, msg.sender, block.timestamp, prizeAmountInBaseUnits);
     }
 
     /// @notice Obtiene los detalles de múltiples desafíos

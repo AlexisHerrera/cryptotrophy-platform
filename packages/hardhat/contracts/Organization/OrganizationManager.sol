@@ -12,6 +12,7 @@ contract OrganizationManager is IOrganizationManager {
 		uint256 id;
 		string name;
 		address token;
+		string baseURI;
 
         bytes32 customerBaseUID;
 		address customerBaseAddr;
@@ -35,7 +36,13 @@ contract OrganizationManager is IOrganizationManager {
 	event OrganizationCreated(
 		uint256 indexed orgId,
 		string name,
-		address token
+		address token,
+		string baseURI
+	);
+
+	event OrganizationAdminAdded(
+		uint256 indexed orgId,
+		address indexed adminAddress
 	);
 
 	// Modificadores
@@ -89,6 +96,7 @@ contract OrganizationManager is IOrganizationManager {
         bytes32 _customerBaseUID
 	) public payable returns (uint256) {
 		require(msg.value >= _initialEthBacking, "Insufficient ETH backing");
+		string memory _baseURI = string(abi.encodePacked("http://localhost:3000/ipfs/orgs/", _name));
 
 		// Crear nuevo token de la organización y asignar tokens al contrato
 		OrganizationToken token = new OrganizationToken(
@@ -114,6 +122,7 @@ contract OrganizationManager is IOrganizationManager {
 		org.exists = true;
 		org.customerBaseUID = _customerBaseUID;
 		org.customerBaseAddr = customerBaseRegistry[_customerBaseUID];
+		org.baseURI = _baseURI;
 
 		// Por default, el creador de la organización es admin
 		_addAdmin(orgId, msg.sender);
@@ -128,7 +137,7 @@ contract OrganizationManager is IOrganizationManager {
 		}
 
 		organizationIds.push(orgId);
-		emit OrganizationCreated(orgId, _name, address(token));
+		emit OrganizationCreated(orgId, _name, address(token), _baseURI);
 		return orgId;
 	}
 
@@ -136,6 +145,7 @@ contract OrganizationManager is IOrganizationManager {
 		if (!organizations[_orgId].adminExists[_admin]) {
 			organizations[_orgId].adminExists[_admin] = true;
 			organizations[_orgId].admins.push(_admin);
+			emit OrganizationAdminAdded(_orgId, _admin);
 		}
 	}
 
@@ -143,7 +153,6 @@ contract OrganizationManager is IOrganizationManager {
 	function addAdmin(uint256 _orgId, address _admin) public onlyAdmin(_orgId) {
 		_addAdmin(_orgId, _admin);
 	}
-
 
 	// Implementación de las funciones de la interfaz
 
