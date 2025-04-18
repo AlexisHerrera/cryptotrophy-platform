@@ -27,6 +27,7 @@ contract OrganizationManager is IOrganizationManager {
 	// Atributos
 	uint256 public orgCount;
 	mapping(uint256 => Organization) public organizations;
+	mapping(string => bool) public orgNameExists;
 	mapping(string => bool) public tokenSymbolExists;
 
 	uint256[] public organizationIds;
@@ -90,7 +91,9 @@ contract OrganizationManager is IOrganizationManager {
         bytes32 _customerBaseUID
 	) public payable returns (uint256) {
 		require(msg.value >= _initialEthBacking, "Insufficient ETH backing");
+		require(!orgNameExists[_name], "Organization name already exists");
 		require(!tokenSymbolExists[_symbol], "Token symbol already exists");
+		orgNameExists[_name] = true;
 		tokenSymbolExists[_symbol] = true;
 
 		// Crear nuevo token de la organización y asignar tokens al contrato

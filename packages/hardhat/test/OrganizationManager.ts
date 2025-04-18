@@ -171,6 +171,37 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
         ),
       ).to.be.revertedWith("Token symbol already exists");
     });
+
+    it("Should revert when creating a second organization with the same name", async function () {
+      const { orgManager } = await loadFixture(deployCoreContractsFixture);
+      const encodedCustomerBaseUID = encodeBytes32String("");
+
+      // Create first organization with name "DuplicateName"
+      await orgManager.createOrganization(
+        "DuplicateName",
+        "ORG1",
+        1000,
+        ethers.parseEther("1"),
+        [],
+        encodedCustomerBaseUID,
+        {
+          value: ethers.parseEther("1"),
+        },
+      );
+
+      // Attempt to create a second organization with the same name
+      await expect(
+        orgManager.createOrganization(
+          "DuplicateName", // Same name as the first organization
+          "ORG2", // Different symbol
+          1000,
+          ethers.parseEther("1"),
+          [],
+          encodedCustomerBaseUID,
+          { value: ethers.parseEther("1") },
+        ),
+      ).to.be.revertedWith("Organization name already exists");
+    });
   });
 
   // ----------------------------------------------------------------
