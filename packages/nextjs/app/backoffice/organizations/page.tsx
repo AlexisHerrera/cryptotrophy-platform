@@ -41,7 +41,7 @@ const Organizations: React.FC = () => {
       ) : (
         <div className="flex justify-between">
           <BackButton />
-          <OrganizationTable organizationsData={organizationsData} />
+          <OrganizationTable organizationsData={organizationsData} baseUrl={"backoffice"} />
         </div>
       )}
     </MotionDiv>
