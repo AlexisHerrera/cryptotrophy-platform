@@ -10,7 +10,7 @@ import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 const Organizations: React.FC = () => {
   const { data: organizationsData, isLoading } = useScaffoldReadContract({
     contractName: "OrganizationManager",
-    functionName: "listOrganizationsWithDetails",
+    functionName: "listAdministratedOrganizations",
   });
   const router = useRouter();
 
@@ -32,7 +32,7 @@ const Organizations: React.FC = () => {
           <button
             className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition duration-200 hover:scale-105"
             onClick={() => {
-              router.push("/trophy-app");
+              router.push("/backoffice");
             }}
           >
             Go back

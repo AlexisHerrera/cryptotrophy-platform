@@ -6,7 +6,7 @@ import { Menu, X } from "lucide-react";
 
 const navLinks = [
   { href: "/backoffice/create-organization", label: "Create Organization" },
-  // { href: "/backoffice/register-algorithm", label: "Register Algorithm" },
+  { href: "/backoffice/organizations", label: "Administrated Organizations" },
 ];
 
 export default function BackofficeNavbar() {
