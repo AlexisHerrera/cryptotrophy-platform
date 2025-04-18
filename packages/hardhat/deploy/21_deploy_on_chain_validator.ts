@@ -38,10 +38,26 @@ const deployValidatorContract: DeployFunction = async function (hre: HardhatRunt
   const validatorContractAddr = await validatorContract.getAddress();
   console.log("👋 OnChainValidator address:", validatorContractAddr);
 
+  await deploy("SecretValidator", {
+    from: deployer,
+    args: [grothVerifierContractAddress],
+    log: true,
+    autoMine: true,
+  });
+
+  // Get the deployed contract to interact with it after deploying.
+  const secretValidatorContract = await hre.ethers.getContract<Contract>("SecretValidator", deployer);
+  const secretValidatorContractAddr = await secretValidatorContract.getAddress();
+  console.log("👋 SecretValidator address:", secretValidatorContractAddr);
+
   // Add OnChainValidator to challenge manager registred validators.
   const validatorRegistry = await hre.ethers.getContract<Contract>("ValidatorRegistry", deployer);
   const validatorUID = hre.ethers.encodeBytes32String("OnChainValidatorV1");
   await validatorRegistry.registerValidator(validatorUID, validatorContractAddr);
+
+  // Add SecretValidator to challenge manager registred validators.
+  const secretValidatorUID = hre.ethers.encodeBytes32String("SecretValidatorV1");
+  await validatorRegistry.registerValidator(secretValidatorUID, secretValidatorContractAddr);
 };
 
 export default deployValidatorContract;

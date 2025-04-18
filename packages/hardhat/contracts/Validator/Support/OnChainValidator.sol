@@ -44,4 +44,3 @@ contract OnChainValidator is IValidator {
         return verifier.verifyProof(_pA, _pB, _pC, [config[validationId]]);
     }
 }
-
