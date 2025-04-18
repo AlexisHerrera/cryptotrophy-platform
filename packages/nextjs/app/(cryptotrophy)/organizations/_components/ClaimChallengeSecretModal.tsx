@@ -18,7 +18,6 @@ const PROVING_KEY_URL = "/circuits/secret_code.zkey";
 const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ orgId, challengeId, onClose }) => {
   const [secretValue, setSecretValue] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [validatingHash, setValidatingHash] = useState(false);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const [currentHash, setCurrentHash] = useState<bigint>(0n);
   const [isSecretValid, setIsSecretValid] = useState(false);
@@ -27,31 +26,40 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
   const [proofError, setProofError] = useState<string | null>(null);
   // Add state for the proof modal
   const [showProofModal, setShowProofModal] = useState(false);
-
-  // State to track if validation is in progress
-  const [validationSecret, setValidationSecret] = useState<string>("");
+  // Add state to track if validation was triggered
+  const [validationTriggered, setValidationTriggered] = useState(false);
 
   // Use the hook with a state-dependent value
   const { data: isValidHash, isLoading: isLoadingHash } = useScaffoldReadContract({
     contractName: "SecretValidator",
     functionName: "config",
     args: [challengeId, currentHash],
+    query: {
+      // Only enable the query when a hash is set and validation was triggered
+      enabled: currentHash !== 0n && validationTriggered,
+    },
   });
 
   // Update validation state when hash validation changes
   useEffect(() => {
-    setIsSecretValid(!!isValidHash);
-
-    // If we're validating and hash loading has completed
-    if (validatingHash && !isLoadingHash) {
-      if (!!isValidHash) {
+    // Only react when loading finishes and validation was explicitly triggered
+    if (!isLoadingHash && validationTriggered) {
+      const valid = !!isValidHash;
+      setIsSecretValid(valid);
+      if (valid) {
         setValidationMessage("✅ Valid secret code!");
       } else {
-        setValidationMessage("❌ Invalid secret code. Please try a different one.");
+        // Ensure we don't show "invalid" if the hash is 0 (initial state or empty input)
+        if (currentHash !== 0n) {
+          setValidationMessage("❌ Invalid secret code. Please try a different one.");
+        } else {
+          setValidationMessage(null); // Clear message if hash is 0
+        }
       }
-      setValidatingHash(false);
+      // Reset the trigger after processing the result
+      setValidationTriggered(false);
     }
-  }, [isValidHash, isLoadingHash, validatingHash]);
+  }, [isValidHash, isLoadingHash, validationTriggered, currentHash]);
 
   const { writeContractAsync: claimReward } = useScaffoldWriteContract("ChallengeManager");
 
@@ -190,31 +198,32 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
   const validateSecretCode = async () => {
     if (!secretValue.trim()) {
       setValidationMessage("Please enter a secret code");
-      return false;
+      setIsSecretValid(false);
+      setCurrentHash(0n); // Reset hash for empty input
+      setValidationTriggered(false); // Ensure no stale validation runs
+      return;
     }
 
     try {
-      setValidatingHash(true);
+      // Reset previous state
+      setIsSecretValid(false);
       setValidationMessage("Validating your secret code...");
+      setValidationTriggered(false); // Reset trigger before starting new validation
 
       // Calculate the hash of the secret code
       const secretHash = await calculateSecretHash(secretValue.trim());
-      if (secretHash === 0n) {
-        setValidationMessage("Failed to hash the secret code");
-        setValidatingHash(false);
-        return false;
-      }
 
-      // Update current hash - this will trigger the hook to refetch
+      // Update current hash and trigger validation
       setCurrentHash(secretHash);
+      setValidationTriggered(true); // Set trigger to start the useScaffoldReadContract query
 
-      // The useEffect will handle updating the validation message when isValidHash updates
-      return true;
+      // Note: The useEffect will now handle the result when isLoadingHash changes to false
     } catch (error) {
-      console.error("Error validating secret code:", error);
-      setValidationMessage(`Error validating secret code: ${error instanceof Error ? error.message : String(error)}`);
-      setValidatingHash(false);
-      return false;
+      console.error("Error calculating hash during validation:", error);
+      setValidationMessage(`Error hashing code: ${error instanceof Error ? error.message : String(error)}`);
+      setIsSecretValid(false);
+      setCurrentHash(0n);
+      setValidationTriggered(false);
     }
   };
 
@@ -353,16 +362,19 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
             value={secretValue}
             onChange={e => {
               setSecretValue(e.target.value);
-              setValidationMessage(null); // Clear validation message when input changes
+              setValidationMessage(null); // Clear validation message
+              setIsSecretValid(false); // Reset validation status
+              setCurrentHash(0n); // Reset hash
+              setValidationTriggered(false); // Reset trigger
             }}
           />
 
           <button
             className="btn btn-sm btn-secondary mb-2"
             onClick={validateSecretCode}
-            disabled={validatingHash || !secretValue.trim()}
+            disabled={isLoadingHash || !secretValue.trim()} // Disable while loading hash or if input is empty
           >
-            {validatingHash ? "Validating..." : "Validate Code"}
+            {isLoadingHash && validationTriggered ? "Validating..." : "Validate Code"}
           </button>
 
           {validationMessage && (
@@ -411,7 +423,7 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ o
           <button
             className="btn btn-primary"
             onClick={handleClaim}
-            disabled={loading || validatingHash || !secretValue.trim() || !zkProof}
+            disabled={loading || isLoadingHash || !secretValue.trim() || !zkProof} // Also disable if hash is loading
           >
             {loading ? "Claiming..." : "Claim Reward"}
           </button>
