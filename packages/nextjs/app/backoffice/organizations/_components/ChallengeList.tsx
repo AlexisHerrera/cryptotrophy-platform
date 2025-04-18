@@ -207,11 +207,7 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
         )}
 
       {secretCodeChallenge !== null && (
-        <ClaimChallengeSecretModal
-          orgId={orgId}
-          challengeId={secretCodeChallenge.id}
-          onClose={() => setSecretCodeChallenge(null)}
-        />
+        <ClaimChallengeSecretModal challengeId={secretCodeChallenge.id} onClose={() => setSecretCodeChallenge(null)} />
       )}
 
       {challengeValidator !== null && (
