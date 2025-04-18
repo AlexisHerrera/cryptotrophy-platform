@@ -10,24 +10,13 @@ interface TokenRowProps {
   tokenAddress: string;
   tokenSymbol: string;
   userAddress: string;
+  balance: bigint;
   setModalData: (tokenData: TokenData) => void;
 }
 
-const TokenRow = ({ tokenAddress, tokenSymbol, userAddress, setModalData }: TokenRowProps) => {
+const TokenRow = ({ tokenAddress, tokenSymbol, userAddress, balance, setModalData }: TokenRowProps) => {
   const { targetNetwork } = useTargetNetwork();
   const { data: deployedContract } = useDeployedContractInfo("OrganizationToken");
-  const {
-    data: balance,
-    isFetching: balanceFetching,
-    refetch: refetchBalance,
-  } = useReadContract({
-    address: tokenAddress,
-    abi: deployedContract?.abi,
-    functionName: "balanceOf",
-    args: [userAddress || ethers.ZeroAddress],
-    chainId: targetNetwork.id,
-    query: { retry: false },
-  });
 
   const {
     data: exchangeRate,
@@ -41,11 +30,11 @@ const TokenRow = ({ tokenAddress, tokenSymbol, userAddress, setModalData }: Toke
     query: { retry: false },
   });
 
-  const isLoading = balanceFetching || rateFetching;
+  const isLoading = rateFetching;
 
   let balanceInETH = "0";
-  if (!isLoading && balance && exchangeRate) {
-    const formattedBalance = parseFloat(formatEther(balance as bigint));
+  if (!isLoading && balance !== undefined && exchangeRate) {
+    const formattedBalance = parseFloat(formatEther(balance));
     const rate = parseFloat(exchangeRate.toString());
     if (rate > 0) {
       balanceInETH = (formattedBalance / rate).toFixed(4);
@@ -53,30 +42,30 @@ const TokenRow = ({ tokenAddress, tokenSymbol, userAddress, setModalData }: Toke
   }
 
   useEffect(() => {
-    refetchBalance();
     refetchRate();
-  }, [refetchBalance, refetchRate]);
+  }, [refetchRate]);
 
   return (
     <tr>
       <td>{tokenSymbol}</td>
-      <td>{isLoading || balance === undefined ? "Loading..." : formatEther(balance as bigint)}</td>
-      <td>{isLoading || !exchangeRate ? "Loading..." : 1 / parseFloat(exchangeRate.toString())}</td>
+      <td>{balance === undefined ? "Loading..." : formatEther(balance)}</td>
+      <td>{isLoading || !exchangeRate ? "Loading..." : (1 / parseFloat(exchangeRate.toString())).toFixed(6)}</td>
       <td>{isLoading ? "Loading..." : balanceInETH}</td>
       <td>
         <button
           className="btn btn-primary"
+          disabled={balance === 0n}
           onClick={() => {
             console.log("Redeem", {
               tokenAddress,
               tokenSymbol,
-              balance: balance as bigint,
+              balance: balance,
               exchangeRate: exchangeRate as bigint,
             });
             setModalData({
               tokenAddress,
               tokenSymbol,
-              balance: balance as bigint,
+              balance: balance,
               exchangeRate: exchangeRate as bigint,
             });
           }}
