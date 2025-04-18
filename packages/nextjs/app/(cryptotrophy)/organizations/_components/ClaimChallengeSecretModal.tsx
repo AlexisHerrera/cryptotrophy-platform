@@ -6,7 +6,6 @@ import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 interface ClaimChallengeSecretModalProps {
-  orgId: bigint;
   challengeId: bigint;
   onClose: () => void;
 }
@@ -15,7 +14,7 @@ interface ClaimChallengeSecretModalProps {
 const CIRCUIT_WASM_URL = "/circuits/secret_code.wasm";
 const PROVING_KEY_URL = "/circuits/secret_code.zkey";
 
-const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ orgId, challengeId, onClose }) => {
+const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ challengeId, onClose }) => {
   const [secretValue, setSecretValue] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
