@@ -1,6 +1,6 @@
-// app/layout.tsx
+import React from "react";
 import Link from "next/link";
-import Navbar from "~~/app/backoffice/_components/Navbar";
+import BackofficeNavbar from "~~/app/backoffice/_components/Navbar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,17 +10,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Link href="/backoffice/organizations" className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
             Organizations
           </Link>
-
-          <nav className="hidden md:flex space-x-6 text-gray-700 dark:text-gray-200">
-            <Link
-              href="/backoffice/create-organization"
-              className="hover:text-indigo-600 dark:hover:text-indigo-400 transition"
-            >
-              Create Organization
-            </Link>
-          </nav>
-
-          <Navbar />
+          <BackofficeNavbar />
         </div>
       </header>
 
