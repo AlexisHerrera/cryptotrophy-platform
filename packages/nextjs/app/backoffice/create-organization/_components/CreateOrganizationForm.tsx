@@ -47,7 +47,7 @@ const CreateOrganizationForm = () => {
         const organizationId = decodedLog.orgId;
         console.log("Organization ID:", organizationId.toString());
         // Redirigir a la página de la organización
-        router.push(`/trophy-app/organizations/${organizationId.toString()}`);
+        router.push(`/backoffice/organizations/${organizationId.toString()}`);
       }
     }
   }, [receipt, router]);
