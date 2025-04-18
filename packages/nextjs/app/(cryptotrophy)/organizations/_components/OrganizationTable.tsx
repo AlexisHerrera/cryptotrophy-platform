@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import AdminPanel from "~~/app/(cryptotrophy)/organizations/_components/AdminPanel";
 import CopyButton from "~~/app/(cryptotrophy)/organizations/_components/CopyButton";
@@ -61,6 +62,32 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
   const handleCopy = () => {
     notification.success("Token address copied!");
   };
+
+  const addTokenToMetaMask = async (tokenAddress: string, tokenSymbol: string) => {
+    try {
+      if (typeof window.ethereum !== "undefined") {
+        await window.ethereum.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: "ERC20",
+            options: {
+              address: tokenAddress,
+              symbol: tokenSymbol,
+              decimals: 18,
+              image: "", // Could add a token image URL if available
+            },
+          },
+        });
+        notification.success("Token added to MetaMask!");
+      } else {
+        notification.error("MetaMask is not installed!");
+      }
+    } catch (error) {
+      console.error("Error adding token to MetaMask:", error);
+      notification.error("Failed to add token to MetaMask");
+    }
+  };
+
   return (
     <div className="mx-auto p-4 max-w-4xl">
       <div className="container mx-auto p-4 max-w-4xl">
@@ -72,6 +99,7 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
               <th>Your Balance</th>
               <th>Admins</th>
               <th>Users</th>
+              <th>Add to Wallet</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -93,6 +121,15 @@ const OrganizationTable = ({ organizationsData }: IOrganizationTable): React.Rea
                 </td>
                 <td>{org.adminCount.toString()}</td>
                 <td>{org.userCount.toString()}</td>
+                <td>
+                  <button
+                    className="btn btn-sm btn-outline flex items-center gap-2"
+                    onClick={() => addTokenToMetaMask(org.tokenAddress, org.tokenSymbols)}
+                  >
+                    <Image src="/icons/metamask-logo.svg" alt="MetaMask" width={16} height={16} />
+                    Add to MetaMask
+                  </button>
+                </td>
                 <td>
                   {org.isMember && (
                     <button
