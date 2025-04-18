@@ -4,8 +4,9 @@ import React, { useEffect, useState } from "react";
 import AdminSetChallengeValidator from "./AdminSetChallengeValidator";
 import ClaimChallengeBasicButton from "./ClaimChallengeBasicButton";
 import ClaimChallengeOnChainModal from "./ClaimChallengeOnChainModal";
+import ClaimChallengeSecretModal from "./ClaimChallengeSecretModal";
 import ClaimChallengeTwoStepButton from "./ClaimChallengeTwoStepButton";
-import { ValidatorContractName, getContractName } from "./KnownValidators";
+import { ValidatorContractName, getContractName, getValidatorDisplayName } from "./KnownValidators";
 import MockExternalValidatorFulfill from "./MockExternalValidatorFulfill";
 import { formatUnits } from "ethers";
 import { decodeBytes32String } from "ethers";
@@ -25,7 +26,21 @@ const ActiveChallengeWrapper: React.FC<ActiveChallengeWrapperProps> = ({ challen
 
 // Creates the correct button type depending on validatorUID
 
-function createClaimChallengeButton(orgId: bigint, challengeId: bigint, validatorUID: string) {
+function createClaimChallengeButton(
+  orgId: bigint,
+  challengeId: bigint,
+  validatorUID: string,
+  onSecretCodeChallenge: (id: bigint, validatorUID: string) => void,
+) {
+  // For SecretValidatorV1, we'll show a special button that triggers the secret input modal
+  if (validatorUID === "SecretValidatorV1") {
+    return (
+      <button className="btn btn-primary btn-sm" onClick={() => onSecretCodeChallenge(challengeId, validatorUID)}>
+        Claim Reward
+      </button>
+    );
+  }
+
   const contractName: ValidatorContractName = getContractName(validatorUID);
   if (contractName) {
     return <ClaimChallengeTwoStepButton challengeId={challengeId} contractName={contractName} />;
@@ -51,6 +66,10 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
   const [challengeValidator, setChallengeValidator] = useState<{
     id: bigint;
     hasValidator: boolean;
+    validatorUID: string;
+  } | null>(null);
+  const [secretCodeChallenge, setSecretCodeChallenge] = useState<{
+    id: bigint;
     validatorUID: string;
   } | null>(null);
   const [mockValidatorResponse, setMockValidatorResponse] = useState<{ id: bigint; validatorUID: string } | null>(null);
@@ -82,6 +101,14 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
     }
   }, [data, isLoading]);
 
+  // Handler for secret code challenge button
+  const handleSecretCodeChallenge = (challengeId: bigint, validatorUID: string) => {
+    setSecretCodeChallenge({
+      id: challengeId,
+      validatorUID: validatorUID,
+    });
+  };
+
   if (isLoading) {
     return <p>Loading challenges...</p>;
   }
@@ -99,6 +126,7 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
             <th>Description</th>
             <th>Prize</th>
             <th>Status</th>
+            <th>Validator</th>
             <th>Max Winners</th>
             <th>Start Time</th>
             <th>End Time</th>
@@ -114,12 +142,19 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
               <td>{challenge.description}</td>
               <td>{challenge.prizeAmount} tokens</td>
               <td>{challenge.active ? "Active" : "Inactive"}</td>
+              <td>
+                {challenge.hasValidator ? (
+                  <span className="">{getValidatorDisplayName(challenge.validatorUID)}</span>
+                ) : (
+                  <span className="badge badge-ghost">No Validator</span>
+                )}
+              </td>
               <td>{challenge.maxWinners.toString()}</td>
               <td>{challenge.startTime}</td>
               <td>{challenge.endTime}</td>
               <td>
                 <ActiveChallengeWrapper challengeActive={challenge.active}>
-                  {createClaimChallengeButton(orgId, challenge.id, challenge.validatorUID)}
+                  {createClaimChallengeButton(orgId, challenge.id, challenge.validatorUID, handleSecretCodeChallenge)}
                 </ActiveChallengeWrapper>
               </td>
               <td>
@@ -170,6 +205,11 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
             onClose={() => setSelectedChallenge(null)}
           />
         )}
+
+      {secretCodeChallenge !== null && (
+        <ClaimChallengeSecretModal challengeId={secretCodeChallenge.id} onClose={() => setSecretCodeChallenge(null)} />
+      )}
+
       {challengeValidator !== null && (
         <AdminSetChallengeValidator
           orgId={orgId}
@@ -178,6 +218,7 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
           onClose={() => setChallengeValidator(null)}
         />
       )}
+
       {mockValidatorResponse !== null && (
         <MockExternalValidatorFulfill
           orgId={orgId}
