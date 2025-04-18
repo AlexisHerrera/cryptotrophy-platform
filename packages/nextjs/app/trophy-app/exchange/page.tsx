@@ -29,7 +29,11 @@ const ExchangePage = () => {
   const { data: tokenContract } = useDeployedContractInfo("OrganizationToken");
   const [showOnlyOwned, setShowOnlyOwned] = useState(true);
 
-  const { data: balancesData, isLoading: balancesLoading } = useReadContracts({
+  const {
+    data: balancesData,
+    isLoading: balancesLoading,
+    refetch: refetchBalances,
+  } = useReadContracts({
     contracts: organizationsData
       ? organizationsData[3].map(tokenAddress => ({
           address: tokenAddress as `0x${string}`,
@@ -106,7 +110,16 @@ const ExchangePage = () => {
             )}
           </tbody>
         </table>
-        {tokenData !== null && <ExchangeModal tokenData={tokenData} onClose={() => setTokenData(null)} />}
+        {tokenData !== null && (
+          <ExchangeModal
+            tokenData={tokenData}
+            onClose={() => setTokenData(null)}
+            onSuccess={() => {
+              refetchBalances();
+              setTokenData(null);
+            }}
+          />
+        )}
       </div>
     </div>
   );

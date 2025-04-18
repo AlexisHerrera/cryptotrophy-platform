@@ -8,9 +8,10 @@ import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 interface ExchangeModalProps {
   onClose: () => void;
   tokenData: TokenData;
+  onSuccess: () => void;
 }
 
-const ExchangeModal = ({ onClose, tokenData }: ExchangeModalProps) => {
+const ExchangeModal = ({ onClose, tokenData, onSuccess }: ExchangeModalProps) => {
   const { writeContractAsync: orgTokenContract } = useScaffoldWriteContract("OrganizationToken");
   const [tokensToExchange, setTokensToExchange] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -33,7 +34,7 @@ const ExchangeModal = ({ onClose, tokenData }: ExchangeModalProps) => {
         contractAddress: tokenData.tokenAddress,
       });
       console.log("Transaction successful:", tx);
-      onClose();
+      onSuccess();
     } catch (error) {
       console.error("Redeem error:", error);
     } finally {
@@ -48,13 +49,13 @@ const ExchangeModal = ({ onClose, tokenData }: ExchangeModalProps) => {
 
   return (
     <Modal onClose={onClose}>
-      <div className="flex flex-col items-center space-y-4 p-4">
+      <div className="flex flex-col items-center space-y-4 p-6 bg-gray-800 text-white">
         <h2 className="text-2xl font-bold">Redeem {tokenData.tokenSymbol}</h2>
-        <p className="text-gray-500 text-lg">
+        <p className="text-lg">
           Your balance: {formatEther(tokenData.balance as bigint)} {tokenData.tokenSymbol}
         </p>
-        <p className="text-gray-500 text-lg">
-          Exchange Rate: 1 {tokenData.tokenSymbol} = {tokToETHRatio} ETH
+        <p className="text-lg">
+          Exchange Rate: 1 {tokenData.tokenSymbol} = {tokToETHRatio.toFixed(6)} ETH
         </p>
         <div className="w-full">
           <label className="block text-lg font-medium mb-2">Tokens to Exchange:</label>
