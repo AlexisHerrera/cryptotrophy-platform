@@ -6,7 +6,7 @@ import { Menu, X } from "lucide-react";
 
 const navLinks = [
   { href: "/trophy-app", label: "Home" },
-  { href: "/trophy-app/organizations", label: "My Organizations" },
+  { href: "/trophy-app/organizations", label: "Organizations" },
   { href: "/trophy-app/exchange", label: "Exchange" },
 ];
 
