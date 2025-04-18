@@ -46,11 +46,6 @@ contract ChallengeManager is IChallengeManager {
         _;
     }
 
-    modifier onlyUser(uint256 orgId) {
-        require(orgManager.isUser(orgId, msg.sender), "Not a user");
-        _;
-    }
-
     function getOrganizationId(uint256 _challengeId) external view returns (uint256) {
         return challenges[_challengeId].orgId;
     }
@@ -121,10 +116,6 @@ contract ChallengeManager is IChallengeManager {
         bytes calldata params
     ) external { // TODO: check only user
         Challenge storage challenge = challenges[_challengeId];
-        // Si se utiliza el modificador, no es necesario verificar estas condiciones
-        if (orgManager.hasUsers(challenge.orgId)) {
-            require(orgManager.isUser(challenge.orgId, msg.sender), "Not a user");
-        }
         require(challenge.exists, "Challenge does not exist");
         require(challenge.active, "Challenge not active");
         require(

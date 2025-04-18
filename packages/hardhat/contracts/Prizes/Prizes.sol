@@ -45,15 +45,6 @@ contract Prizes {
         _;
     }
 
-    /// @dev Verifica si msg.sender es miembro o admin de la org
-    modifier onlyOrgMember(uint256 orgId) {
-        require(
-            orgManager.isUser(orgId, msg.sender) || orgManager.isAdmin(orgId, msg.sender),
-            "Prizes: caller is not a member of this org"
-        );
-        _;
-    }
-
     // -------------------------------------------------------------------------
     // FUNCIONES PRINCIPALES
     // -------------------------------------------------------------------------
@@ -131,7 +122,6 @@ contract Prizes {
     /// @param amount Cantidad de unidades que se reclaman
     function claimPrize(uint256 orgId, uint256 prizeId, uint256 amount)
     external
-    onlyOrgMember(orgId)
     {
         require(amount > 0, "Prizes: amount must be > 0");
 
