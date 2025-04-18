@@ -148,6 +148,29 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
         ),
       ).to.be.revertedWith("Insufficient ETH backing");
     });
+
+    it("Should revert when creating a second organization with the same token symbol", async function () {
+      const { orgManager } = await loadFixture(deployCoreContractsFixture);
+      const encodedCustomerBaseUID = encodeBytes32String("");
+
+      // Create first organization with symbol "DUP"
+      await orgManager.createOrganization("FirstOrg", "DUP", 1000, ethers.parseEther("1"), [], encodedCustomerBaseUID, {
+        value: ethers.parseEther("1"),
+      });
+
+      // Attempt to create a second organization with the same symbol
+      await expect(
+        orgManager.createOrganization(
+          "SecondOrg",
+          "DUP", // Same symbol as the first organization
+          1000,
+          ethers.parseEther("1"),
+          [],
+          encodedCustomerBaseUID,
+          { value: ethers.parseEther("1") },
+        ),
+      ).to.be.revertedWith("Token symbol already exists");
+    });
   });
 
   // ----------------------------------------------------------------
