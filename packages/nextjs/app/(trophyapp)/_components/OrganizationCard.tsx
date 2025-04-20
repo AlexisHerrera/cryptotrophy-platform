@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Organization } from "~~/utils/orgIndex/query";
+import { Organization } from "~~/utils/cryptotrophyIndex/organizations";
 
 // Helper to convert ipfs:// URLs to a public gateway URL.
 const convertIpfsUrl = (baseURI: string): string => {

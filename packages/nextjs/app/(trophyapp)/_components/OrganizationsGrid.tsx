@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { OrganizationCard } from "./OrganizationCard";
-import { Organization, PageInfo, fetchOrganizations } from "~~/utils/orgIndex/query";
+import { Organization, PageInfo, fetchOrganizations } from "~~/utils/cryptotrophyIndex/organizations";
 
 const PAGE_SIZE = 2;
 
