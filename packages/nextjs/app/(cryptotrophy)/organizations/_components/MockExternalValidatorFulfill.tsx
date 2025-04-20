@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { ValidatorContractName } from "./KnownValidators";
 import Modal from "~~/components/Modal";
 import { useScaffoldContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { fetchLatestOffChainApiRequestId } from "~~/utils/orgIndex/offChainApiValidator";
-import { fetchLatestRandomValidatorRequestId } from "~~/utils/orgIndex/randomValidator";
+import { fetchLatestOffChainApiRequestId } from "~~/utils/cryptotrophyIndex/offChainApiValidator";
+import { fetchLatestRandomValidatorRequestId } from "~~/utils/cryptotrophyIndex/randomValidator";
 
 type FetchValidatorRequestId = () => Promise<string | null>;
 
