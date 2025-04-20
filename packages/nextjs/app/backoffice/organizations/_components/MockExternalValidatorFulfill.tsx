@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { ValidatorContractName } from "./KnownValidators";
 import Modal from "~~/components/Modal";
-import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { fetchLatestOffChainApiRequestId } from "~~/utils/cryptotrophyIndex/offChainApiValidator";
+import { fetchLatestRandomValidatorRequestId } from "~~/utils/cryptotrophyIndex/randomValidator";
+
+type FetchValidatorRequestId = () => Promise<string | null>;
 
 type ExecuteExternalFulfillFunction = (
   validatorContractAddress: string,
@@ -98,15 +102,26 @@ function initMockConfig(
 ): [
   ValidatorContractName,
   "OracleMock" | "ChainlinkVrfCoordinatorMock" | "RouterMock",
+  FetchValidatorRequestId,
   ExecuteExternalFulfillFunction,
   React.FC<CreateFulfillFormProps>,
 ] {
   if (validatorUID == "RandomValidatorV1") {
-    return ["RandomValidator", "ChainlinkVrfCoordinatorMock", executeExternalRandomFulfill, RandomFulfillForm];
-  } else if (validatorUID == "OffChainValidatorV1") {
-    return ["OffChainValidator", "OracleMock", executeExternalOffchainFulfill, OffchainFulfillForm];
+    return [
+      "RandomValidator",
+      "ChainlinkVrfCoordinatorMock",
+      fetchLatestRandomValidatorRequestId,
+      executeExternalRandomFulfill,
+      RandomFulfillForm,
+    ];
   } else if (validatorUID == "OffChainValidatorV2") {
-    return ["OffChainApiValidator", "RouterMock", executeExternalOffchainFulfill, OffchainFulfillForm];
+    return [
+      "OffChainApiValidator",
+      "RouterMock",
+      fetchLatestOffChainApiRequestId,
+      executeExternalOffchainFulfill,
+      OffchainFulfillForm,
+    ];
   }
   throw new Error("Unknown validatorUID.");
 }
@@ -128,21 +143,20 @@ const MockExternalValidatorFulfill: React.FC<MockExternalOffchainValidatorProps>
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<Record<string, string>>({});
 
-  const [validatorContractName, mockContractName, executeExternalFulfill, FulfillForm] = initMockConfig(validatorUID);
+  const [validatorContractName, mockContractName, fetchLatestRequestId, executeExternalFulfill, FulfillForm] =
+    initMockConfig(validatorUID);
   const { writeContractAsync: mockWriteContract } = useScaffoldWriteContract(mockContractName as any);
 
-  const { data: lastRequestId } = useScaffoldReadContract({
-    contractName: validatorContractName,
-    functionName: "lastRequestId",
-  });
   const { data: deployedContract } = useScaffoldContract({ contractName: validatorContractName });
 
   const handleMock = async () => {
     try {
       setLoading(true);
 
-      if (deployedContract !== undefined && lastRequestId !== undefined) {
-        executeExternalFulfill(deployedContract.address, lastRequestId, mockWriteContract, formData);
+      const latestRequestId = await fetchLatestRequestId();
+
+      if (deployedContract !== undefined && latestRequestId !== undefined && latestRequestId !== null) {
+        executeExternalFulfill(deployedContract.address, latestRequestId as `0x${string}`, mockWriteContract, formData);
       } else {
         throw new Error("Error during validator configuration.");
       }

@@ -49,10 +49,15 @@ describe("OffChainValidator contract", function () {
       // Request validation
       const preval = await offChainValidator.preValidation(dummyChallengeId, "0x");
       await preval.wait();
-      const requestId = await offChainValidator.lastRequestId();
+
+      const offChainValidatorAddr = await offChainValidator.getAddress();
+      // The requestId is initialized in ChainlinkClient
+      const requestId = ethersHardhat.keccak256(
+        ethersHardhat.solidityPacked(["address", "uint256"], [offChainValidatorAddr, 1]),
+      );
+      console.log("REQUEST ID", requestId);
 
       // Simulate response
-      const offChainValidatorAddr = await offChainValidator.getAddress();
       const fulfill = await oracleMock.callFulfill(offChainValidatorAddr, requestId, true);
       await fulfill.wait();
 

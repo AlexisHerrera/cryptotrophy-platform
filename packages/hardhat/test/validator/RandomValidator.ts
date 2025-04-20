@@ -25,11 +25,14 @@ describe("RandomValidator contract", function () {
     const fundsubs = await coord.fundSubscription(subsId, 13615227254092620456000n);
     await fundsubs.wait();
 
+    const validatorUID = hre.ethers.encodeBytes32String("RandomValidatorV2");
     const randomValidator = await hre.ethers.deployContract("RandomValidator", [
       subsId,
       coord_addr,
       "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc",
+      validatorUID,
     ]);
+
     const randomValidatorAddr = await randomValidator.getAddress();
 
     const addConsum = await coord.addConsumer(subsId, randomValidatorAddr);
@@ -50,15 +53,21 @@ describe("RandomValidator contract", function () {
     it("Should validate when VRF reports the correct result", async function () {
       const { owner, randomValidator, coord } = await loadFixture(deployRandomValidatorFixture);
 
+      // Configure validator
+      const tx = await randomValidator.setConfig(1n, 100n, "0x0000000000000000000000000000000000000000");
+      await tx.wait();
+
       // Make VRF call
-      const randwords = await randomValidator.preValidation(1n, "0x");
-      await randwords.wait();
-      const request_id = await randomValidator.lastRequestId();
+      const tx2 = await randomValidator.preValidation(1n, "0x");
+      await tx2.wait();
 
       // Simulate VRF response
       const randomValidatorAddr = await randomValidator.getAddress();
 
-      const fullfill = await coord.fulfillRandomWordsWithOverride(request_id, randomValidatorAddr, [13]);
+      // The requestId is initialized in VRFCoordinatorMock. It is an incremental value from 1.
+      const requestId = 1;
+
+      const fullfill = await coord.fulfillRandomWordsWithOverride(requestId, randomValidatorAddr, [13]);
       await fullfill.wait();
 
       // Test Validation

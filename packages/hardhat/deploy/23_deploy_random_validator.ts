@@ -48,9 +48,11 @@ const deployRandomValidator: DeployFunction = async function (hre: HardhatRuntim
     coord_addr = "0x6090149792dAAeE9D1D568c9f9a6F6B46AA29eFD";
   }
 
+  const validatorUID = hre.ethers.encodeBytes32String("RandomValidatorV1");
+
   await deploy("RandomValidator", {
     from: deployer,
-    args: [subsId, coord_addr, "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc"],
+    args: [subsId, coord_addr, "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc", validatorUID],
     log: true,
     autoMine: true,
   });
@@ -62,7 +64,6 @@ const deployRandomValidator: DeployFunction = async function (hre: HardhatRuntim
 
   // Add RandomValidator to challenge manager registred validators.
   const validatorRegistry = await hre.ethers.getContract<Contract>("ValidatorRegistry", deployer);
-  const validatorUID = hre.ethers.encodeBytes32String("RandomValidatorV1");
   await validatorRegistry.registerValidator(validatorUID, randomValidatorAddr);
 
   if (developmentChains.includes(network.name)) {

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { OrganizationsGrid } from "~~/app/(trophyapp)/_components/OrganizationsGrid";
 import { MotionDiv } from "~~/app/motions/use-motion";
 
 const Home: React.FC = () => {
@@ -11,7 +12,7 @@ const Home: React.FC = () => {
       exit={{ opacity: 0, x: 50 }}
       transition={{ duration: 0.2 }}
     >
-      <div className="p-4"> Home </div>
+      <OrganizationsGrid />
     </MotionDiv>
   );
 };

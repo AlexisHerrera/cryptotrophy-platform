@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { buildPoseidon } from "circomlibjs";
 import { encodeBytes32String } from "ethers";
 import Modal from "~~/components/Modal";
-import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 interface AdminSetChallengeValidatorProps {
   orgId: bigint;
@@ -46,9 +46,11 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
 
   const { writeContractAsync: validatorRegistry } = useScaffoldWriteContract("ValidatorRegistry");
   const { writeContractAsync: onChainValidator } = useScaffoldWriteContract("OnChainValidator");
-  const { writeContractAsync: offChainValidator } = useScaffoldWriteContract("OffChainValidator");
   const { writeContractAsync: OffChainApiValidator } = useScaffoldWriteContract("OffChainApiValidator");
   const { writeContractAsync: secretValidator } = useScaffoldWriteContract("SecretValidator");
+  const { writeContractAsync: RandomValidator } = useScaffoldWriteContract("RandomValidator");
+
+  const { data: challengeContract } = useScaffoldContract({ contractName: "ChallengeManager" });
 
   // Function to calculate the Poseidon hash of a string
   const calculateSecretHash = async (secretStr: string): Promise<bigint> => {
@@ -84,6 +86,11 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
         selectedAlgorithm,
       );
 
+      let challangeAddress = "0x";
+      if (challengeContract !== undefined) {
+        challangeAddress = challengeContract.address;
+      }
+
       if (selectedAlgorithm === "OnChainValidatorV1") {
         // Configure public hash in validator
         const publicHash = BigInt(formData.challengeHash);
@@ -91,19 +98,12 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
           functionName: "setConfig",
           args: [challengeId, publicHash],
         });
-      } else if (selectedAlgorithm === "OffChainValidatorV1") {
-        console.log("Set config", formData.url, formData.path);
-        // Configure url and path for challenge.
-        await offChainValidator({
-          functionName: "setConfig",
-          args: [challengeId, formData.url, formData.path],
-        });
       } else if (selectedAlgorithm === "OffChainValidatorV2") {
         console.log("Set config", formData.url, formData.path);
         // Configure url and path for challenge.
         await OffChainApiValidator({
           functionName: "setConfig",
-          args: [challengeId, formData.url, formData.path],
+          args: [challengeId, formData.url, formData.path, challangeAddress],
         });
       } else if (selectedAlgorithm === "SecretValidatorV1") {
         console.log("Processing secret codes", formData.secretCodes);
@@ -128,7 +128,11 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
           args: [challengeId, validHashes],
         });
       } else if (selectedAlgorithm === "RandomValidatorV1") {
-        // PENDING CONFIGURATION
+        console.log("Set config", formData.successProbability);
+        await RandomValidator({
+          functionName: "setConfig",
+          args: [challengeId, BigInt(formData.successProbability), challangeAddress],
+        });
       } else {
         throw new Error("Invalid validator");
       }
@@ -199,8 +203,7 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
           >
             <option value="">Sin Validar</option>
             <option value="OnChainValidatorV1">On Chain</option>
-            <option value="OffChainValidatorV1">Off Chain</option>
-            <option value="OffChainValidatorV2">Off Chain (Function)</option>
+            <option value="OffChainValidatorV2">Off Chain</option>
             <option value="SecretValidatorV1">Secret Codes</option>
             <option value="RandomValidatorV1">Random</option>
           </select>
@@ -369,9 +372,9 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
                 <span className="label-text text-base-content">Probabilities</span>
               </label>
               <textarea
-                name="probabilities"
-                placeholder="Set the challenge probabilities"
-                value={formData.probabilities}
+                name="successProbability"
+                placeholder="Set the challenge success probability"
+                value={formData.successProbability}
                 onChange={handleInputChange}
                 className="textarea textarea-bordered w-full bg-base-200 text-base-content"
               />
