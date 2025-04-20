@@ -4,6 +4,8 @@ import { challenge } from "ponder:schema";
 import { prize } from "ponder:schema";
 import { prizeClaim } from "ponder:schema";
 import { rewardClaim } from "ponder:schema";
+import { offchainApiCall } from "ponder:schema";
+import { randomValidatorCall } from "ponder:schema";
 
 
 ponder.on("OrganizationManager:OrganizationCreated", async ({ event, context }) => {
@@ -101,6 +103,29 @@ ponder.on("Prizes:PrizeClaimed", async ({ event, context }) => {
       amount,
       claimer,
       cost,
+    });
+  });
+
+
+ponder.on("OffChainApiValidator:OffChainApiValidatorCalled", async ({ event, context }) => {
+    const { validationId, claimer, requestId } = event.args;
+  
+    await context.db.insert(offchainApiCall).values({
+      validationId: validationId.toString(),
+      claimer,
+      requestId: requestId.toString(),
+    });
+  });
+
+
+
+ponder.on("RandomValidator:RandomValidatorCalled", async ({ event, context }) => {
+    const { validationId, claimer, requestId } = event.args;
+  
+    await context.db.insert(randomValidatorCall).values({
+      validationId: validationId.toString(),
+      claimer,
+      requestId: requestId.toString(),
     });
   });
 

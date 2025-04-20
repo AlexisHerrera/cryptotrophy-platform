@@ -56,3 +56,19 @@ export const prizeClaim = onchainTable("prizeClaim", (t) => ({
   claimer: t.text(),
   cost: t.bigint(),
 }));
+
+
+export const offchainApiCall = onchainTable("offchainApiCall", (t) => ({
+  requestId: t.text().primaryKey(),
+  validationId: t.text(),
+  claimer: t.text(),
+}));
+
+
+
+export const randomValidatorCall = onchainTable("randomValidatorCall", (t) => ({
+  requestId: t.text().primaryKey(),
+  validationId: t.text(),
+  claimer: t.text(),
+}));
+
