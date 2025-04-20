@@ -42,9 +42,6 @@ const ClaimChallengeTwoStepButton: React.FC<ClaimRewardButtonProps> = ({
   const [buttonEnabled, setButtonEnabled] = useState<boolean>(true);
   const [validationState, setValidationState] = useState<string>("");
 
-  const { address: connectedAddress } = useAccount();
-
-  const { writeContractAsync: challengeManager } = useScaffoldWriteContract("ChallengeManager");
   const { writeContractAsync: twoStepValidator } = useScaffoldWriteContract(contractName);
 
   const { data: validatorConfig } = useScaffoldReadContract({
@@ -92,26 +89,6 @@ const ClaimChallengeTwoStepButton: React.FC<ClaimRewardButtonProps> = ({
     }
   };
 
-  const handleClaim = async () => {
-    if (validatorConfig !== undefined) {
-      try {
-        const abiCoder = new ethers.AbiCoder();
-        const params = abiCoder.encode(["address[1]"], [[connectedAddress]]);
-
-        await challengeManager({
-          functionName: "claimReward",
-          args: [challengeId, params as `0x${string}`],
-        });
-
-        alert("Reward claimed successfully!");
-      } catch (error) {
-        console.error("Error claiming reward:", error);
-        alert("Failed to claim reward. Please try again.");
-      } finally {
-      }
-    }
-  };
-
   const handleButtonClick = async () => {
     // Disable the button right away
     setButtonEnabled(false);
@@ -120,14 +97,18 @@ const ClaimChallengeTwoStepButton: React.FC<ClaimRewardButtonProps> = ({
       // Call pre-validation first
       let contractState = await fetchValidationState();
 
-      if (contractState !== "SUCCESS") {
-        console.log("Calling prevalidation. Current state: ", contractState);
-        await handlePreValidation();
+      if (contractState === "SUCCESS") {
+        // If successful, there is not point in trying again.
+        console.log("Validation successful. Reward already claimed.");
+        setLoading(true);
+        return;
       }
+
+      console.log("Calling prevalidation. Current state: ", contractState);
+      await handlePreValidation();
 
       let attempts = 0;
       let delay = backoffConfig.initialDelay;
-
       while (attempts < backoffConfig.maxAttempts) {
         // Wait for the current delay period
         await new Promise(resolve => setTimeout(resolve, delay));
@@ -138,7 +119,6 @@ const ClaimChallengeTwoStepButton: React.FC<ClaimRewardButtonProps> = ({
         if (contractState === "SUCCESS") {
           // If successful, call claimReward and exit the loop.
           console.log("Validation successful. Claiming reward.");
-          await handleClaim();
           setLoading(true);
           return;
         }
@@ -170,7 +150,11 @@ const ClaimChallengeTwoStepButton: React.FC<ClaimRewardButtonProps> = ({
 
   return (
     <div>
-      <button className="btn btn-primary btn-sm" onClick={handleButtonClick} disabled={loading || !buttonEnabled}>
+      <button
+        className="btn btn-primary btn-sm"
+        onClick={handleButtonClick}
+        disabled={validationState === "SUCCESS" || loading || !buttonEnabled}
+      >
         Claim Reward
       </button>
       {validationState !== "NOSTATE" && (
