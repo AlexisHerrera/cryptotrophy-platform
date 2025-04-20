@@ -3,11 +3,11 @@ pragma solidity ^0.8.10;
 
 import "hardhat/console.sol";
 import "../Organization/IOrganizationManager.sol";
-import {IValidator} from "./IValidator.sol";
+import {IValidator, IValidatorCallback} from "./IValidator.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IChallengeManager} from "./IChallengeManager.sol";
 
-contract ChallengeManager is IChallengeManager {
+contract ChallengeManager is IChallengeManager, IValidatorCallback {
     struct Challenge {
         uint256 id;
         string description;
@@ -31,6 +31,9 @@ contract ChallengeManager is IChallengeManager {
     mapping(uint256 => Challenge) public challenges;
     uint256[] public challengeIds;
     mapping(uint256 => uint256[]) public orgChallenges;
+
+    // Allows to query the challenge associated to a ValidatorUID / ValidationId
+    mapping(bytes32 => mapping(uint256 => uint256)) public validationChallenge;
 
     IOrganizationManager public orgManager;
 
@@ -135,6 +138,18 @@ contract ChallengeManager is IChallengeManager {
         challenge.validatorAddr = _validatorAddr;
         challenge.validationId = _validationId;
         challenge.validatorUID = _validatorUID;
+        validationChallenge[_validatorUID][_validationId] = _challengeId;
+    }
+
+    /// @notice Permite que un validador reclame un desafío
+    function validatorClaimCallback(bytes32 _validatorUID, uint256 _validationId, address _claimer) external {
+        uint256 _challengeId = validationChallenge[_validatorUID][_validationId];
+        Challenge storage _challenge = challenges[_challengeId];
+        require(_challenge.exists, "Challenge does not exist.");
+        require(_challenge.validatorAddr == msg.sender, "The challenge's validator is not the expected one.");
+    
+        checkClaim(_challenge, _claimer);
+        transferReward(_challenge, _claimer);
     }
 
     /// @notice Reclama un premio de un desafío
@@ -142,49 +157,68 @@ contract ChallengeManager is IChallengeManager {
         uint256 _challengeId,
         bytes calldata params
     ) external { // TODO: check only user
-        Challenge storage challenge = challenges[_challengeId];
-        // Si se utiliza el modificador, no es necesario verificar estas condiciones
-        if (orgManager.hasUsers(challenge.orgId)) {
-            require(orgManager.isUser(challenge.orgId, msg.sender), "Not a user");
+        Challenge storage _challenge = challenges[_challengeId];
+        require(_challenge.exists, "Challenge does not exist.");
+
+        checkClaim(_challenge, msg.sender);
+
+        if (_challenge.validatorAddr != address(0x0)) {
+            IValidator validator = IValidator(_challenge.validatorAddr);
+            require(validator.validate(_challenge.validationId, params), "Validation failed");
         }
-        require(challenge.exists, "Challenge does not exist");
-        require(challenge.active, "Challenge not active");
+
+        transferReward(_challenge, msg.sender);
+    }
+
+    function checkClaim(
+        Challenge storage _challenge
+        , address _claimer
+    ) internal view {
+        require(_challenge.active, "Challenge not active");
+
         require(
-            block.timestamp >= challenge.startTime,
+            block.timestamp >= _challenge.startTime,
             "Challenge not started"
         );
-        require(block.timestamp <= challenge.endTime, "Challenge ended");
+        require(block.timestamp <= _challenge.endTime, "Challenge ended");
         require(
-            challenge.winnerCount < challenge.maxWinners,
+            _challenge.winnerCount < _challenge.maxWinners,
             "Max winners reached"
         );
-        require(!challenge.winners[msg.sender], "Already claimed");
 
-        if (challenge.validatorAddr != address(0x0)) {
-            IValidator validator = IValidator(challenge.validatorAddr);
-            require(validator.validate(challenge.validationId, params), "Validation failed");
+        // Si se utiliza el modificador, no es necesario verificar estas condiciones
+        if (orgManager.hasUsers(_challenge.orgId)) {
+            require(orgManager.isUser(_challenge.orgId, _claimer), "Not a user");
         }
 
-        uint256 prizeAmountInBaseUnits = challenge.prizeAmount;
-        address orgToken = orgManager.getTokenOfOrg(challenge.orgId);
+        require(!_challenge.winners[_claimer], "Already claimed");
+    }
+
+    function transferReward(
+        Challenge storage _challenge
+        , address _claimer
+    ) internal {
+        console.log("transferReward", _claimer);
+        uint256 prizeAmountInBaseUnits = _challenge.prizeAmount;
+        address orgToken = orgManager.getTokenOfOrg(_challenge.orgId);
 
         require(
             ERC20(orgToken).balanceOf(address(this)) >= prizeAmountInBaseUnits,
             "Not enough tokens in the challenge contract"
         );
 
-        challenge.winners[msg.sender] = true;
-        challenge.winnerCount++;
+        _challenge.winners[_claimer] = true;
+        _challenge.winnerCount++;
 
         // Si se alcanzó el número máximo de ganadores, marcar el desafío como inactivo
-        if (challenge.winnerCount >= challenge.maxWinners) {
-            challenge.active = false;
+        if (_challenge.winnerCount >= _challenge.maxWinners) {
+            _challenge.active = false;
         }
 
         // Transferir tokens al ganador
-        ERC20(orgToken).transfer(msg.sender, prizeAmountInBaseUnits);
+        ERC20(orgToken).transfer(_claimer, prizeAmountInBaseUnits);
 
-        emit RewardClaimed(_challengeId, msg.sender, block.timestamp, prizeAmountInBaseUnits);
+        emit RewardClaimed(_challenge.id, _claimer, block.timestamp, prizeAmountInBaseUnits);
     }
 
     /// @notice Obtiene los detalles de múltiples desafíos
