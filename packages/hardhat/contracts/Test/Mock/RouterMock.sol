@@ -18,11 +18,11 @@ contract RouterMock {
   }
 
   function sendRequest(
-    uint64 subscriptionId,
-    bytes calldata data,
-    uint16 dataVersion,
-    uint32 callbackGasLimit,
-    bytes32 donId
+    uint64 /* subscriptionId */,
+    bytes calldata /* data */,
+    uint16 /* dataVersion */,
+    uint32 /* callbackGasLimit */,
+    bytes32 /* donId */
   ) public returns (bytes32 requestId) {
     lastRequestId += 1;
     return bytes32(lastRequestId);
@@ -34,7 +34,7 @@ contract RouterMock {
     if (!_completed) {
       _response = abi.encodePacked(bytes32("0x1"));
     }
-    bytes memory _err = abi.encodePacked(bytes32(0));
+    bytes memory _err = "";
     source.handleOracleFulfillment(_requestId, _response, _err);
   }
 }
