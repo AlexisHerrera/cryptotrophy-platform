@@ -55,7 +55,6 @@ describe("OffChainValidator contract", function () {
       const requestId = ethersHardhat.keccak256(
         ethersHardhat.solidityPacked(["address", "uint256"], [offChainValidatorAddr, 1]),
       );
-      console.log("REQUEST ID", requestId);
 
       // Simulate response
       const fulfill = await oracleMock.callFulfill(offChainValidatorAddr, requestId, true);

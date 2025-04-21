@@ -86,15 +86,14 @@ contract OrganizationManager is IOrganizationManager {
 		string memory _symbol,
 		uint256 _initialSupply,
 		uint256 _initialEthBacking,
-		address[] memory _admins
+		address[] memory _admins,
+		string memory _baseURI
 	) public payable returns (uint256) {
 		require(msg.value >= _initialEthBacking, "Insufficient ETH backing");
 		require(!orgNameExists[_name], "Organization name already exists");
 		require(!tokenSymbolExists[_symbol], "Token symbol already exists");
 		orgNameExists[_name] = true;
 		tokenSymbolExists[_symbol] = true;
-
-		string memory _baseURI = string(abi.encodePacked("http://localhost:3000/ipfs/orgs/", _name));
 
 		// Crear nuevo token de la organización y asignar tokens al contrato
 		OrganizationToken token = new OrganizationToken(

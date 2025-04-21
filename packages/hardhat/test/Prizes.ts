@@ -39,6 +39,7 @@ describe("Prizes contract", function () {
       1000, // supply inicial del token de la org
       ethers.parseEther("1"), // backing
       [admin1.address], // admins extra
+      "http://localhost:3000/ipfs/org",
       { value: ethers.parseEther("1") },
     );
     const receipt = await txCreateOrg.wait();

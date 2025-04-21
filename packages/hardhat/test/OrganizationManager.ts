@@ -62,8 +62,9 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
       const initialSupply = 1000;
       const initialEthBacking = ethers.parseEther("1");
       const admins = [admin1.address, admin2.address];
+      const baseURI = "http://localhost:3000/ipfs/org";
 
-      const tx = await orgManager.createOrganization(name, symbol, initialSupply, initialEthBacking, admins, {
+      const tx = await orgManager.createOrganization(name, symbol, initialSupply, initialEthBacking, admins, baseURI, {
         value: initialEthBacking,
       });
       const receipt = await tx.wait();
@@ -109,6 +110,7 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
 
     it("Should revert if not enough ETH is sent for initial backing", async function () {
       const { orgManager } = await loadFixture(deployCoreContractsFixture);
+      const baseURI = "http://localhost:3000/ipfs/org";
 
       await expect(
         orgManager.createOrganization(
@@ -117,6 +119,7 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
           1000,
           ethers.parseEther("5"), // se pide 5 ETH
           [],
+          baseURI,
           { value: ethers.parseEther("1") }, // solo 1 ETH enviado
         ),
       ).to.be.revertedWith("Insufficient ETH backing");
@@ -128,16 +131,23 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
       const initialSupply = 1000;
       const initialEthBacking = ethers.parseEther("1");
       const admins = [admin1.address];
+      const baseURI = "http://localhost:3000/ipfs/org";
 
       // Create first organization with symbol "DUP"
-      const tx = await orgManager.createOrganization("FirstOrg", "DUP", initialSupply, initialEthBacking, admins, {
-        value: ethers.parseEther("1"),
-      });
+      const tx = await orgManager.createOrganization(
+        "FirstOrg",
+        "DUP",
+        initialSupply,
+        initialEthBacking,
+        admins,
+        baseURI,
+        { value: ethers.parseEther("1") },
+      );
       await tx.wait();
 
       // Attempt to create a second organization with the same symbol
       await expect(
-        orgManager.createOrganization("SecondOrg", "DUP", initialSupply, initialEthBacking, admins, {
+        orgManager.createOrganization("SecondOrg", "DUP", initialSupply, initialEthBacking, admins, baseURI, {
           value: ethers.parseEther("1"),
         }),
       ).to.be.revertedWith("Token symbol already exists");
@@ -149,6 +159,7 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
       const initialSupply = 1000;
       const initialEthBacking = ethers.parseEther("1");
       const admins = [admin1.address];
+      const baseURI = "http://localhost:3000/ipfs/org";
 
       // Create first organization with name "DuplicateName"
       const tx = await orgManager.createOrganization(
@@ -157,13 +168,14 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
         initialSupply,
         initialEthBacking,
         admins,
+        baseURI,
         { value: ethers.parseEther("1") },
       );
       await tx.wait();
 
       // Attempt to create a second organization with the same name
       await expect(
-        orgManager.createOrganization("DuplicateName", "ORG2", initialSupply, initialEthBacking, admins, {
+        orgManager.createOrganization("DuplicateName", "ORG2", initialSupply, initialEthBacking, admins, baseURI, {
           value: ethers.parseEther("1"),
         }),
       ).to.be.revertedWith("Organization name already exists");
@@ -177,6 +189,7 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
     async function createOrgFixture() {
       const f = await deployCoreContractsFixture();
       const { orgManager, admin1 } = f;
+      const baseURI = "http://localhost:3000/ipfs/org";
 
       // Creamos una organización de prueba
       const tx = await orgManager.createOrganization(
@@ -185,6 +198,7 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
         1000,
         ethers.parseEther("1"),
         [admin1.address], // admin extra
+        baseURI,
         { value: ethers.parseEther("1") },
       );
       const receipt = await tx.wait();
@@ -227,11 +241,20 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
     async function multipleOrgsFixture() {
       const f = await deployCoreContractsFixture();
       const { orgManager, admin1, admin2 } = f;
+      const baseURI = "http://localhost:3000/ipfs/org";
 
       // OrgA
-      let tx = await orgManager.createOrganization("OrgA", "ORGA", 1000, ethers.parseEther("1"), [admin1.address], {
-        value: ethers.parseEther("1"),
-      });
+      let tx = await orgManager.createOrganization(
+        "OrgA",
+        "ORGA",
+        1000,
+        ethers.parseEther("1"),
+        [admin1.address],
+        baseURI,
+        {
+          value: ethers.parseEther("1"),
+        },
+      );
       await tx.wait();
 
       // OrgB
@@ -241,6 +264,7 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
         500,
         ethers.parseEther("0.5"),
         [admin2.address], // solo el creador (owner) será admin
+        baseURI,
         { value: ethers.parseEther("0.5") },
       );
       await tx.wait();
@@ -290,6 +314,7 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
       // Usamos la fixture principal
       const f = await deployCoreContractsFixture();
       const { orgManager, admin1 } = f;
+      const baseURI = "http://localhost:3000/ipfs/org";
 
       // Crear una organización con supply 1000
       const tx = await orgManager.createOrganization(
@@ -298,6 +323,7 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
         1000,
         ethers.parseEther("1"),
         [admin1.address], // admin extra
+        baseURI,
         { value: ethers.parseEther("1") },
       );
       const receipt = await tx.wait();

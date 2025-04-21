@@ -99,7 +99,6 @@ contract RandomValidator is TwoStepValidator, VRFConsumerBaseV2Plus {
         bytes32 claimUID = keccak256(abi.encodePacked(_validationId, msg.sender));
         validationRequest[bytes32(requestId)] = claimUID;
         claims[claimUID] = Claim(_validationId, msg.sender, ValidationState.PREVALIDATION);
-        console.log("SSSSS", claims[claimUID].validationId);
 
         emit RandomValidatorCalled(_validationId, msg.sender, bytes32(requestId));
 
