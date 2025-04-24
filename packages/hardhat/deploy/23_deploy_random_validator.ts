@@ -44,8 +44,8 @@ const deployRandomValidator: DeployFunction = async function (hre: HardhatRuntim
     await fundsubs.wait();
   } else {
     // TODO: Configure subsId and coord based on network ID
-    subsId = 1;
-    coord_addr = "0x6090149792dAAeE9D1D568c9f9a6F6B46AA29eFD";
+    subsId = 297;
+    coord_addr = "0x5C210eF41CD1a72de73bF76eC39637bB0d3d7BEE";
   }
 
   const validatorUID = hre.ethers.encodeBytes32String("RandomValidatorV1");
