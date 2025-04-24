@@ -8,5 +8,8 @@ interface IValidatorCallback {
 
 
 interface IValidator {
+
+	function setConfigFromParams(uint256 _validationId, bytes calldata _params) external; 
+
     function validate(uint256 _validationId, bytes calldata _validationParams) external returns (bool);
 }

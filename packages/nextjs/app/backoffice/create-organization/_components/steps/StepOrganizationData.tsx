@@ -6,6 +6,7 @@ import FormInput from "~~/app/backoffice/create-organization/_components/FormInp
 interface StepOrganizationDataProps {
   formData: {
     organizationName: string;
+    baseURI: string;
     admins: string[];
   };
   handleInputChange: (field: keyof CreateOrganizationFormProps, value: string | string[]) => void;
@@ -20,6 +21,12 @@ const StepOrganizationData: React.FC<StepOrganizationDataProps> = ({ formData, h
         placeholder="Enter organization name"
         value={formData.organizationName}
         onChange={value => handleInputChange("organizationName", value)}
+      />
+      <FormInput
+        label="Organization Repository"
+        placeholder="Enter organization repository path"
+        value={formData.baseURI}
+        onChange={value => handleInputChange("baseURI", value)}
       />
       <div className="form-control">
         <label className="label text-lg">Add Admins</label>

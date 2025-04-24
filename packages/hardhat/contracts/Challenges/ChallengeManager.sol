@@ -67,6 +67,41 @@ contract ChallengeManager is IChallengeManager, IValidatorCallback {
         return challenges[_challengeId].orgId;
     }
 
+    function createChallengeWithValidator(
+        uint256 _orgId
+        , string memory _description
+        , uint256 _prizeAmount
+        , uint256 _startTime
+        , uint256 _endTime
+        , uint256 _maxWinners
+        , bytes32 _validatorUID
+        , address _validatorAddress
+        , bytes calldata validatorParams
+    ) public {
+        require(orgManager.isAdmin(_orgId, msg.sender), "Not an admin");
+        console.log("A1");
+        uint256 _challengeId = createChallenge(
+            _orgId,
+            _description,
+            _prizeAmount,
+            _startTime,
+            _endTime,
+            _maxWinners
+        );
+        uint256 _validationId = _challengeId;
+
+        if (_validatorAddress != address(0)) {
+            console.log("A2");
+            IValidator _validator = IValidator(_validatorAddress);
+            _validator.setConfigFromParams(_validationId, validatorParams);
+
+            console.log("A3");
+            setChallengeValidator(_challengeId, _validatorAddress, _validatorUID, _validationId);
+        }
+
+        console.log("A4");
+    }
+
     function createChallenge(
         uint256 _orgId,
         string memory _description,
@@ -74,7 +109,7 @@ contract ChallengeManager is IChallengeManager, IValidatorCallback {
         uint256 _startTime,
         uint256 _endTime,
         uint256 _maxWinners
-    ) public override onlyAdmin(_orgId) {
+    ) public override returns (uint256) {
         // 1. Validar que msg.sender sea admin de la org
         require(orgManager.isAdmin(_orgId, msg.sender), "Not an admin");
 
@@ -114,6 +149,8 @@ contract ChallengeManager is IChallengeManager, IValidatorCallback {
             , _orgId
             , _prizeAmount
         );
+
+        return challengeId;
     }
 
     function getChallengesByOrg(uint256 _orgId) public view returns (uint256[] memory) {

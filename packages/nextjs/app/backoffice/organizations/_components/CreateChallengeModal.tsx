@@ -1,138 +1,151 @@
-import React, { useEffect, useState } from "react";
-import { formatUnits, parseUnits } from "ethers";
+"use client";
+
+import React, { useState } from "react";
+import { encodeBytes32String, parseUnits } from "ethers";
+import ChallengeDetailsForm from "~~/app/backoffice/organizations/_components/pages/ChallengeDetails";
+import SetChallengeValidator from "~~/app/backoffice/organizations/_components/pages/ChallengeValidator";
+import ReviewChallengeData from "~~/app/backoffice/organizations/_components/pages/ReviewChallengeData";
 import Modal from "~~/components/Modal";
-import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
+import { ChallengeData, getEncodedValidatorConfig } from "~~/utils/challenges/challengeParam";
 
 interface CreateChallengeModalProps {
   organizationId: bigint;
   onClose: () => void;
 }
 
-const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({ organizationId, onClose }) => {
+const CreateChallengeForm: React.FC<CreateChallengeModalProps> = ({ organizationId, onClose }) => {
+  const [loading, setLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
+
   const now = new Date();
   now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
   const defaultStartTime = now.toISOString().slice(0, 16);
-
   const oneWeekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
   const defaultEndTime = oneWeekLater.toISOString().slice(0, 16);
 
-  const [formData, setFormData] = useState({
+  const [challengeForm, setChallengeForm] = useState<ChallengeData>({
+    organizationId: organizationId,
     description: "",
-    prizeAmount: "",
+    prizeAmount: 0,
+    maxPrizeAmount: 0n,
     startTime: defaultStartTime,
     endTime: defaultEndTime,
-    maxWinners: "",
+    maxWinners: 1,
+    validatorUID: "",
+    validatorAddress: "0x0000000000000000000000000000000000000000",
+    params: {},
   });
-
-  const [maxPrizeAmount, setMaxPrizeAmount] = useState<bigint | null>(null);
 
   const { writeContractAsync: challengeManager } = useScaffoldWriteContract("ChallengeManager");
   const challengeManagerAddress = useDeployedContractInfo("ChallengeManager").data?.address;
-  console.log("Challenge Manager Address:", challengeManagerAddress);
-  // Hook to get available tokens
-  const { data: availableTokens } = useScaffoldReadContract({
-    contractName: "ChallengeManager",
-    functionName: "tokensAvailable",
-    args: [organizationId],
-  });
 
-  console.log(
-    "Organization Id:",
-    organizationId,
-    "token decimals:",
-    DECIMALS_TOKEN,
-    "available tokens:",
-    availableTokens,
-  );
-  useEffect(() => {
-    if (availableTokens !== undefined) {
-      setMaxPrizeAmount(availableTokens as bigint);
-    }
-  }, [availableTokens]);
-
-  const formattedMaxPrizeAmount = maxPrizeAmount !== null ? formatUnits(maxPrizeAmount, DECIMALS_TOKEN) : "Loading...";
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleCreateChallenge = async () => {
-    const { description, prizeAmount, startTime, endTime, maxWinners } = formData;
+  const handleChallengeSubmit = async () => {
     try {
-      const prizeAmountInBaseUnits = parseUnits(prizeAmount, DECIMALS_TOKEN);
+      setLoading(true);
+      const {
+        organizationId,
+        description,
+        prizeAmount,
+        startTime,
+        endTime,
+        maxWinners,
+        validatorUID,
+        validatorAddress,
+        params,
+      } = challengeForm;
+      const prizeAmountInBaseUnits = parseUnits(prizeAmount.toString(), DECIMALS_TOKEN);
       const startTimestamp = BigInt(Math.floor(new Date(startTime).getTime() / 1000));
       const endTimestamp = BigInt(Math.floor(new Date(endTime).getTime() / 1000));
+      const maxWinnersInt = BigInt(maxWinners);
+      const encodedValidatorUID = encodeBytes32String(validatorUID) as `0x${string}`;
+      const hexParams = await getEncodedValidatorConfig(validatorUID, params, challengeManagerAddress);
 
       await challengeManager({
-        functionName: "createChallenge",
-        args: [organizationId, description, prizeAmountInBaseUnits, startTimestamp, endTimestamp, BigInt(maxWinners)],
+        functionName: "createChallengeWithValidator",
+        args: [
+          organizationId,
+          description,
+          prizeAmountInBaseUnits,
+          startTimestamp,
+          endTimestamp,
+          maxWinnersInt,
+          encodedValidatorUID,
+          validatorAddress,
+          hexParams,
+        ],
       });
       alert("Challenge created successfully!");
       onClose();
     } catch (error) {
       console.error("Error creating challenge:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const isCreateButtonDisabled =
-    !maxPrizeAmount ||
-    !formData.prizeAmount ||
-    !formData.maxWinners ||
-    parseUnits(formData.prizeAmount, DECIMALS_TOKEN) > maxPrizeAmount;
+    !challengeForm.maxPrizeAmount ||
+    !challengeForm.prizeAmount ||
+    !challengeForm.maxWinners ||
+    parseUnits(challengeForm.prizeAmount.toString(), DECIMALS_TOKEN) > challengeForm.maxPrizeAmount;
+
+  const handleInputChange = (field: keyof ChallengeData, value: string | bigint | Record<string, any>) => {
+    setChallengeForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleStepClick = (step: number) => {
+    setCurrentStep(step);
+  };
+
+  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 4));
+  const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
   return (
     <Modal onClose={onClose}>
-      <h2 className="text-xl font-bold mb-4 text-center">Create Challenge</h2>
-      <div className="flex flex-col gap-4">
-        <textarea
-          name="description"
-          placeholder="Describe your challenge here (e.g., Complete the task in 7 days)"
-          value={formData.description}
-          onChange={handleInputChange}
-          className="textarea textarea-bordered w-full"
-        />
-        <div className="relative">
-          <input
-            type="text"
-            name="prizeAmount"
-            placeholder={`Prize Amount (Max: ${formattedMaxPrizeAmount} tokens)`}
-            value={formData.prizeAmount}
-            onChange={handleInputChange}
-            className="input input-bordered w-full"
-          />
-          <span className="absolute right-2 top-2 text-gray-500 text-sm">Max: {formattedMaxPrizeAmount}</span>
+      <div className="p-8 bg-base-100 rounded-xl shadow-xl max-w-4xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-6">Create Your Challenge</h2>
+
+        <ul className="steps steps-horizontal mb-8 space-x-3">
+          {["Challenge Data", "Validator", "Review"].map((label, index) => (
+            <li
+              key={index}
+              className={`step cursor-pointer ${currentStep > index ? "step-primary" : ""}`}
+              onClick={() => handleStepClick(index + 1)}
+            >
+              {label}
+            </li>
+          ))}
+        </ul>
+
+        {currentStep === 1 && <ChallengeDetailsForm formData={challengeForm} handleInputChange={handleInputChange} />}
+        {currentStep === 2 && <SetChallengeValidator formData={challengeForm} handleInputChange={handleInputChange} />}
+        {currentStep === 3 && <ReviewChallengeData formData={challengeForm} />}
+
+        <div className="mt-6 flex justify-center gap-6">
+          {currentStep > 1 && (
+            <button className="btn btn-secondary" onClick={prevStep}>
+              Previous
+            </button>
+          )}
+          {currentStep < 3 ? (
+            <button className="btn btn-primary" onClick={nextStep}>
+              Next
+            </button>
+          ) : (
+            <button
+              className="btn btn-success ml-auto"
+              onClick={handleChallengeSubmit}
+              disabled={loading || isCreateButtonDisabled}
+            >
+              {loading ? "Processing..." : "Submit"}
+            </button>
+          )}
         </div>
-        <input
-          type="datetime-local"
-          name="startTime"
-          placeholder="Start Time"
-          value={formData.startTime}
-          onChange={handleInputChange}
-          className="input input-bordered w-full"
-        />
-        <input
-          type="datetime-local"
-          name="endTime"
-          placeholder="End Time"
-          value={formData.endTime}
-          onChange={handleInputChange}
-          className="input input-bordered w-full"
-        />
-        <input
-          type="number"
-          name="maxWinners"
-          placeholder="Max Winners (default: 1)"
-          value={formData.maxWinners}
-          onChange={handleInputChange}
-          className="input input-bordered w-full"
-        />
-        <button className="btn btn-primary" onClick={handleCreateChallenge} disabled={isCreateButtonDisabled}>
-          Create
-        </button>
       </div>
     </Modal>
   );
 };
 
-export default CreateChallengeModal;
+export default CreateChallengeForm;

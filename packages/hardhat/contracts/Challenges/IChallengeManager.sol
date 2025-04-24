@@ -9,7 +9,7 @@ interface IChallengeManager {
         uint256 _startTime,
         uint256 _endTime,
         uint256 _maxWinners
-    ) external;
+    ) external returns (uint256);
 
     function setChallengeValidator(
         uint256 _challengeId,

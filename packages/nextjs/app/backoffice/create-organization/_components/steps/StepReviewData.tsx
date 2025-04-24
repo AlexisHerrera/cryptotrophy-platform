@@ -9,6 +9,7 @@ interface StepReviewDataProps {
     tokenSymbol: string;
     initialMint: string;
     ethBacking: string;
+    baseURI: string;
   };
 }
 
@@ -25,6 +26,10 @@ const StepReviewData: React.FC<StepReviewDataProps> = ({ formData }) => {
 
       <div>
         <strong>Organization Name:</strong> {formData.organizationName}
+      </div>
+
+      <div>
+        <strong>Organization Repository:</strong> {formData.baseURI}
       </div>
 
       <div>

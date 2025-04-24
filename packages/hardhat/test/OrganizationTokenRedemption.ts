@@ -28,6 +28,7 @@ describe("Organization Token Redemption", function () {
       initialSupply,
       initialEthBacking,
       [], // no extra admins
+      "http://localhost:3000/ipfs/org",
       { value: initialEthBacking },
     );
 

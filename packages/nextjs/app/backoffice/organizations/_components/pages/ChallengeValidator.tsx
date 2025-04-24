@@ -1,14 +1,10 @@
 import React, { useRef, useState } from "react";
-import { buildPoseidon } from "circomlibjs";
-import { encodeBytes32String } from "ethers";
-import Modal from "~~/components/Modal";
-import { useScaffoldContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract } from "~~/hooks/scaffold-eth";
+import { ChallengeData } from "~~/utils/challenges/challengeParam";
 
-interface AdminSetChallengeValidatorProps {
-  orgId: bigint;
-  challengeId: bigint;
-  validatorUID: string;
-  onClose: () => void;
+interface SetChallengeValidatorProps {
+  formData: ChallengeData;
+  handleInputChange: (field: keyof ChallengeData, value: string | Record<string, any> | bigint) => void;
 }
 
 // Function to generate a random code
@@ -21,140 +17,45 @@ const generateRandomCode = (length = 8) => {
   return result;
 };
 
-const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
-  orgId,
-  challengeId,
-  validatorUID,
-  onClose,
-}) => {
-  const [loading, setLoading] = useState(false);
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState(validatorUID);
-  const [formData, setFormData] = useState<Record<string, string>>({});
-  const [codeCount, setCodeCount] = useState<number>(5);
-  const [generatedCodes, setGeneratedCodes] = useState<string[]>([]);
+const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData, handleInputChange }) => {
+  const [parameterData, setParameterData] = useState<Record<string, string | string[]>>(formData.params);
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState(formData.validatorUID);
+  const [codeCount, setCodeCount] = useState<number>(formData.params.generatedCodes?.length ?? 5);
+  const [generatedCodes, setGeneratedCodes] = useState<string[]>(formData.params.generatedCodes ?? []);
   const [codeCopied, setCodeCopied] = useState(false);
   const [showCodesPopup, setShowCodesPopup] = useState(false);
   const codesRef = useRef<HTMLDivElement>(null);
+
+  const { data: onChainValidator } = useScaffoldContract({ contractName: "OnChainValidator" });
+  const { data: OffChainApiValidator } = useScaffoldContract({ contractName: "OffChainApiValidator" });
+  const { data: secretValidator } = useScaffoldContract({ contractName: "SecretValidator" });
+  const { data: RandomValidator } = useScaffoldContract({ contractName: "RandomValidator" });
 
   const handleAlgorithmChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const algorithm = e.target.value;
     setSelectedAlgorithm(algorithm);
     // Optionally reset parameters when switching algorithms:
-    setFormData({});
-  };
-  console.log("selectedAlgorithm", selectedAlgorithm);
-
-  const { writeContractAsync: validatorRegistry } = useScaffoldWriteContract("ValidatorRegistry");
-  const { writeContractAsync: onChainValidator } = useScaffoldWriteContract("OnChainValidator");
-  const { writeContractAsync: OffChainApiValidator } = useScaffoldWriteContract("OffChainApiValidator");
-  const { writeContractAsync: secretValidator } = useScaffoldWriteContract("SecretValidator");
-  const { writeContractAsync: RandomValidator } = useScaffoldWriteContract("RandomValidator");
-
-  const { data: challengeContract } = useScaffoldContract({ contractName: "ChallengeManager" });
-
-  // Function to calculate the Poseidon hash of a string
-  const calculateSecretHash = async (secretStr: string): Promise<bigint> => {
-    // Skip empty strings
-    if (!secretStr.trim()) return 0n;
-
-    try {
-      const poseidon = await buildPoseidon();
-      // Convert string to numeric representation
-      const secret = BigInt(Buffer.from(secretStr).reduce((acc, byte) => acc * 256n + BigInt(byte), 0n));
-
-      // Calculate hash using Poseidon with 1 input (just the secret)
-      const hash = poseidon.F.toString(poseidon([secret]));
-      console.log(`Secret code "${secretStr}" hashed to: ${hash}`);
-      return BigInt(hash);
-    } catch (error) {
-      console.error("Error calculating hash:", error);
-      alert(`Failed to hash secret code: ${secretStr}`);
-      return 0n;
-    }
-  };
-
-  const handleSetValidator = async () => {
-    try {
-      setLoading(true);
-      console.log(
-        "AdminSetChallengeValidator.handleSetValidator",
-        "Org ID",
-        orgId,
-        "Challenge ID",
-        challengeId,
-        "selectedAlgorithm",
-        selectedAlgorithm,
-      );
-
-      let challangeAddress = "0x";
-      if (challengeContract !== undefined) {
-        challangeAddress = challengeContract.address;
+    handleInputChange("validatorUID", e.target.value);
+    let validatorAddress: string | undefined = "0x0000000000000000000000000000000000000000";
+    if (e.target.value !== "" && e.target.value !== undefined) {
+      const validatorAddresses: Record<string, string | undefined> = {
+        OnChainValidatorV1: onChainValidator?.address,
+        OffChainValidatorV2: OffChainApiValidator?.address,
+        SecretValidatorV1: secretValidator?.address,
+        RandomValidatorV1: RandomValidator?.address,
+      };
+      validatorAddress = validatorAddresses[e.target.value];
+      if (validatorAddress === "0x0000000000000000000000000000000000000000" || validatorAddress === undefined) {
+        throw new Error("Validator address could not be read.");
       }
-
-      if (selectedAlgorithm === "OnChainValidatorV1") {
-        // Configure public hash in validator
-        const publicHash = BigInt(formData.challengeHash);
-        await onChainValidator({
-          functionName: "setConfig",
-          args: [challengeId, publicHash],
-        });
-      } else if (selectedAlgorithm === "OffChainValidatorV2") {
-        console.log("Set config", formData.url, formData.path);
-        // Configure url and path for challenge.
-        await OffChainApiValidator({
-          functionName: "setConfig",
-          args: [challengeId, formData.url, formData.path, challangeAddress],
-        });
-      } else if (selectedAlgorithm === "SecretValidatorV1") {
-        console.log("Processing secret codes", formData.secretCodes);
-        // Parse the secret codes from the textarea
-        const secretCodes = formData.secretCodes.split("\n").filter(line => line.trim() !== "");
-
-        // Calculate hashes for each secret code
-        const hashes = await Promise.all(secretCodes.map(code => calculateSecretHash(code.trim())));
-
-        // Filter out any failed hashes (0n)
-        const validHashes = hashes.filter(hash => hash !== 0n);
-
-        if (validHashes.length === 0) {
-          throw new Error("No valid secret codes provided");
-        }
-
-        console.log(`Adding ${validHashes.length} secret hashes to validator`);
-
-        // Add the valid hashes to the validator
-        await secretValidator({
-          functionName: "setConfig",
-          args: [challengeId, validHashes],
-        });
-      } else if (selectedAlgorithm === "RandomValidatorV1") {
-        console.log("Set config", formData.successProbability);
-        await RandomValidator({
-          functionName: "setConfig",
-          args: [challengeId, BigInt(formData.successProbability), challangeAddress],
-        });
-      } else {
-        throw new Error("Invalid validator");
-      }
-
-      const encodedValidatorUID = encodeBytes32String(selectedAlgorithm);
-      await validatorRegistry({
-        functionName: "setChallengeValidator",
-        args: [challengeId, encodedValidatorUID as `0x${string}`, challengeId],
-      });
-
-      alert("Validator updated successfully!");
-      onClose();
-    } catch (error) {
-      console.error("Error updating validator:", error);
-      alert("Failed to update the validator. Please try again.");
-    } finally {
-      setLoading(false);
     }
+    handleInputChange("validatorAddress", validatorAddress);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleParameterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const newParameterData = { ...parameterData, [e.target.name]: e.target.value };
+    setParameterData(newParameterData);
+    handleInputChange("params", newParameterData);
   };
 
   // Generate random secret codes
@@ -162,7 +63,10 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
     const count = Math.min(Math.max(1, codeCount), 100); // Limit between 1 and 100
     const codes = Array.from({ length: count }, () => generateRandomCode(8));
     setGeneratedCodes(codes);
-    setFormData({ ...formData, secretCodes: codes.join("\n") });
+
+    const newParameterData = { ...parameterData, ["secretCodes"]: codes.join("\n"), ["generatedCodes"]: codes };
+    setParameterData(newParameterData);
+    handleInputChange("params", newParameterData);
     setCodeCopied(false);
   };
 
@@ -183,12 +87,10 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
   };
 
   return (
-    <Modal onClose={onClose}>
+    <div>
       <div className="p-6 bg-base-100">
         <h2 className="text-xl font-bold mb-4 text-center text-primary">Configure Validator</h2>
-        <p className="mb-6 text-center text-base-content">
-          Setting validator for challenge: <strong>{challengeId.toString()}</strong>
-        </p>
+        <p className="mb-6 text-center text-base-content">Setting validator for new challenge</p>
 
         {/* Algorithm Selection */}
         <div className="mb-6">
@@ -218,8 +120,8 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
               <textarea
                 name="challengeHash"
                 placeholder="Set the full public hash for the challenge"
-                value={formData.challengeHash}
-                onChange={handleInputChange}
+                value={parameterData.challengeHash}
+                onChange={handleParameterChange}
                 className="textarea textarea-bordered w-full bg-base-200 text-base-content"
               />
             </div>
@@ -234,8 +136,8 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
                 <textarea
                   name="url"
                   placeholder="Set the external url that should be called"
-                  value={formData.url}
-                  onChange={handleInputChange}
+                  value={parameterData.url}
+                  onChange={handleParameterChange}
                   className="textarea textarea-bordered w-full bg-base-200 text-base-content"
                 />
               </div>
@@ -246,8 +148,8 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
                 <textarea
                   name="path"
                   placeholder="Set the path in the json response with the validation result"
-                  value={formData.path}
-                  onChange={handleInputChange}
+                  value={parameterData.path}
+                  onChange={handleParameterChange}
                   className="textarea textarea-bordered w-full bg-base-200 text-base-content"
                 />
               </div>
@@ -374,31 +276,12 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
               <textarea
                 name="successProbability"
                 placeholder="Set the challenge success probability"
-                value={formData.successProbability}
-                onChange={handleInputChange}
+                value={parameterData.successProbability}
+                onChange={handleParameterChange}
                 className="textarea textarea-bordered w-full bg-base-200 text-base-content"
               />
             </div>
           )}
-        </div>
-        <div className="flex justify-center gap-4 mt-8">
-          <button className="btn btn-outline" onClick={onClose} disabled={loading}>
-            Cancel
-          </button>
-          <button
-            className="btn btn-primary"
-            onClick={handleSetValidator}
-            disabled={loading || (selectedAlgorithm === "SecretValidatorV1" && generatedCodes.length === 0)}
-          >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <span className="loading loading-spinner loading-sm"></span>
-                Setting Validator...
-              </span>
-            ) : (
-              "Set Validator"
-            )}
-          </button>
         </div>
       </div>
 
@@ -439,8 +322,8 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
           </div>
         </div>
       )}
-    </Modal>
+    </div>
   );
 };
 
-export default AdminSetChallengeValidator;
+export default SetChallengeValidator;

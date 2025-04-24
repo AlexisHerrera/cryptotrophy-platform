@@ -9,7 +9,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import "./TwoStepValidator.sol";
 
 
-struct OffChainApiConfig {
+struct OffChainConfig {
     bool exists;
     string apiUrl;
     string dataPath;
@@ -26,7 +26,7 @@ contract OffChainValidator is TwoStepValidator, ChainlinkClient, ConfirmedOwner 
     uint256 private fee;
 
     // validationId -> validatorConfig
-    mapping(uint256 => OffChainApiConfig) public config;
+    mapping(uint256 => OffChainConfig) public config;
 
     event OffChainRequestSent(uint256 validationId, address indexed claimer, bytes32 indexed requestId);
 
@@ -39,18 +39,27 @@ contract OffChainValidator is TwoStepValidator, ChainlinkClient, ConfirmedOwner 
         fee = (1 * LINK_DIVISIBILITY) / 10;
     }
 
+	function setConfigFromParams(uint256 _validationId, bytes calldata _params) public {
+		(
+			string memory _apiUrl,
+			string memory _dataPath
+		) = abi.decode(_params, (string, string));
+
+        config[_validationId] = OffChainConfig(true, _apiUrl, _dataPath);
+	}
+
     function setConfig(uint256 _validationId, string calldata apiUrl, string calldata dataPath) public {
-        config[_validationId] = OffChainApiConfig(true, apiUrl, dataPath);
+        config[_validationId] = OffChainConfig(true, apiUrl, dataPath);
     }
 
     function getConfig(uint256 _validationId) external view returns (string memory) {
-        OffChainApiConfig memory paramsStruct = config[_validationId];
+        OffChainConfig memory paramsStruct = config[_validationId];
 		require(paramsStruct.exists, "Error. Invalid configuration. No API configured for validationId.");
         return string.concat("{\"apiUrl\": \"", paramsStruct.apiUrl, "\"}");
     }
 
     function preValidation(uint256 _validationId, bytes calldata /* preValidationParams */) external returns (bytes32) {
-        OffChainApiConfig memory paramsStruct = config[_validationId];
+        OffChainConfig memory paramsStruct = config[_validationId];
 		require(paramsStruct.exists, "Error. Invalid configuration. No API configured for validationId.");
 
         Chainlink.Request memory request = _buildChainlinkRequest(

@@ -15,6 +15,7 @@ export interface CreateOrganizationFormProps {
   tokenSymbol: string;
   initialMint: string;
   ethBacking: string;
+  baseURI: string;
 }
 
 const CreateOrganizationForm = () => {
@@ -25,6 +26,7 @@ const CreateOrganizationForm = () => {
     tokenSymbol: "",
     initialMint: "1000",
     ethBacking: "0",
+    baseURI: "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -64,7 +66,7 @@ const CreateOrganizationForm = () => {
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
   const handleSubmit = async () => {
-    const { organizationName, tokenSymbol, initialMint, ethBacking, admins } = organizationForm;
+    const { organizationName, tokenSymbol, initialMint, ethBacking, admins, baseURI } = organizationForm;
 
     if (!organizationName || !tokenSymbol) {
       alert("Please fill all required fields.");
@@ -76,7 +78,7 @@ const CreateOrganizationForm = () => {
 
       const tx = await createOrganization({
         functionName: "createOrganization",
-        args: [organizationName, tokenSymbol, BigInt(initialMint), BigInt(ethBacking), admins],
+        args: [organizationName, tokenSymbol, BigInt(initialMint), BigInt(ethBacking), admins, baseURI],
         value: BigInt(ethBacking),
       });
 
