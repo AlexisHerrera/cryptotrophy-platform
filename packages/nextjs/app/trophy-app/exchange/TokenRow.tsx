@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { ethers } from "ethers";
 import { formatEther } from "viem";
 import { useReadContract } from "wagmi";
 import { TokenData } from "~~/app/trophy-app/exchange/page";
@@ -9,20 +8,16 @@ import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 interface TokenRowProps {
   tokenAddress: string;
   tokenSymbol: string;
-  userAddress: string;
   balance: bigint;
   setModalData: (tokenData: TokenData) => void;
 }
 
-const TokenRow = ({ tokenAddress, tokenSymbol, userAddress, balance, setModalData }: TokenRowProps) => {
+const TokenRow = ({ tokenAddress, tokenSymbol, balance, setModalData }: TokenRowProps) => {
   const { targetNetwork } = useTargetNetwork();
   const { data: deployedContract } = useDeployedContractInfo("OrganizationToken");
 
-  const {
-    data: exchangeRate,
-    isFetching: rateFetching,
-    refetch: refetchRate,
-  } = useReadContract({
+  // Use type assertion for the hook result
+  const readContractResult = useReadContract({
     address: tokenAddress,
     abi: deployedContract?.abi,
     functionName: "getCurrentExchangeRate",
@@ -30,10 +25,17 @@ const TokenRow = ({ tokenAddress, tokenSymbol, userAddress, balance, setModalDat
     query: { retry: false },
   });
 
+  // Extract typed values with assertions
+  const exchangeRate = readContractResult.data as bigint | undefined;
+  const rateFetching = readContractResult.isFetching;
+  const rateError = readContractResult.isError;
+  const refetchRate = readContractResult.refetch;
+
   const isLoading = rateFetching;
+  const isRedeemable = !isLoading && !rateError && exchangeRate && balance > 0n;
 
   let balanceInETH = "0";
-  if (!isLoading && balance !== undefined && exchangeRate) {
+  if (!isLoading && !rateError && balance !== undefined && exchangeRate) {
     const formattedBalance = parseFloat(formatEther(balance));
     const rate = parseFloat(exchangeRate.toString());
     if (rate > 0) {
@@ -45,22 +47,32 @@ const TokenRow = ({ tokenAddress, tokenSymbol, userAddress, balance, setModalDat
     refetchRate();
   }, [refetchRate]);
 
+  // Determine what to display for exchange rate
+  const exchangeRateDisplay = () => {
+    if (isLoading) return "Loading...";
+    if (rateError) return "Not available";
+    if (!exchangeRate) return "Not available";
+    return (1 / parseFloat(exchangeRate.toString())).toFixed(6);
+  };
+
   return (
     <tr>
       <td>{tokenSymbol}</td>
       <td>{balance === undefined ? "Loading..." : formatEther(balance)}</td>
-      <td>{isLoading || !exchangeRate ? "Loading..." : (1 / parseFloat(exchangeRate.toString())).toFixed(6)}</td>
-      <td>{isLoading ? "Loading..." : balanceInETH}</td>
+      <td>{exchangeRateDisplay()}</td>
+      <td>{isLoading || rateError ? "N/A" : balanceInETH}</td>
       <td>
         <button
           className="btn btn-primary"
-          disabled={balance === 0n}
+          disabled={!isRedeemable}
           onClick={() => {
+            if (!isRedeemable) return;
+
             console.log("Redeem", {
               tokenAddress,
               tokenSymbol,
               balance: balance,
-              exchangeRate: exchangeRate as bigint,
+              exchangeRate: exchangeRate,
             });
             setModalData({
               tokenAddress,
@@ -70,7 +82,7 @@ const TokenRow = ({ tokenAddress, tokenSymbol, userAddress, balance, setModalDat
             });
           }}
         >
-          Redeem
+          {rateError ? "Not Available" : "Redeem"}
         </button>
       </td>
     </tr>

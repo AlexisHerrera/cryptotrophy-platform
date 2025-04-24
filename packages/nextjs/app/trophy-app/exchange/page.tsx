@@ -96,7 +96,6 @@ const ExchangePage = () => {
                   key={token.tokenAddress}
                   tokenAddress={token.tokenAddress}
                   tokenSymbol={token.tokenSymbol}
-                  userAddress={userAddress}
                   balance={token.balance}
                   setModalData={data => setTokenData(data)}
                 />
