@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import TokenRow from "./TokenRow";
 import { ethers } from "ethers";
-import { formatEther } from "viem";
 import { useAccount, useReadContracts } from "wagmi";
 import ExchangeModal from "~~/app/trophy-app/exchange/ExchangeModal";
 import { BackButton } from "~~/components/common/BackButton";
