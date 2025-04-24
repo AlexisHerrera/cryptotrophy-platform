@@ -54,6 +54,16 @@ contract OffChainApiValidator is TwoStepValidator, FunctionsClient, ConfirmedOwn
         validatorUID = _validatorUID;
     }
 
+	function setConfigFromParams(uint256 validationId, bytes calldata params) public {
+		(
+			string memory _apiUrl,
+			string memory _dataPath,
+			address _callback
+		) = abi.decode(params, (string, string, address));
+
+        config[validationId] = OffChainApiConfig(true, _apiUrl, _dataPath, _callback);
+	}
+
     function setConfig(uint256 _validationId, string calldata _apiUrl, string calldata _dataPath, address _callback) public {
         config[_validationId] = OffChainApiConfig(true, _apiUrl, _dataPath, _callback);
     }

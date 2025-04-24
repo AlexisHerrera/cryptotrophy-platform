@@ -66,6 +66,13 @@ contract RandomValidator is TwoStepValidator, VRFConsumerBaseV2Plus {
         validatorUID = _validatorUID;
     }
 
+	function setConfigFromParams(uint256 _validationId, bytes calldata _params) public {
+        console.log("EEEEEEEEEEEE");
+		( uint256 _successProbability, address _callback ) = abi.decode(_params, (uint256, address));
+        require(_successProbability <= 10000, "Probability must be <= 10000 (100%)");
+        configs[_validationId] = RandomValidatorConfig(true, _successProbability, _callback);
+	}
+
     function setConfig(uint256 _validationId, uint256 _successProbability, address _callback) public {
         require(_successProbability <= 10000, "Probability must be <= 10000 (100%)");
         configs[_validationId] = RandomValidatorConfig(true, _successProbability, _callback);
