@@ -11,6 +11,7 @@ contract OrganizationManager is IOrganizationManager {
 		uint256 id;
 		string name;
 		address token;
+		string baseURI;
 		mapping(address => bool) adminExists;
 		address[] admins;
 		bool exists;
@@ -29,7 +30,13 @@ contract OrganizationManager is IOrganizationManager {
 	event OrganizationCreated(
 		uint256 indexed orgId,
 		string name,
-		address token
+		address token,
+		string baseURI
+	);
+
+	event OrganizationAdminAdded(
+		uint256 indexed orgId,
+		address indexed adminAddress
 	);
 
 	// Modificadores
@@ -87,6 +94,8 @@ contract OrganizationManager is IOrganizationManager {
 		orgNameExists[_name] = true;
 		tokenSymbolExists[_symbol] = true;
 
+		string memory _baseURI = string(abi.encodePacked("http://localhost:3000/ipfs/orgs/", _name));
+
 		// Crear nuevo token de la organización y asignar tokens al contrato
 		OrganizationToken token = new OrganizationToken(
 			_name,
@@ -109,6 +118,8 @@ contract OrganizationManager is IOrganizationManager {
 		org.name = _name;
 		org.token = address(token);
 		org.exists = true;
+		org.baseURI = _baseURI;
+
 		// Por default, el creador de la organización es admin
 		_addAdmin(orgId, msg.sender);
 
@@ -117,7 +128,7 @@ contract OrganizationManager is IOrganizationManager {
 		}
 
 		organizationIds.push(orgId);
-		emit OrganizationCreated(orgId, _name, address(token));
+		emit OrganizationCreated(orgId, _name, address(token), _baseURI);
 		return orgId;
 	}
 
@@ -125,6 +136,7 @@ contract OrganizationManager is IOrganizationManager {
 		if (!organizations[_orgId].adminExists[_admin]) {
 			organizations[_orgId].adminExists[_admin] = true;
 			organizations[_orgId].admins.push(_admin);
+			emit OrganizationAdminAdded(_orgId, _admin);
 		}
 	}
 
@@ -132,7 +144,6 @@ contract OrganizationManager is IOrganizationManager {
 	function addAdmin(uint256 _orgId, address _admin) public onlyAdmin(_orgId) {
 		_addAdmin(_orgId, _admin);
 	}
-
 
 	// Implementación de las funciones de la interfaz
 

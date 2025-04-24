@@ -35,10 +35,11 @@ const deployOffChainApiValidator: DeployFunction = async function (hre: HardhatR
   const sourcePath = path.resolve(__dirname, "../chainlinkcode/apifunctionvalidator.js");
   const source = readFileSync(sourcePath, "utf8");
   const subscriptionId = 297;
+  const validatorUID = hre.ethers.encodeBytes32String("OffChainValidatorV2");
 
   await deploy("OffChainApiValidator", {
     from: deployer,
-    args: [routerAddress, donid, source, subscriptionId],
+    args: [routerAddress, donid, source, subscriptionId, validatorUID],
     log: true,
     autoMine: true,
   });
@@ -50,7 +51,6 @@ const deployOffChainApiValidator: DeployFunction = async function (hre: HardhatR
 
   // Add OffChainApiValidator to challenge manager registred validators.
   const validatorRegistry = await hre.ethers.getContract<Contract>("ValidatorRegistry", deployer);
-  const validatorUID = hre.ethers.encodeBytes32String("OffChainValidatorV2");
   await validatorRegistry.registerValidator(validatorUID, validatorAddr);
 };
 
