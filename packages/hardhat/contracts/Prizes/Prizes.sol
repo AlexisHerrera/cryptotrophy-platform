@@ -15,7 +15,11 @@ contract Prizes {
         string description;
         uint256 price;
         uint256 stock;
+        uint256 orgId;
     }
+
+    mapping(uint256 => Prize) private prizes; // prizeId => Prize
+    uint256 private nextPrizeId;
 
     // prizesByOrg[orgId] => array dinámico de premios de esa organización
     mapping(uint256 => Prize[]) private prizesByOrg;
@@ -23,6 +27,24 @@ contract Prizes {
     // Referencia al OrganizationManager para verificar admins y miembros,
     // y para obtener el token de la org.
     IOrganizationManager public orgManager;
+
+    // EVents
+    event PrizeCreated(
+        uint256 indexed prizeId,
+        uint256 indexed orgId,
+        string name,
+        string description,
+        uint256 price,
+        uint256 stock
+    );
+
+    event PrizeClaimed(
+        uint256 indexed prizeId,
+        uint256 indexed orgId,
+        uint256 amount,
+		address claimer,
+        uint256 cost
+    );
 
     // -------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -41,15 +63,6 @@ contract Prizes {
         require(
             orgManager.isAdmin(orgId, msg.sender),
             "Prizes: caller is not an admin of this org"
-        );
-        _;
-    }
-
-    /// @dev Verifica si msg.sender es miembro o admin de la org
-    modifier onlyOrgMember(uint256 orgId) {
-        require(
-            orgManager.isUser(orgId, msg.sender) || orgManager.isAdmin(orgId, msg.sender),
-            "Prizes: caller is not a member of this org"
         );
         _;
     }
@@ -74,14 +87,32 @@ contract Prizes {
     external
     onlyOrgAdmin(orgId)
     {
-        // Almacenar el nuevo premio
-        prizesByOrg[orgId].push(Prize({
+        Prize memory _prize = Prize({
             name: name,
             description: description,
             price: price,
-            stock: stock
-        }));
+            stock: stock,
+            orgId: orgId
+        });
+        uint256 _prizeId = nextPrizeId++;
+		prizes[_prizeId] = _prize;
+
+        // Almacenar el nuevo premio
+        prizesByOrg[orgId].push(_prize);
+
+        emit PrizeCreated(
+            _prizeId,
+            orgId,
+            name,
+            description,
+            price,
+            stock
+        );
     }
+
+	function getPrize(uint256 prizeId) external view returns (Prize memory) {
+		return prizes[prizeId];
+	}
 
     /// @notice Lista todos los premios de una organización, incluyendo su ID e información.
     /// @dev Retorna un array de structs `Prize` pero en Solidity 0.8.x se puede usar
@@ -104,8 +135,8 @@ contract Prizes {
         uint256[] memory stocks
     )
     {
-        Prize[] storage prizes = prizesByOrg[orgId];
-        uint256 length = prizes.length;
+        Prize[] storage _prizes = prizesByOrg[orgId];
+        uint256 length = _prizes.length;
 
         ids = new uint256[](length);
         names = new string[](length);
@@ -114,7 +145,7 @@ contract Prizes {
         stocks = new uint256[](length);
 
         for (uint256 i = 0; i < length; i++) {
-            Prize storage p = prizes[i];
+            Prize storage p = _prizes[i];
             ids[i] = i;  // El ID es simplemente el índice en el array
             names[i] = p.name;
             descriptions[i] = p.description;
@@ -131,7 +162,6 @@ contract Prizes {
     /// @param amount Cantidad de unidades que se reclaman
     function claimPrize(uint256 orgId, uint256 prizeId, uint256 amount)
     external
-    onlyOrgMember(orgId)
     {
         require(amount > 0, "Prizes: amount must be > 0");
 
@@ -150,6 +180,8 @@ contract Prizes {
 
         // Disminuir el stock
         p.stock -= amount;
+
+		emit PrizeClaimed(prizeId, orgId, amount, msg.sender, cost);
 
         // Opcionalmente: "quemar" tokens o lo que se desee hacer con esos tokens
         // Si se pueden quemar:

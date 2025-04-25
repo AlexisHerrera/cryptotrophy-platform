@@ -21,6 +21,11 @@ contract OnChainValidator is IValidator {
         verifier = Groth16Verifier(_groth16Addr);
     }
 
+	function setConfigFromParams(uint256 validationId, bytes calldata params) public {
+		( uint256 _publicHash ) = abi.decode(params, (uint256));
+        config[validationId] = _publicHash;
+	}
+
     function setConfig(uint256 validationId, uint256 publicHash) public {
         config[validationId] = publicHash;
     }

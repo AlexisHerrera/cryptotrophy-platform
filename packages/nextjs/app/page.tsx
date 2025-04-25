@@ -38,19 +38,19 @@ const Home: NextPage = () => {
             <button
               className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition duration-200 hover:scale-105"
               onClick={() => {
-                router.push("/organizations");
+                router.push("/backoffice");
               }}
             >
               Backoffice
             </button>
-            {/*<button*/}
-            {/*  className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition duration-200 hover:scale-105"*/}
-            {/*  onClick={() => {*/}
-            {/*    router.push("/home");*/}
-            {/*  }}*/}
-            {/*>*/}
-            {/*  TrophyApp*/}
-            {/*</button>*/}
+            <button
+              className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition duration-200 hover:scale-105"
+              onClick={() => {
+                router.push("/trophy-app");
+              }}
+            >
+              TrophyApp
+            </button>
           </div>
         </main>
 

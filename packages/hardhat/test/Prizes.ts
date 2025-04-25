@@ -2,7 +2,6 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers as ethersHardhat } from "hardhat";
 import { ethers } from "ethers";
-import { encodeBytes32String } from "ethers";
 
 // Importa los tipos de TypeChain (ajusta según tu configuración)
 import { OrganizationManager, Prizes, OrganizationManager__factory, Prizes__factory } from "../typechain-types";
@@ -22,17 +21,6 @@ describe("Prizes contract", function () {
     const orgManager = (await OrgManagerFactory.deploy()) as OrganizationManager;
     await orgManager.waitForDeployment();
 
-    // Deploy OnChainCustomerBase
-    const OnChainCustomerBaseFactory = await ethersHardhat.getContractFactory("OnChainCustomerBase");
-    const onChainCustomerBase = (await OnChainCustomerBaseFactory.deploy(
-      orgManager.getAddress(),
-    )) as OnChainCustomerBase;
-    await onChainCustomerBase.waitForDeployment();
-
-    // Add OnChainCustomerBase to organization contract.
-    const onChainCustomerBaseUID = hre.ethers.encodeBytes32String("OnChainCustomerBaseV1");
-    await orgManager.registerCustomerBase(onChainCustomerBaseUID, onChainCustomerBase.getAddress());
-
     // 1B. Desplegamos Prizes apuntando al orgManager
     const PrizesFactory = (await ethersHardhat.getContractFactory("Prizes")) as Prizes__factory;
 
@@ -45,14 +33,13 @@ describe("Prizes contract", function () {
     //    - Añadimos user1 como user de la org
     //    - Creamos supply 1000 (de su token interno)
     //    - Añadimos algo de ETH backing
-    const encodedCustomerBaseUID = encodeBytes32String("OnChainCustomerBaseV1");
     const txCreateOrg = await orgManager.createOrganization(
       "TestOrg",
       "TST",
       1000, // supply inicial del token de la org
       ethers.parseEther("1"), // backing
       [admin1.address], // admins extra
-      encodedCustomerBaseUID, // users base
+      "http://localhost:3000/ipfs/org",
       { value: ethers.parseEther("1") },
     );
     const receipt = await txCreateOrg.wait();
@@ -67,9 +54,6 @@ describe("Prizes contract", function () {
     } else {
       throw new Error("No se encontró el evento OrganizationCreated");
     }
-
-    onChainCustomerBase.addCustomer(orgId, user1.address);
-    onChainCustomerBase.addCustomer(orgId, user2.address);
 
     // 3. Transferimos algunos tokens de la organización a user1 para que pueda probar claimPrize
     //    Por defecto, los tokens de la org residen en el OrganizationManager,
@@ -228,14 +212,6 @@ describe("Prizes contract", function () {
       // Solo hay stock=100
       // Intentar reclamar 101
       await expect(prizes.connect(user1).claimPrize(orgId, 0, 101)).to.be.revertedWith("Prizes: not enough stock");
-    });
-
-    it("Should revert if the caller is not a member or admin of the org", async function () {
-      const { prizes, outsider, orgId } = await loadFixture(createPrizeAndApproveFixture);
-
-      await expect(prizes.connect(outsider).claimPrize(orgId, 0, 1)).to.be.revertedWith(
-        "Prizes: caller is not a member of this org",
-      );
     });
 
     it("Should revert if the caller has not approved enough tokens", async function () {

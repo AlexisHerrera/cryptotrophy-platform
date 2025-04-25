@@ -9,7 +9,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import "./TwoStepValidator.sol";
 
 
-struct OffChainApiConfig {
+struct OffChainConfig {
     bool exists;
     string apiUrl;
     string dataPath;
@@ -26,13 +26,9 @@ contract OffChainValidator is TwoStepValidator, ChainlinkClient, ConfirmedOwner 
     uint256 private fee;
 
     // validationId -> validatorConfig
-    mapping(uint256 => OffChainApiConfig) public config;
+    mapping(uint256 => OffChainConfig) public config;
 
-    // Debug info
-    uint256 public lastExecuted;
-    string public lastUrl;
-    bool public lastCompleted;
-
+    event OffChainRequestSent(uint256 validationId, address indexed claimer, bytes32 indexed requestId);
 
     constructor(address _oracle, address _link) ConfirmedOwner(msg.sender) {
         _setChainlinkToken(_link);
@@ -41,21 +37,29 @@ contract OffChainValidator is TwoStepValidator, ChainlinkClient, ConfirmedOwner 
         jobId = "c1c5e92880894eb6b27d3cae19670aa3";
         link = _link;
         fee = (1 * LINK_DIVISIBILITY) / 10;
-        lastExecuted = 0;
     }
 
-    function setConfig(uint256 validationId, string calldata apiUrl, string calldata dataPath) public {
-        config[validationId] = OffChainApiConfig(true, apiUrl, dataPath);
+	function setConfigFromParams(uint256 _validationId, bytes calldata _params) public {
+		(
+			string memory _apiUrl,
+			string memory _dataPath
+		) = abi.decode(_params, (string, string));
+
+        config[_validationId] = OffChainConfig(true, _apiUrl, _dataPath);
+	}
+
+    function setConfig(uint256 _validationId, string calldata apiUrl, string calldata dataPath) public {
+        config[_validationId] = OffChainConfig(true, apiUrl, dataPath);
     }
 
-    function getConfig(uint256 validationId) external view returns (string memory) {
-        OffChainApiConfig memory paramsStruct = config[validationId];
+    function getConfig(uint256 _validationId) external view returns (string memory) {
+        OffChainConfig memory paramsStruct = config[_validationId];
 		require(paramsStruct.exists, "Error. Invalid configuration. No API configured for validationId.");
         return string.concat("{\"apiUrl\": \"", paramsStruct.apiUrl, "\"}");
     }
 
-    function preValidation(uint256 validationId, bytes calldata /* preValidationParams */) external returns (bytes32) {
-        OffChainApiConfig memory paramsStruct = config[validationId];
+    function preValidation(uint256 _validationId, bytes calldata /* preValidationParams */) external returns (bytes32) {
+        OffChainConfig memory paramsStruct = config[_validationId];
 		require(paramsStruct.exists, "Error. Invalid configuration. No API configured for validationId.");
 
         Chainlink.Request memory request = _buildChainlinkRequest(
@@ -68,7 +72,7 @@ contract OffChainValidator is TwoStepValidator, ChainlinkClient, ConfirmedOwner 
         string memory url = string(
             abi.encodePacked(
                 paramsStruct.apiUrl,
-                Strings.toString(validationId)
+                Strings.toString(_validationId)
             )
         );
         request._add("get", url);
@@ -79,13 +83,11 @@ contract OffChainValidator is TwoStepValidator, ChainlinkClient, ConfirmedOwner 
         // Sends the request
         bytes32 requestId = _sendChainlinkRequest(request, fee);
 
-        bytes32 claimUID = keccak256(abi.encodePacked(validationId, msg.sender));
+        bytes32 claimUID = keccak256(abi.encodePacked(_validationId, msg.sender));
         validationRequest[requestId] = claimUID;
-        claimState[claimUID] = ValidationState.PREVALIDATION;
+        claims[claimUID] = Claim(_validationId, msg.sender, ValidationState.PREVALIDATION);
 
-        // DEBUG
-        lastUrl=url;
-        lastRequestId = requestId;
+        emit OffChainRequestSent(_validationId, msg.sender, requestId);
 
         return requestId;
     }
@@ -95,12 +97,10 @@ contract OffChainValidator is TwoStepValidator, ChainlinkClient, ConfirmedOwner 
         bytes32 _requestId,
         bool _completed
     ) public recordChainlinkFulfillment(_requestId) {
-        lastCompleted=_completed;
-        lastExecuted += 1;
         if (_completed) {
-            claimState[validationRequest[_requestId]] = ValidationState.SUCCESS;
+            claims[validationRequest[_requestId]].state = ValidationState.SUCCESS;
         } else {
-            claimState[validationRequest[_requestId]] = ValidationState.FAIL;
+            claims[validationRequest[_requestId]].state = ValidationState.FAIL;
         }
     }
 }

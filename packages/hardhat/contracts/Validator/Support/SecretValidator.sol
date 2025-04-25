@@ -25,9 +25,24 @@ contract SecretValidator is IValidator {
 		verifier = Groth16Verifier(_groth16Addr);
 	}
 
-	function setConfig(uint256 validationId, uint256 publicHash) public {
-		config[validationId][publicHash] = true;
-		validHashes[validationId].push(publicHash);
+	function setConfigFromParams(uint256 _validationId, bytes calldata _params) public {
+		( uint256 length, uint256[] memory _hashes) = abi.decode(_params, (uint256, uint256[]));
+		for (uint256 i = 0; i < length; i++) {
+			uint256 _publicHash = _hashes[i];
+			config[_validationId][_publicHash] = true;
+			validHashes[_validationId].push(_publicHash);
+		}
+	}
+
+	/// @notice Add a list of hashes to the validator
+	/// @param _hashes The list of hashes to add
+	/// @dev This function is only callable by the owner of the validator
+	function setConfig(uint256 validationId, uint256[] calldata _hashes) public {
+		for (uint256 i = 0; i < _hashes.length; i++) {
+			uint256 _publicHash = _hashes[i];
+			config[validationId][_publicHash] = true;
+			validHashes[validationId].push(_publicHash);
+		}
 	}
 
 	function getConfig(
@@ -82,17 +97,5 @@ contract SecretValidator is IValidator {
 			"Invalid proof"
 		);
 		return true;
-	}
-
-	/// @notice Add a list of hashes to the validator
-	/// @param _hashes The list of hashes to add
-	/// @dev This function is only callable by the owner of the validator
-	function addValidHashes(
-		uint256 validationId,
-		uint256[] memory _hashes
-	) public {
-		for (uint256 i = 0; i < _hashes.length; i++) {
-			setConfig(validationId, _hashes[i]);
-		}
 	}
 }
