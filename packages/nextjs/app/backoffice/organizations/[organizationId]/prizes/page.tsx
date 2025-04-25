@@ -2,6 +2,7 @@
 
 import React, { useCallback, useState } from "react";
 import { useParams } from "next/navigation";
+import CreatePrizeModal from "./_components/CreatePrizeModal";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 import { BackButton } from "~~/components/common/BackButton";
@@ -16,6 +17,7 @@ const PrizeCenter: React.FC = () => {
   const { organizationId } = useParams() as { organizationId: string };
   const { address } = useAccount();
   const signer = useEthersSigner();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [claimAmounts, setClaimAmounts] = useState<{ [prizeId: string]: string }>({});
 
   const handleClaimAmountChange = useCallback((prizeId: bigint, value: string) => {
@@ -127,12 +129,13 @@ const PrizeCenter: React.FC = () => {
     <div className="flex justify-between">
       <BackButton />
       <div className="container mx-auto p-4 max-w-4xl">
-        <h1 className="text-4xl text-gray-700 font-mono grayscale mb-4 dark:text-gray-300 text-center">Prize Center</h1>
-
-        <div className="mb-4 text-center">
-          <span className="font-bold">Your Balance:</span>{" "}
-          {ethers.formatUnits(balanceData ? balanceData[0] : 0n, DECIMALS_TOKEN)}{" "}
-          {balanceData ? balanceData[1] : "Tokens"}
+        <h1 className="text-4xl text-gray-700 font-mono grayscale mb-4 dark:text-gray-300 text-center">
+          Prize Administration
+        </h1>
+        <div className="flex justify-center mb-6">
+          <button className="btn btn-primary" onClick={() => setIsCreateModalOpen(true)}>
+            Create Prize
+          </button>
         </div>
 
         <PrizeTable
@@ -141,6 +144,14 @@ const PrizeCenter: React.FC = () => {
           onClaimAmountChange={handleClaimAmountChange}
           onClaim={handleClaim}
           isLoading={isPrizesLoading || isBalanceLoading}
+        />
+        <CreatePrizeModal
+          orgId={organizationId}
+          isOpen={isCreateModalOpen}
+          onClose={async () => {
+            setIsCreateModalOpen(false);
+            await refetchPrizes();
+          }}
         />
       </div>
     </div>

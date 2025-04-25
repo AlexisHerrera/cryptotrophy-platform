@@ -130,7 +130,6 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
             <th>Max Winners</th>
             <th>Start Time</th>
             <th>End Time</th>
-            <th>Actions</th>
             <th>Admin</th>
             <th>Local Network</th>
           </tr>
@@ -152,11 +151,6 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
               <td>{challenge.maxWinners.toString()}</td>
               <td>{challenge.startTime}</td>
               <td>{challenge.endTime}</td>
-              <td>
-                <ActiveChallengeWrapper challengeActive={challenge.active}>
-                  {createClaimChallengeButton(orgId, challenge.id, challenge.validatorUID, handleSecretCodeChallenge)}
-                </ActiveChallengeWrapper>
-              </td>
               <td>
                 <ActiveChallengeWrapper challengeActive={challenge.active}>
                   {

@@ -88,7 +88,7 @@ const OrganizationPage: React.FC = () => {
             <div>
               <button
                 className="btn bg-amber-400 dark:text-gray-800 dark:btn-warning"
-                onClick={() => router.push(`/trophy-app/organizations/${organization.id}/prizes`)}
+                onClick={() => router.push(`/backoffice/organizations/${organization.id}/prizes`)}
               >
                 Prize Center
               </button>
