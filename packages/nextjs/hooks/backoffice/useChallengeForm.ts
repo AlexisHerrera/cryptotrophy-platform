@@ -60,7 +60,7 @@ export const useChallengeForm = (initialOrganizationId: bigint | undefined) => {
     } else {
       setChallengeForm({} as ChallengeData);
     }
-  }, [initialOrganizationId]);
+  }, [challengeForm.organizationId, initialOrganizationId]);
 
   return {
     challengeForm,

@@ -32,7 +32,7 @@ const ChallengeDetailsForm: React.FC<ChallengeDetailsFormProps> = ({ formData, h
       setMaxPrizeAmount(availableTokens as bigint);
       handleInputChange("maxPrizeAmount", availableTokens);
     }
-  }, [availableTokens]);
+  }, [availableTokens, handleInputChange]);
 
   const formattedMaxPrizeAmount = maxPrizeAmount !== null ? formatUnits(maxPrizeAmount, DECIMALS_TOKEN) : "Loading...";
   const handleNumericInputChange = (field: keyof ChallengeData, value: string) => {
