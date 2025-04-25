@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Organization } from "~~/utils/cryptotrophyIndex/organizations";
 
 // Helper to convert ipfs:// URLs to a public gateway URL.
@@ -14,6 +15,8 @@ const convertIpfsUrl = (baseURI: string): string => {
 export const OrganizationCard: React.FC<{ organization: Organization }> = ({ organization }) => {
   const [metadata, setMetadata] = useState<{ logo?: string; name?: string; description?: string }>({});
   const [loading, setLoading] = useState<boolean>(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchMetadata = async () => {
@@ -35,7 +38,10 @@ export const OrganizationCard: React.FC<{ organization: Organization }> = ({ org
   }, [organization.baseURI]);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
+    <div
+      onClick={() => router.push(`/trophy-app/organizations/${organization.id.toString()}`)}
+      className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col cursor-pointer hover:shadow-lg transition-shadow duration-200"
+    >
       {metadata.logo ? (
         <img src={metadata.logo} alt={metadata.name} className="w-full h-60 object-cover rounded-md mb-4" />
       ) : (
