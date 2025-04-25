@@ -9,7 +9,6 @@ import { BackButton } from "~~/components/common/BackButton";
 import PrizeTable from "~~/components/common/PrizeTable";
 import { useEthersSigner } from "~~/hooks/ethers/useEthersSigner";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { DECIMALS_TOKEN } from "~~/settings";
 import { checkAndApproveErc20 } from "~~/utils/orgTokens/approve";
 import { notification } from "~~/utils/scaffold-eth";
 

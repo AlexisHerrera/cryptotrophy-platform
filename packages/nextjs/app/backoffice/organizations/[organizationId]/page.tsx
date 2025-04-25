@@ -3,10 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AdminPanel from "~~/app/backoffice/organizations/_components/AdminPanel";
-import ChallengeList from "~~/app/backoffice/organizations/_components/ChallengeList";
 import CreateChallengeModal from "~~/app/backoffice/organizations/_components/CreateChallengeModal";
 import Modal from "~~/components/Modal";
 import { BackButton } from "~~/components/common/BackButton";
+import ChallengeList from "~~/components/common/ChallengeList";
 import { useChallengeForm } from "~~/hooks/backoffice/useChallengeForm";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
@@ -97,7 +97,7 @@ const OrganizationPage: React.FC = () => {
 
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-semibold mb-4">Active Challenges</h2>
-            <ChallengeList challengeIds={challengeIds ?? []} orgId={BigInt(organizationId as string)} />
+            <ChallengeList mode={"admin"} challengeIds={challengeIds ?? []} orgId={BigInt(organizationId as string)} />
           </div>
         </div>
 

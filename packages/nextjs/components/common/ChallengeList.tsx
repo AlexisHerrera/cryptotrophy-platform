@@ -1,18 +1,99 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import AdminSetChallengeValidator from "./AdminSetChallengeValidator";
-import ClaimChallengeBasicButton from "./ClaimChallengeBasicButton";
-import ClaimChallengeOnChainModal from "./ClaimChallengeOnChainModal";
-import ClaimChallengeSecretModal from "./ClaimChallengeSecretModal";
-import ClaimChallengeTwoStepButton from "./ClaimChallengeTwoStepButton";
-import { ValidatorContractName, getContractName, getValidatorDisplayName } from "./KnownValidators";
-import MockExternalValidatorFulfill from "./MockExternalValidatorFulfill";
+import AdminSetChallengeValidator from "../../app/backoffice/organizations/_components/AdminSetChallengeValidator";
+import ClaimChallengeBasicButton from "../../app/backoffice/organizations/_components/ClaimChallengeBasicButton";
+import ClaimChallengeOnChainModal from "../../app/backoffice/organizations/_components/ClaimChallengeOnChainModal";
+import ClaimChallengeSecretModal from "../../app/backoffice/organizations/_components/ClaimChallengeSecretModal";
+import ClaimChallengeTwoStepButton from "../../app/backoffice/organizations/_components/ClaimChallengeTwoStepButton";
+import MockExternalValidatorFulfill from "../../app/backoffice/organizations/_components/MockExternalValidatorFulfill";
 import { formatUnits } from "ethers";
 import { decodeBytes32String } from "ethers";
+import {
+  ValidatorContractName,
+  getContractName,
+  getValidatorDisplayName,
+} from "~~/app/backoffice/organizations/_components/KnownValidators";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
 
+const AdditionalHeaders = ({ mode }: { mode: "user" | "admin" }) => {
+  if (mode === "admin") {
+    return (
+      <>
+        <th>Admin</th>
+        <th>Local Network</th>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <th>Claim</th>
+      </>
+    );
+  }
+};
+
+interface AdminColumnsCellsProps {
+  challenge: any;
+  onConfigureValidator: (challenge: any) => void;
+  onMockValidator: (challenge: any) => void;
+}
+
+const AdminColumnsCells: React.FC<AdminColumnsCellsProps> = ({ challenge, onConfigureValidator, onMockValidator }) => (
+  <>
+    <td>
+      <ActiveChallengeWrapper challengeActive={challenge.active}>
+        <button
+          className="btn btn-primary btn-sm"
+          onClick={() =>
+            onConfigureValidator({
+              id: challenge.id,
+              hasValidator: challenge.hasValidator,
+              validatorUID: challenge.validatorUID,
+            })
+          }
+        >
+          Configure Validator
+        </button>
+      </ActiveChallengeWrapper>
+    </td>
+    <td>
+      <ActiveChallengeWrapper challengeActive={challenge.active}>
+        {challenge.hasValidator ? (
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() =>
+              onMockValidator({
+                id: challenge.id,
+                validatorUID: challenge.validatorUID,
+              })
+            }
+          >
+            Mock Validator
+          </button>
+        ) : (
+          <span className="text-gray-500">Missing Validator</span>
+        )}
+      </ActiveChallengeWrapper>
+    </td>
+  </>
+);
+interface UserColumnsCellsProps {
+  challenge: any;
+  orgId: bigint;
+  handleSecretCodeChallenge: (id: bigint, validatorUID: string) => void;
+}
+
+const UserColumnCells: React.FC<UserColumnsCellsProps> = ({ challenge, orgId, handleSecretCodeChallenge }) => {
+  return (
+    <td>
+      <ActiveChallengeWrapper challengeActive={challenge.active}>
+        {createClaimChallengeButton(orgId, challenge.id, challenge.validatorUID, handleSecretCodeChallenge)}
+      </ActiveChallengeWrapper>
+    </td>
+  );
+};
 // Wrapper to hide children if challenge is not active
 
 interface ActiveChallengeWrapperProps {
@@ -54,9 +135,10 @@ function createClaimChallengeButton(
 interface ChallengeListProps {
   orgId: bigint;
   challengeIds: readonly bigint[];
+  mode: "user" | "admin";
 }
 
-const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) => {
+const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds, mode }) => {
   const [challenges, setChallenges] = useState<any[]>([]);
   const [selectedChallenge, setSelectedChallenge] = useState<{
     id: bigint;
@@ -130,8 +212,7 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
             <th>Max Winners</th>
             <th>Start Time</th>
             <th>End Time</th>
-            <th>Admin</th>
-            <th>Local Network</th>
+            <AdditionalHeaders mode={mode} />
           </tr>
         </thead>
         <tbody>
@@ -151,40 +232,19 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
               <td>{challenge.maxWinners.toString()}</td>
               <td>{challenge.startTime}</td>
               <td>{challenge.endTime}</td>
-              <td>
-                <ActiveChallengeWrapper challengeActive={challenge.active}>
-                  {
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() =>
-                        setChallengeValidator({
-                          id: challenge.id,
-                          hasValidator: challenge.hasValidator,
-                          validatorUID: challenge.validatorUID,
-                        })
-                      }
-                    >
-                      Configure Validator
-                    </button>
-                  }
-                </ActiveChallengeWrapper>
-              </td>
-              <td>
-                <ActiveChallengeWrapper challengeActive={challenge.active}>
-                  {challenge.hasValidator ? (
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() =>
-                        setMockValidatorResponse({ id: challenge.id, validatorUID: challenge.validatorUID })
-                      }
-                    >
-                      Mock Validator
-                    </button>
-                  ) : (
-                    <span className="text-gray-500">Missing Validator</span>
-                  )}
-                </ActiveChallengeWrapper>
-              </td>
+              {mode === "admin" ? (
+                <AdminColumnsCells
+                  challenge={challenge}
+                  onConfigureValidator={setChallengeValidator}
+                  onMockValidator={setMockValidatorResponse}
+                />
+              ) : (
+                <UserColumnCells
+                  challenge={challenge}
+                  orgId={orgId}
+                  handleSecretCodeChallenge={handleSecretCodeChallenge}
+                />
+              )}
             </tr>
           ))}
         </tbody>
