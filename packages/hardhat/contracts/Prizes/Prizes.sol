@@ -3,6 +3,34 @@ pragma solidity ^0.8.10;
 
 import "../Organization/IOrganizationManager.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
+
+// NFT contract for prizes
+contract PrizeNFT is ERC721URIStorage, Ownable {
+    uint256 private _nextTokenId;
+    
+    string private _baseTokenURI;
+    
+    constructor(string memory name, string memory symbol, string memory baseTokenURI) 
+        ERC721(name, symbol) 
+        Ownable(msg.sender)
+    {
+        _baseTokenURI = baseTokenURI;
+    }
+    
+    function mint(address to) external onlyOwner returns (uint256) {
+        uint256 tokenId = _nextTokenId++;
+        _safeMint(to, tokenId);
+        return tokenId;
+    }
+    
+    function _baseURI() internal view override returns (string memory) {
+        return _baseTokenURI;
+    }
+}
 
 contract Prizes {
     // -------------------------------------------------------------------------
@@ -16,6 +44,7 @@ contract Prizes {
         uint256 price;
         uint256 stock;
         uint256 orgId;
+        address nftContract; // Address of the deployed NFT contract for this prize
     }
 
     mapping(uint256 => Prize) private prizes; // prizeId => Prize
@@ -35,7 +64,8 @@ contract Prizes {
         string name,
         string description,
         uint256 price,
-        uint256 stock
+        uint256 stock,
+        address nftContract
     );
 
     event PrizeClaimed(
@@ -43,7 +73,8 @@ contract Prizes {
         uint256 indexed orgId,
         uint256 amount,
 		address claimer,
-        uint256 cost
+        uint256 cost,
+        uint256[] nftIds
     );
 
     // -------------------------------------------------------------------------
@@ -87,12 +118,18 @@ contract Prizes {
     external
     onlyOrgAdmin(orgId)
     {
+        // Deploy a new NFT contract for this prize
+        string memory symbol = string(abi.encodePacked("PRIZE", Strings.toString(nextPrizeId)));
+        string memory baseURI = ""; // Can be set later by admin
+        PrizeNFT nftContract = new PrizeNFT(name, symbol, baseURI);
+        
         Prize memory _prize = Prize({
             name: name,
             description: description,
             price: price,
             stock: stock,
-            orgId: orgId
+            orgId: orgId,
+            nftContract: address(nftContract)
         });
         uint256 _prizeId = nextPrizeId++;
 		prizes[_prizeId] = _prize;
@@ -106,7 +143,8 @@ contract Prizes {
             name,
             description,
             price,
-            stock
+            stock,
+            address(nftContract)
         );
     }
 
@@ -124,6 +162,7 @@ contract Prizes {
     /// @return descriptions Lista de descripciones
     /// @return prices Lista de precios
     /// @return stocks Lista de stocks
+    /// @return nftContracts Lista de direcciones de contratos NFT
     function listPrizes(uint256 orgId)
     external
     view
@@ -132,7 +171,8 @@ contract Prizes {
         string[] memory names,
         string[] memory descriptions,
         uint256[] memory prices,
-        uint256[] memory stocks
+        uint256[] memory stocks,
+        address[] memory nftContracts
     )
     {
         Prize[] storage _prizes = prizesByOrg[orgId];
@@ -143,6 +183,7 @@ contract Prizes {
         descriptions = new string[](length);
         prices = new uint256[](length);
         stocks = new uint256[](length);
+        nftContracts = new address[](length);
 
         for (uint256 i = 0; i < length; i++) {
             Prize storage p = _prizes[i];
@@ -151,6 +192,7 @@ contract Prizes {
             descriptions[i] = p.description;
             prices[i] = p.price;
             stocks[i] = p.stock;
+            nftContracts[i] = p.nftContract;
         }
     }
 
@@ -178,10 +220,16 @@ contract Prizes {
         // Transferir tokens desde el usuario a este contrato (requiere approve)
         IERC20(tokenAddress).transferFrom(msg.sender, address(this), cost);
 
+        // Mint NFTs to the claimer
+        uint256[] memory nftIds = new uint256[](amount);
+        for (uint256 i = 0; i < amount; i++) {
+            nftIds[i] = PrizeNFT(p.nftContract).mint(msg.sender);
+        }
+
         // Disminuir el stock
         p.stock -= amount;
 
-		emit PrizeClaimed(prizeId, orgId, amount, msg.sender, cost);
+		emit PrizeClaimed(prizeId, orgId, amount, msg.sender, cost, nftIds);
 
         // Opcionalmente: "quemar" tokens o lo que se desee hacer con esos tokens
         // Si se pueden quemar:
