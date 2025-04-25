@@ -19,6 +19,7 @@ interface PrizeTableProps {
   onClaimAmountChange: (prizeId: bigint, value: string) => void;
   onClaim: (prizeId: bigint) => void;
   isLoading?: boolean;
+  mode: "admin" | "user";
 }
 
 const PrizeTable: React.FC<PrizeTableProps> = ({
@@ -27,6 +28,7 @@ const PrizeTable: React.FC<PrizeTableProps> = ({
   onClaimAmountChange,
   onClaim,
   isLoading = false,
+  mode,
 }) => {
   if (isLoading) {
     return (
@@ -45,7 +47,7 @@ const PrizeTable: React.FC<PrizeTableProps> = ({
             <th>Name</th>
             <th>Price (tokens)</th>
             <th>Stock</th>
-            <th>Claim</th>
+            {mode === "user" ? <th>Claim</th> : <></>}
           </tr>
         </thead>
         <tbody>
@@ -64,38 +66,42 @@ const PrizeTable: React.FC<PrizeTableProps> = ({
                 <td>{prize.name}</td>
                 <td>{ethers.formatUnits(prize.price, 18)}</td>
                 <td>{prize.stock.toString()}</td>
-                <td>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      min="1"
-                      placeholder="Qty"
-                      className="input input-sm input-bordered w-20 hide-number-spinners"
-                      value={claimAmounts[prize.id.toString()] || ""}
-                      onChange={e => {
-                        const requestedAmount = BigInt(e.target.value || "0");
-                        if (requestedAmount <= prize.stock) {
-                          onClaimAmountChange(prize.id, e.target.value);
-                        } else {
-                          onClaimAmountChange(prize.id, prize.stock.toString());
-                          console.warn("Cannot claim more than available stock.");
+                {mode === "user" ? (
+                  <td>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min="1"
+                        placeholder="Qty"
+                        className="input input-sm input-bordered w-20 hide-number-spinners"
+                        value={claimAmounts[prize.id.toString()] || ""}
+                        onChange={e => {
+                          const requestedAmount = BigInt(e.target.value || "0");
+                          if (requestedAmount <= prize.stock) {
+                            onClaimAmountChange(prize.id, e.target.value);
+                          } else {
+                            onClaimAmountChange(prize.id, prize.stock.toString());
+                            console.warn("Cannot claim more than available stock.");
+                          }
+                        }}
+                        disabled={prize.stock === 0n}
+                      />
+                      <button
+                        className="btn btn-sm btn-secondary"
+                        onClick={() => onClaim(prize.id)}
+                        disabled={
+                          prize.stock === 0n ||
+                          !claimAmounts[prize.id.toString()] ||
+                          BigInt(claimAmounts[prize.id.toString()] || "0") <= 0n
                         }
-                      }}
-                      disabled={prize.stock === 0n}
-                    />
-                    <button
-                      className="btn btn-sm btn-secondary"
-                      onClick={() => onClaim(prize.id)}
-                      disabled={
-                        prize.stock === 0n ||
-                        !claimAmounts[prize.id.toString()] ||
-                        BigInt(claimAmounts[prize.id.toString()] || "0") <= 0n
-                      }
-                    >
-                      Claim
-                    </button>
-                  </div>
-                </td>
+                      >
+                        Claim
+                      </button>
+                    </div>
+                  </td>
+                ) : (
+                  <></>
+                )}
               </tr>
             ))
           )}
