@@ -12,7 +12,7 @@ const convertIpfsUrl = (baseURI: string): string => {
 
 // A card component for displaying an individual organization's data.
 // It fetches additional metadata (logo and description) from IPFS.
-export const OrganizationCard: React.FC<{ organization: Organization }> = ({ organization }) => {
+export const OrganizationCard: React.FC<{ item: Organization }> = ({ item: organization }) => {
   const [metadata, setMetadata] = useState<{ logo?: string; name?: string; description?: string }>({});
   const [loading, setLoading] = useState<boolean>(false);
 

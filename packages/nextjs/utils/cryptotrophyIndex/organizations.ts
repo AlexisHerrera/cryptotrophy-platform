@@ -25,8 +25,8 @@ export interface OrganizationsData {
 
 // GraphQL query to fetch organizations with pagination.
 const GET_ORGANIZATIONS_QUERY = `
-  query GetOrganizations($limit: Int!, $after: String, $before: String) {
-    organizations(limit: $limit, after: $after, before: $before) {
+  query GetOrganizations($limit: Int!, $after: String, $before: String, $name: String) {
+    organizations(limit: $limit, after: $after, before: $before, where: {name_contains: $name}) {
       totalCount
       items {
         id
@@ -49,13 +49,14 @@ export async function fetchOrganizations(
   limit: number,
   after?: string | null,
   before?: string | null,
+  name?: string,
 ): Promise<OrganizationsData> {
   const res = await fetch(GRAPHQL_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       query: GET_ORGANIZATIONS_QUERY,
-      variables: { limit, after, before },
+      variables: { limit, after, before, name },
     }),
   });
 
