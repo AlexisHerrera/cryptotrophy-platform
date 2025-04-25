@@ -1219,6 +1219,36 @@ const deployedContracts = {
               name: "description",
               type: "string",
             },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "startTime",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "endTime",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "maxWinners",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "prizeAmount",
+              type: "uint256",
+            },
           ],
           name: "ChallengeCreated",
           type: "event",
@@ -1237,6 +1267,18 @@ const deployedContracts = {
               internalType: "address",
               name: "user",
               type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "claimTime",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "prizeAmountInBaseUnits",
+              type: "uint256",
             },
           ],
           name: "RewardClaimed",
@@ -1405,6 +1447,65 @@ const deployedContracts = {
             },
           ],
           name: "createChallenge",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "_description",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "_prizeAmount",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_startTime",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_endTime",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_maxWinners",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes32",
+              name: "_validatorUID",
+              type: "bytes32",
+            },
+            {
+              internalType: "address",
+              name: "_validatorAddress",
+              type: "address",
+            },
+            {
+              internalType: "bytes",
+              name: "validatorParams",
+              type: "bytes",
+            },
+          ],
+          name: "createChallengeWithValidator",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -1588,6 +1689,53 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "validationChallenge",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "_validatorUID",
+              type: "bytes32",
+            },
+            {
+              internalType: "uint256",
+              name: "_validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_claimer",
+              type: "address",
+            },
+          ],
+          name: "validatorClaimCallback",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
       ],
@@ -1801,6 +1949,11 @@ const deployedContracts = {
               name: "_subscriptionId",
               type: "uint64",
             },
+            {
+              internalType: "bytes32",
+              name: "_validatorUID",
+              type: "bytes32",
+            },
           ],
           stateMutability: "nonpayable",
           type: "constructor",
@@ -1835,6 +1988,69 @@ const deployedContracts = {
           ],
           name: "UnexpectedRequestID",
           type: "error",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "claimer",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "requestId",
+              type: "bytes32",
+            },
+          ],
+          name: "OffChainApiValidatorCalled",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "requestId",
+              type: "bytes32",
+            },
+            {
+              indexed: false,
+              internalType: "bytes",
+              name: "errorData",
+              type: "bytes",
+            },
+          ],
+          name: "OffChainApiValidatorError",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "requestId",
+              type: "bytes32",
+            },
+            {
+              indexed: false,
+              internalType: "bytes32",
+              name: "response",
+              type: "bytes32",
+            },
+          ],
+          name: "OffChainApiValidatorFulfilled",
+          type: "event",
         },
         {
           anonymous: false,
@@ -1901,31 +2117,6 @@ const deployedContracts = {
           type: "event",
         },
         {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "bytes32",
-              name: "requestId",
-              type: "bytes32",
-            },
-            {
-              indexed: false,
-              internalType: "bytes",
-              name: "response",
-              type: "bytes",
-            },
-            {
-              indexed: false,
-              internalType: "bytes",
-              name: "err",
-              type: "bytes",
-            },
-          ],
-          name: "Response",
-          type: "event",
-        },
-        {
           inputs: [],
           name: "MAX_CALLBACK_GAS",
           outputs: [
@@ -1953,11 +2144,21 @@ const deployedContracts = {
               type: "bytes32",
             },
           ],
-          name: "claimState",
+          name: "claims",
           outputs: [
             {
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "claimer",
+              type: "address",
+            },
+            {
               internalType: "enum ITwoStepValidator.ValidationState",
-              name: "",
+              name: "state",
               type: "uint8",
             },
           ],
@@ -1989,6 +2190,11 @@ const deployedContracts = {
               name: "dataPath",
               type: "string",
             },
+            {
+              internalType: "address",
+              name: "callback",
+              type: "address",
+            },
           ],
           stateMutability: "view",
           type: "function",
@@ -2010,7 +2216,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
           ],
@@ -2069,58 +2275,6 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "lastCompleted",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastExecuted",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastRequestId",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastUrl",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
           name: "owner",
           outputs: [
             {
@@ -2136,7 +2290,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
             {
@@ -2173,21 +2327,44 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
             {
               internalType: "string",
-              name: "apiUrl",
+              name: "_apiUrl",
               type: "string",
             },
             {
               internalType: "string",
-              name: "dataPath",
+              name: "_dataPath",
               type: "string",
+            },
+            {
+              internalType: "address",
+              name: "_callback",
+              type: "address",
             },
           ],
           name: "setConfig",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes",
+              name: "params",
+              type: "bytes",
+            },
+          ],
+          name: "setConfigFromParams",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -2276,10 +2453,10 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        claimState: "contracts/Validator/Support/TwoStepValidator.sol",
+        claims: "contracts/Validator/Support/TwoStepValidator.sol",
         getValidationState: "contracts/Validator/Support/TwoStepValidator.sol",
-        lastRequestId: "contracts/Validator/Support/TwoStepValidator.sol",
         preValidation: "contracts/Validator/Support/TwoStepValidator.sol",
+        setConfigFromParams: "contracts/Validator/Support/TwoStepValidator.sol",
         validate: "contracts/Validator/Support/TwoStepValidator.sol",
         validationRequest: "contracts/Validator/Support/TwoStepValidator.sol",
         handleOracleFulfillment: "@chainlink/contracts/src/v0.8/functions/v1_0_0/FunctionsClient.sol",
@@ -2350,6 +2527,31 @@ const deployedContracts = {
           anonymous: false,
           inputs: [
             {
+              indexed: false,
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "claimer",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "requestId",
+              type: "bytes32",
+            },
+          ],
+          name: "OffChainRequestSent",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
               indexed: true,
               internalType: "address",
               name: "from",
@@ -2399,11 +2601,21 @@ const deployedContracts = {
               type: "bytes32",
             },
           ],
-          name: "claimState",
+          name: "claims",
           outputs: [
             {
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "claimer",
+              type: "address",
+            },
+            {
               internalType: "enum ITwoStepValidator.ValidationState",
-              name: "",
+              name: "state",
               type: "uint8",
             },
           ],
@@ -2461,7 +2673,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
           ],
@@ -2510,58 +2722,6 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "lastCompleted",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastExecuted",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastRequestId",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastUrl",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
           name: "link",
           outputs: [
             {
@@ -2603,7 +2763,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
             {
@@ -2627,7 +2787,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
             {
@@ -2642,6 +2802,24 @@ const deployedContracts = {
             },
           ],
           name: "setConfig",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes",
+              name: "_params",
+              type: "bytes",
+            },
+          ],
+          name: "setConfigFromParams",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -2704,10 +2882,10 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        claimState: "contracts/Validator/Support/TwoStepValidator.sol",
+        claims: "contracts/Validator/Support/TwoStepValidator.sol",
         getValidationState: "contracts/Validator/Support/TwoStepValidator.sol",
-        lastRequestId: "contracts/Validator/Support/TwoStepValidator.sol",
         preValidation: "contracts/Validator/Support/TwoStepValidator.sol",
+        setConfigFromParams: "contracts/Validator/Support/TwoStepValidator.sol",
         validate: "contracts/Validator/Support/TwoStepValidator.sol",
         validationRequest: "contracts/Validator/Support/TwoStepValidator.sol",
         acceptOwnership: "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol",
@@ -2824,6 +3002,24 @@ const deployedContracts = {
               type: "bytes",
             },
           ],
+          name: "setConfigFromParams",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes",
+              name: "params",
+              type: "bytes",
+            },
+          ],
           name: "validate",
           outputs: [
             {
@@ -2837,6 +3033,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
+        setConfigFromParams: "contracts/Challenges/IValidator.sol",
         validate: "contracts/Challenges/IValidator.sol",
       },
     },
@@ -2905,6 +3102,25 @@ const deployedContracts = {
               type: "uint256",
             },
             {
+              indexed: true,
+              internalType: "address",
+              name: "adminAddress",
+              type: "address",
+            },
+          ],
+          name: "OrganizationAdminAdded",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
               indexed: false,
               internalType: "string",
               name: "name",
@@ -2915,6 +3131,12 @@ const deployedContracts = {
               internalType: "address",
               name: "token",
               type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "baseURI",
+              type: "string",
             },
           ],
           name: "OrganizationCreated",
@@ -2964,6 +3186,11 @@ const deployedContracts = {
               internalType: "address[]",
               name: "_admins",
               type: "address[]",
+            },
+            {
+              internalType: "string",
+              name: "_baseURI",
+              type: "string",
             },
           ],
           name: "createOrganization",
@@ -3202,6 +3429,25 @@ const deployedContracts = {
         {
           inputs: [
             {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          name: "orgNameExists",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
               internalType: "uint256",
               name: "",
               type: "uint256",
@@ -3244,8 +3490,32 @@ const deployedContracts = {
               type: "address",
             },
             {
+              internalType: "string",
+              name: "baseURI",
+              type: "string",
+            },
+            {
               internalType: "bool",
               name: "exists",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          name: "tokenSymbolExists",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
               type: "bool",
             },
           ],
@@ -3863,6 +4133,86 @@ const deployedContracts = {
           type: "constructor",
         },
         {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "prizeId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "address",
+              name: "claimer",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "cost",
+              type: "uint256",
+            },
+          ],
+          name: "PrizeClaimed",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "prizeId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "description",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "price",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "stock",
+              type: "uint256",
+            },
+          ],
+          name: "PrizeCreated",
+          type: "event",
+        },
+        {
           inputs: [
             {
               internalType: "uint256",
@@ -3916,6 +4266,52 @@ const deployedContracts = {
           name: "createPrize",
           outputs: [],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "prizeId",
+              type: "uint256",
+            },
+          ],
+          name: "getPrize",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "string",
+                  name: "name",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "description",
+                  type: "string",
+                },
+                {
+                  internalType: "uint256",
+                  name: "price",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "stock",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "orgId",
+                  type: "uint256",
+                },
+              ],
+              internalType: "struct Prizes.Prize",
+              name: "",
+              type: "tuple",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -3980,17 +4376,22 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "subscriptionId",
+              name: "_subscriptionId",
               type: "uint256",
             },
             {
               internalType: "address",
-              name: "vrfCoordinator",
+              name: "_vrfCoordinator",
               type: "address",
             },
             {
               internalType: "bytes32",
-              name: "keyHash",
+              name: "_keyHash",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
+              name: "_validatorUID",
               type: "bytes32",
             },
           ],
@@ -4095,12 +4496,24 @@ const deployedContracts = {
           inputs: [
             {
               indexed: false,
-              internalType: "uint256[]",
-              name: "randomWords",
-              type: "uint256[]",
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "claimer",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "requestId",
+              type: "bytes32",
             },
           ],
-          name: "ReturnedRandomness",
+          name: "RandomValidatorCalled",
           type: "event",
         },
         {
@@ -4118,11 +4531,21 @@ const deployedContracts = {
               type: "bytes32",
             },
           ],
-          name: "claimState",
+          name: "claims",
           outputs: [
             {
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "claimer",
+              type: "address",
+            },
+            {
               internalType: "enum ITwoStepValidator.ValidationState",
-              name: "",
+              name: "state",
               type: "uint8",
             },
           ],
@@ -4137,6 +4560,35 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
+          name: "configs",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "exists",
+              type: "bool",
+            },
+            {
+              internalType: "uint256",
+              name: "successProbability",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "callback",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_validationId",
+              type: "uint256",
+            },
+          ],
           name: "getConfig",
           outputs: [
             {
@@ -4145,7 +4597,7 @@ const deployedContracts = {
               type: "string",
             },
           ],
-          stateMutability: "pure",
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -4169,19 +4621,6 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "lastRequestId",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
           name: "owner",
           outputs: [
             {
@@ -4197,7 +4636,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
             {
@@ -4252,16 +4691,39 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
             {
               internalType: "uint256",
-              name: "publicHash",
+              name: "_successProbability",
               type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_callback",
+              type: "address",
             },
           ],
           name: "setConfig",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes",
+              name: "_params",
+              type: "bytes",
+            },
+          ],
+          name: "setConfigFromParams",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -4337,10 +4799,10 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        claimState: "contracts/Validator/Support/TwoStepValidator.sol",
+        claims: "contracts/Validator/Support/TwoStepValidator.sol",
         getValidationState: "contracts/Validator/Support/TwoStepValidator.sol",
-        lastRequestId: "contracts/Validator/Support/TwoStepValidator.sol",
         preValidation: "contracts/Validator/Support/TwoStepValidator.sol",
+        setConfigFromParams: "contracts/Validator/Support/TwoStepValidator.sol",
         validate: "contracts/Validator/Support/TwoStepValidator.sol",
         validationRequest: "contracts/Validator/Support/TwoStepValidator.sol",
         acceptOwnership: "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol",
@@ -4567,27 +5029,27 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint64",
-              name: "subscriptionId",
+              name: "",
               type: "uint64",
             },
             {
               internalType: "bytes",
-              name: "data",
+              name: "",
               type: "bytes",
             },
             {
               internalType: "uint16",
-              name: "dataVersion",
+              name: "",
               type: "uint16",
             },
             {
               internalType: "uint32",
-              name: "callbackGasLimit",
+              name: "",
               type: "uint32",
             },
             {
               internalType: "bytes32",
-              name: "donId",
+              name: "",
               type: "bytes32",
             },
           ],
@@ -4618,24 +5080,6 @@ const deployedContracts = {
           ],
           stateMutability: "nonpayable",
           type: "constructor",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "validationId",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256[]",
-              name: "_hashes",
-              type: "uint256[]",
-            },
-          ],
-          name: "addValidHashes",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
         },
         {
           inputs: [
@@ -4815,12 +5259,30 @@ const deployedContracts = {
               type: "uint256",
             },
             {
-              internalType: "uint256",
-              name: "publicHash",
-              type: "uint256",
+              internalType: "uint256[]",
+              name: "_hashes",
+              type: "uint256[]",
             },
           ],
           name: "setConfig",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes",
+              name: "_params",
+              type: "bytes",
+            },
+          ],
+          name: "setConfigFromParams",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -4875,6 +5337,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
+        setConfigFromParams: "contracts/Challenges/IValidator.sol",
         validate: "contracts/Challenges/IValidator.sol",
       },
     },
@@ -4989,7 +5452,7 @@ const deployedContracts = {
   },
   84532: {
     ChallengeManager: {
-      address: "0x2633F9Fe97ab4B5437F20eCEe511B587b7BC5cC6",
+      address: "0xF6EF10c9b2aE603b6a5a6D06bB3479c774F4E816",
       abi: [
         {
           inputs: [
@@ -5017,6 +5480,36 @@ const deployedContracts = {
               name: "description",
               type: "string",
             },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "startTime",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "endTime",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "maxWinners",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "prizeAmount",
+              type: "uint256",
+            },
           ],
           name: "ChallengeCreated",
           type: "event",
@@ -5035,6 +5528,18 @@ const deployedContracts = {
               internalType: "address",
               name: "user",
               type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "claimTime",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "prizeAmountInBaseUnits",
+              type: "uint256",
             },
           ],
           name: "RewardClaimed",
@@ -5203,6 +5708,65 @@ const deployedContracts = {
             },
           ],
           name: "createChallenge",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "_description",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "_prizeAmount",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_startTime",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_endTime",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_maxWinners",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes32",
+              name: "_validatorUID",
+              type: "bytes32",
+            },
+            {
+              internalType: "address",
+              name: "_validatorAddress",
+              type: "address",
+            },
+            {
+              internalType: "bytes",
+              name: "validatorParams",
+              type: "bytes",
+            },
+          ],
+          name: "createChallengeWithValidator",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -5388,6 +5952,53 @@ const deployedContracts = {
           stateMutability: "view",
           type: "function",
         },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "validationChallenge",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "_validatorUID",
+              type: "bytes32",
+            },
+            {
+              internalType: "uint256",
+              name: "_validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_claimer",
+              type: "address",
+            },
+          ],
+          name: "validatorClaimCallback",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
       ],
       inheritedFunctions: {
         createChallenge: "contracts/Challenges/IChallengeManager.sol",
@@ -5396,7 +6007,7 @@ const deployedContracts = {
       },
     },
     Groth16Verifier: {
-      address: "0x8d21f7C297798673e00EC6D1F8C9DB1F85B14AA6",
+      address: "0x59eeE1BFDD449b8bAC6032B9D9A60D38cfc89475",
       abi: [
         {
           inputs: [
@@ -5436,7 +6047,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     OffChainApiValidator: {
-      address: "0x5Cc4Ac4cAf252b33BB4f143366777248dB75c608",
+      address: "0x7008dd0Af16DD0617bb52C56Fc5d8d99aE7Ed9c4",
       abi: [
         {
           inputs: [
@@ -5459,6 +6070,11 @@ const deployedContracts = {
               internalType: "uint64",
               name: "_subscriptionId",
               type: "uint64",
+            },
+            {
+              internalType: "bytes32",
+              name: "_validatorUID",
+              type: "bytes32",
             },
           ],
           stateMutability: "nonpayable",
@@ -5494,6 +6110,69 @@ const deployedContracts = {
           ],
           name: "UnexpectedRequestID",
           type: "error",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "claimer",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "requestId",
+              type: "bytes32",
+            },
+          ],
+          name: "OffChainApiValidatorCalled",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "requestId",
+              type: "bytes32",
+            },
+            {
+              indexed: false,
+              internalType: "bytes",
+              name: "errorData",
+              type: "bytes",
+            },
+          ],
+          name: "OffChainApiValidatorError",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "requestId",
+              type: "bytes32",
+            },
+            {
+              indexed: false,
+              internalType: "bytes32",
+              name: "response",
+              type: "bytes32",
+            },
+          ],
+          name: "OffChainApiValidatorFulfilled",
+          type: "event",
         },
         {
           anonymous: false,
@@ -5560,31 +6239,6 @@ const deployedContracts = {
           type: "event",
         },
         {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "bytes32",
-              name: "requestId",
-              type: "bytes32",
-            },
-            {
-              indexed: false,
-              internalType: "bytes",
-              name: "response",
-              type: "bytes",
-            },
-            {
-              indexed: false,
-              internalType: "bytes",
-              name: "err",
-              type: "bytes",
-            },
-          ],
-          name: "Response",
-          type: "event",
-        },
-        {
           inputs: [],
           name: "MAX_CALLBACK_GAS",
           outputs: [
@@ -5612,11 +6266,21 @@ const deployedContracts = {
               type: "bytes32",
             },
           ],
-          name: "claimState",
+          name: "claims",
           outputs: [
             {
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "claimer",
+              type: "address",
+            },
+            {
               internalType: "enum ITwoStepValidator.ValidationState",
-              name: "",
+              name: "state",
               type: "uint8",
             },
           ],
@@ -5648,6 +6312,11 @@ const deployedContracts = {
               name: "dataPath",
               type: "string",
             },
+            {
+              internalType: "address",
+              name: "callback",
+              type: "address",
+            },
           ],
           stateMutability: "view",
           type: "function",
@@ -5669,7 +6338,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
           ],
@@ -5728,58 +6397,6 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "lastCompleted",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastExecuted",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastRequestId",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastUrl",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
           name: "owner",
           outputs: [
             {
@@ -5795,7 +6412,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
             {
@@ -5832,21 +6449,44 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
             {
               internalType: "string",
-              name: "apiUrl",
+              name: "_apiUrl",
               type: "string",
             },
             {
               internalType: "string",
-              name: "dataPath",
+              name: "_dataPath",
               type: "string",
+            },
+            {
+              internalType: "address",
+              name: "_callback",
+              type: "address",
             },
           ],
           name: "setConfig",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes",
+              name: "params",
+              type: "bytes",
+            },
+          ],
+          name: "setConfigFromParams",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -5935,10 +6575,10 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        claimState: "contracts/Validator/Support/TwoStepValidator.sol",
+        claims: "contracts/Validator/Support/TwoStepValidator.sol",
         getValidationState: "contracts/Validator/Support/TwoStepValidator.sol",
-        lastRequestId: "contracts/Validator/Support/TwoStepValidator.sol",
         preValidation: "contracts/Validator/Support/TwoStepValidator.sol",
+        setConfigFromParams: "contracts/Validator/Support/TwoStepValidator.sol",
         validate: "contracts/Validator/Support/TwoStepValidator.sol",
         validationRequest: "contracts/Validator/Support/TwoStepValidator.sol",
         handleOracleFulfillment: "@chainlink/contracts/src/v0.8/functions/v1_0_0/FunctionsClient.sol",
@@ -5948,7 +6588,7 @@ const deployedContracts = {
       },
     },
     OffChainValidator: {
-      address: "0x5bece679e11dff6b70cBc7e086245E5906ACf05B",
+      address: "0xb598a96dca5b374Fc518D588B38c0D899F5CAC74",
       abi: [
         {
           inputs: [
@@ -6009,6 +6649,31 @@ const deployedContracts = {
           anonymous: false,
           inputs: [
             {
+              indexed: false,
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "claimer",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "requestId",
+              type: "bytes32",
+            },
+          ],
+          name: "OffChainRequestSent",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
               indexed: true,
               internalType: "address",
               name: "from",
@@ -6058,11 +6723,21 @@ const deployedContracts = {
               type: "bytes32",
             },
           ],
-          name: "claimState",
+          name: "claims",
           outputs: [
             {
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "claimer",
+              type: "address",
+            },
+            {
               internalType: "enum ITwoStepValidator.ValidationState",
-              name: "",
+              name: "state",
               type: "uint8",
             },
           ],
@@ -6120,7 +6795,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
           ],
@@ -6169,58 +6844,6 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "lastCompleted",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastExecuted",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastRequestId",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastUrl",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
           name: "link",
           outputs: [
             {
@@ -6262,7 +6885,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
             {
@@ -6286,7 +6909,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
             {
@@ -6301,6 +6924,24 @@ const deployedContracts = {
             },
           ],
           name: "setConfig",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes",
+              name: "_params",
+              type: "bytes",
+            },
+          ],
+          name: "setConfigFromParams",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -6363,10 +7004,10 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        claimState: "contracts/Validator/Support/TwoStepValidator.sol",
+        claims: "contracts/Validator/Support/TwoStepValidator.sol",
         getValidationState: "contracts/Validator/Support/TwoStepValidator.sol",
-        lastRequestId: "contracts/Validator/Support/TwoStepValidator.sol",
         preValidation: "contracts/Validator/Support/TwoStepValidator.sol",
+        setConfigFromParams: "contracts/Validator/Support/TwoStepValidator.sol",
         validate: "contracts/Validator/Support/TwoStepValidator.sol",
         validationRequest: "contracts/Validator/Support/TwoStepValidator.sol",
         acceptOwnership: "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol",
@@ -6512,7 +7153,7 @@ const deployedContracts = {
       },
     },
     OnChainValidator: {
-      address: "0xd5774d0F7128608Af3581Ed179aaB59626E612B2",
+      address: "0x1798742742a642E1F6e11bdf331B21Bc24B37C30",
       abi: [
         {
           inputs: [
@@ -6620,6 +7261,24 @@ const deployedContracts = {
               type: "bytes",
             },
           ],
+          name: "setConfigFromParams",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes",
+              name: "params",
+              type: "bytes",
+            },
+          ],
           name: "validate",
           outputs: [
             {
@@ -6633,12 +7292,32 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
+        setConfigFromParams: "contracts/Challenges/IValidator.sol",
         validate: "contracts/Challenges/IValidator.sol",
       },
     },
     OrganizationManager: {
-      address: "0x3D62f41b126c7722b2019a0c66Cd2540136CcEA4",
+      address: "0xd6DFF585b2C99605dCc787F8974e8a674AFfE768",
       abi: [
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "adminAddress",
+              type: "address",
+            },
+          ],
+          name: "OrganizationAdminAdded",
+          type: "event",
+        },
         {
           anonymous: false,
           inputs: [
@@ -6659,6 +7338,12 @@ const deployedContracts = {
               internalType: "address",
               name: "token",
               type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "baseURI",
+              type: "string",
             },
           ],
           name: "OrganizationCreated",
@@ -6710,9 +7395,9 @@ const deployedContracts = {
               type: "address[]",
             },
             {
-              internalType: "bytes32",
-              name: "_customerBaseUID",
-              type: "bytes32",
+              internalType: "string",
+              name: "_baseURI",
+              type: "string",
             },
           ],
           name: "createOrganization",
@@ -6724,25 +7409,6 @@ const deployedContracts = {
             },
           ],
           stateMutability: "payable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          name: "customerBaseRegistry",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
           type: "function",
         },
         {
@@ -6824,18 +7490,8 @@ const deployedContracts = {
               type: "address[]",
             },
             {
-              internalType: "bytes32",
-              name: "customerBaseUID",
-              type: "bytes32",
-            },
-            {
               internalType: "bool",
               name: "userIsAdmin",
-              type: "bool",
-            },
-            {
-              internalType: "bool",
-              name: "userIsMember",
               type: "bool",
             },
           ],
@@ -6868,25 +7524,6 @@ const deployedContracts = {
               name: "_orgId",
               type: "uint256",
             },
-          ],
-          name: "hasUsers",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
             {
               internalType: "address",
               name: "_user",
@@ -6894,30 +7531,6 @@ const deployedContracts = {
             },
           ],
           name: "isAdmin",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_user",
-              type: "address",
-            },
-          ],
-          name: "isUser",
           outputs: [
             {
               internalType: "bool",
@@ -6956,16 +7569,6 @@ const deployedContracts = {
               internalType: "uint256[]",
               name: "adminCounts",
               type: "uint256[]",
-            },
-            {
-              internalType: "uint256[]",
-              name: "customerCounts",
-              type: "uint256[]",
-            },
-            {
-              internalType: "bool[]",
-              name: "isMembers",
-              type: "bool[]",
             },
           ],
           stateMutability: "view",
@@ -7013,16 +7616,6 @@ const deployedContracts = {
               name: "adminCounts",
               type: "uint256[]",
             },
-            {
-              internalType: "uint256[]",
-              name: "customerCounts",
-              type: "uint256[]",
-            },
-            {
-              internalType: "bool[]",
-              name: "isMembers",
-              type: "bool[]",
-            },
           ],
           stateMutability: "view",
           type: "function",
@@ -7035,6 +7628,25 @@ const deployedContracts = {
               internalType: "uint256",
               name: "",
               type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          name: "orgNameExists",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
             },
           ],
           stateMutability: "view",
@@ -7085,14 +7697,9 @@ const deployedContracts = {
               type: "address",
             },
             {
-              internalType: "bytes32",
-              name: "customerBaseUID",
-              type: "bytes32",
-            },
-            {
-              internalType: "address",
-              name: "customerBaseAddr",
-              type: "address",
+              internalType: "string",
+              name: "baseURI",
+              type: "string",
             },
             {
               internalType: "bool",
@@ -7106,19 +7713,20 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "bytes32",
-              name: "_customerBaseUID",
-              type: "bytes32",
-            },
-            {
-              internalType: "address",
-              name: "_customerBaseAddress",
-              type: "address",
+              internalType: "string",
+              name: "",
+              type: "string",
             },
           ],
-          name: "registerCustomerBase",
-          outputs: [],
-          stateMutability: "nonpayable",
+          name: "tokenSymbolExists",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -7154,7 +7762,7 @@ const deployedContracts = {
       },
     },
     OrganizationToken: {
-      address: "0xe18B6d95eE9DC1D1a63252263d41b33cA40DEDAA",
+      address: "0x3f9aED1e26fA231BcFF5BcD9cB26D367E1a097Ac",
       abi: [
         {
           inputs: [
@@ -7718,7 +8326,7 @@ const deployedContracts = {
       },
     },
     Prizes: {
-      address: "0x47e828081FCa317d6fE4d88DE34C6CaE271798D3",
+      address: "0x4D172493c7FD8Be25D0CcBd6662ECfE88756c332",
       abi: [
         {
           inputs: [
@@ -7730,6 +8338,86 @@ const deployedContracts = {
           ],
           stateMutability: "nonpayable",
           type: "constructor",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "prizeId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "address",
+              name: "claimer",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "cost",
+              type: "uint256",
+            },
+          ],
+          name: "PrizeClaimed",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "prizeId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "description",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "price",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "stock",
+              type: "uint256",
+            },
+          ],
+          name: "PrizeCreated",
+          type: "event",
         },
         {
           inputs: [
@@ -7791,6 +8479,52 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
+              name: "prizeId",
+              type: "uint256",
+            },
+          ],
+          name: "getPrize",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "string",
+                  name: "name",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "description",
+                  type: "string",
+                },
+                {
+                  internalType: "uint256",
+                  name: "price",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "stock",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "orgId",
+                  type: "uint256",
+                },
+              ],
+              internalType: "struct Prizes.Prize",
+              name: "",
+              type: "tuple",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
               name: "orgId",
               type: "uint256",
             },
@@ -7843,23 +8577,28 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     RandomValidator: {
-      address: "0xEc96D883B02cDFe149c95585036Ef605aF96DBA4",
+      address: "0xdc526C0372382a4C235BbB0e28622Ad7C7732866",
       abi: [
         {
           inputs: [
             {
               internalType: "uint256",
-              name: "subscriptionId",
+              name: "_subscriptionId",
               type: "uint256",
             },
             {
               internalType: "address",
-              name: "vrfCoordinator",
+              name: "_vrfCoordinator",
               type: "address",
             },
             {
               internalType: "bytes32",
-              name: "keyHash",
+              name: "_keyHash",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
+              name: "_validatorUID",
               type: "bytes32",
             },
           ],
@@ -7964,12 +8703,24 @@ const deployedContracts = {
           inputs: [
             {
               indexed: false,
-              internalType: "uint256[]",
-              name: "randomWords",
-              type: "uint256[]",
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "claimer",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "requestId",
+              type: "bytes32",
             },
           ],
-          name: "ReturnedRandomness",
+          name: "RandomValidatorCalled",
           type: "event",
         },
         {
@@ -7987,11 +8738,21 @@ const deployedContracts = {
               type: "bytes32",
             },
           ],
-          name: "claimState",
+          name: "claims",
           outputs: [
             {
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "claimer",
+              type: "address",
+            },
+            {
               internalType: "enum ITwoStepValidator.ValidationState",
-              name: "",
+              name: "state",
               type: "uint8",
             },
           ],
@@ -8006,6 +8767,35 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
+          name: "configs",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "exists",
+              type: "bool",
+            },
+            {
+              internalType: "uint256",
+              name: "successProbability",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "callback",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_validationId",
+              type: "uint256",
+            },
+          ],
           name: "getConfig",
           outputs: [
             {
@@ -8014,7 +8804,7 @@ const deployedContracts = {
               type: "string",
             },
           ],
-          stateMutability: "pure",
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -8038,19 +8828,6 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "lastRequestId",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
           name: "owner",
           outputs: [
             {
@@ -8066,7 +8843,7 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
             {
@@ -8121,16 +8898,39 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "validationId",
+              name: "_validationId",
               type: "uint256",
             },
             {
               internalType: "uint256",
-              name: "publicHash",
+              name: "_successProbability",
               type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_callback",
+              type: "address",
             },
           ],
           name: "setConfig",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes",
+              name: "_params",
+              type: "bytes",
+            },
+          ],
+          name: "setConfigFromParams",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -8206,10 +9006,10 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        claimState: "contracts/Validator/Support/TwoStepValidator.sol",
+        claims: "contracts/Validator/Support/TwoStepValidator.sol",
         getValidationState: "contracts/Validator/Support/TwoStepValidator.sol",
-        lastRequestId: "contracts/Validator/Support/TwoStepValidator.sol",
         preValidation: "contracts/Validator/Support/TwoStepValidator.sol",
+        setConfigFromParams: "contracts/Validator/Support/TwoStepValidator.sol",
         validate: "contracts/Validator/Support/TwoStepValidator.sol",
         validationRequest: "contracts/Validator/Support/TwoStepValidator.sol",
         acceptOwnership: "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol",
@@ -8370,8 +9170,282 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
+    SecretValidator: {
+      address: "0xEbC2C5Af9A2a78D527CcdD1332d404ea4d3AFA95",
+      abi: [
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "_groth16Addr",
+              type: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "config",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes",
+              name: "params",
+              type: "bytes",
+            },
+          ],
+          name: "decodeParams",
+          outputs: [
+            {
+              internalType: "uint256[2]",
+              name: "_pA",
+              type: "uint256[2]",
+            },
+            {
+              internalType: "uint256[2][2]",
+              name: "_pB",
+              type: "uint256[2][2]",
+            },
+            {
+              internalType: "uint256[2]",
+              name: "_pC",
+              type: "uint256[2]",
+            },
+            {
+              internalType: "uint256",
+              name: "publicHash",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "pure",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "description",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "sender",
+              type: "address",
+            },
+          ],
+          name: "getAddressAsField",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "pure",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+          ],
+          name: "getConfig",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "pure",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "publicHash",
+              type: "uint256",
+            },
+          ],
+          name: "getPublicSignals",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "groth16Addr",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "nonces",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256[]",
+              name: "_hashes",
+              type: "uint256[]",
+            },
+          ],
+          name: "setConfig",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes",
+              name: "_params",
+              type: "bytes",
+            },
+          ],
+          name: "setConfigFromParams",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "validHashes",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "validationId",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes",
+              name: "params",
+              type: "bytes",
+            },
+          ],
+          name: "validate",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {
+        setConfigFromParams: "contracts/Challenges/IValidator.sol",
+        validate: "contracts/Challenges/IValidator.sol",
+      },
+    },
     ValidatorRegistry: {
-      address: "0x29390150271e258D38d72a883E17037C3DC42601",
+      address: "0xE12b8FDD2059bbEa13EAe4f123f1Afd0C7a98c26",
       abi: [
         {
           inputs: [

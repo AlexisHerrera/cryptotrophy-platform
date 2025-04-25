@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import ChallengeList from "../_components/ChallengeList";
 import { BackButton } from "~~/components/common/BackButton";
+import ChallengeList from "~~/components/common/ChallengeList";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 interface OrganizationDetails {
@@ -79,7 +79,7 @@ const OrganizationPage: React.FC = () => {
 
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-semibold mb-4">Active Challenges</h2>
-            <ChallengeList challengeIds={challengeIds ?? []} orgId={BigInt(organizationId as string)} />
+            <ChallengeList mode={"user"} challengeIds={challengeIds ?? []} orgId={BigInt(organizationId as string)} />
           </div>
         </div>
       </div>
