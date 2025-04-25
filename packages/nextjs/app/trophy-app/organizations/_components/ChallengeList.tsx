@@ -3,10 +3,15 @@
 import React, { useEffect, useState } from "react";
 import { formatUnits } from "ethers";
 import { decodeBytes32String } from "ethers";
+import {
+  ValidatorContractName,
+  getContractName,
+  getValidatorDisplayName,
+} from "~~/app/backoffice/organizations/_components//KnownValidators";
 import ClaimChallengeBasicButton from "~~/app/backoffice/organizations/_components/ClaimChallengeBasicButton";
 import ClaimChallengeOnChainModal from "~~/app/backoffice/organizations/_components/ClaimChallengeOnChainModal";
+import ClaimChallengeSecretModal from "~~/app/backoffice/organizations/_components/ClaimChallengeSecretModal";
 import ClaimChallengeTwoStepButton from "~~/app/backoffice/organizations/_components/ClaimChallengeTwoStepButton";
-import { ValidatorContractName, getContractName } from "~~/app/backoffice/organizations/_components/KnownValidators";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
 
@@ -23,7 +28,21 @@ const ActiveChallengeWrapper: React.FC<ActiveChallengeWrapperProps> = ({ challen
 
 // Creates the correct button type depending on validatorUID
 
-function createClaimChallengeButton(orgId: bigint, challengeId: bigint, validatorUID: string) {
+function createClaimChallengeButton(
+  orgId: bigint,
+  challengeId: bigint,
+  validatorUID: string,
+  onSecretCodeChallenge: (id: bigint, validatorUID: string) => void,
+) {
+  // For SecretValidatorV1, we'll show a special button that triggers the secret input modal
+  if (validatorUID === "SecretValidatorV1") {
+    return (
+      <button className="btn btn-primary btn-sm" onClick={() => onSecretCodeChallenge(challengeId, validatorUID)}>
+        Claim Reward
+      </button>
+    );
+  }
+
   const contractName: ValidatorContractName = getContractName(validatorUID);
   if (contractName) {
     return <ClaimChallengeTwoStepButton challengeId={challengeId} contractName={contractName} />;
@@ -31,6 +50,8 @@ function createClaimChallengeButton(orgId: bigint, challengeId: bigint, validato
     return <ClaimChallengeBasicButton orgId={orgId} challengeId={challengeId} />;
   }
 }
+
+// List of challenges for an organization
 
 interface ChallengeListProps {
   orgId: bigint;
@@ -44,6 +65,16 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
     hasValidator: boolean;
     validatorUID: string;
   } | null>(null);
+  const [challengeValidator, setChallengeValidator] = useState<{
+    id: bigint;
+    hasValidator: boolean;
+    validatorUID: string;
+  } | null>(null);
+  const [secretCodeChallenge, setSecretCodeChallenge] = useState<{
+    id: bigint;
+    validatorUID: string;
+  } | null>(null);
+  const [mockValidatorResponse, setMockValidatorResponse] = useState<{ id: bigint; validatorUID: string } | null>(null);
   console.log("SelectedChallengeId", selectedChallenge?.id);
 
   // Hook para obtener los detalles de los desafíos
@@ -71,6 +102,14 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
       setChallenges(formattedChallenges);
     }
   }, [data, isLoading]);
+
+  // Handler for secret code challenge button
+  const handleSecretCodeChallenge = (challengeId: bigint, validatorUID: string) => {
+    setSecretCodeChallenge({
+      id: challengeId,
+      validatorUID: validatorUID,
+    });
+  };
 
   if (isLoading) {
     return <p>Loading challenges...</p>;
@@ -107,7 +146,7 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
               <td>{challenge.endTime}</td>
               <td>
                 <ActiveChallengeWrapper challengeActive={challenge.active}>
-                  {createClaimChallengeButton(orgId, challenge.id, challenge.validatorUID)}
+                  {createClaimChallengeButton(orgId, challenge.id, challenge.validatorUID, handleSecretCodeChallenge)}
                 </ActiveChallengeWrapper>
               </td>
             </tr>
@@ -124,6 +163,10 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds }) =>
             onClose={() => setSelectedChallenge(null)}
           />
         )}
+
+      {secretCodeChallenge !== null && (
+        <ClaimChallengeSecretModal challengeId={secretCodeChallenge.id} onClose={() => setSecretCodeChallenge(null)} />
+      )}
     </div>
   );
 };
