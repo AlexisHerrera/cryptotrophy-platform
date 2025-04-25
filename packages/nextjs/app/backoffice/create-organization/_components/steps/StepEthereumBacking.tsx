@@ -28,7 +28,7 @@ const StepEthereumBacking: React.FC<StepEthereumBackingProps> = ({ formData, han
         label="Token Symbol"
         placeholder="Enter token symbol"
         value={formData.tokenSymbol}
-        onChange={value => handleInputChange("tokenSymbol", value)}
+        onChange={value => handleInputChange("tokenSymbol", value.toUpperCase())}
       />
       <FormInput
         label="Initial Mint"

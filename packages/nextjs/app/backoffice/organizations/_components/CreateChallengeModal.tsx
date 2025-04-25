@@ -6,42 +6,31 @@ import ChallengeDetailsForm from "~~/app/backoffice/organizations/_components/pa
 import SetChallengeValidator from "~~/app/backoffice/organizations/_components/pages/ChallengeValidator";
 import ReviewChallengeData from "~~/app/backoffice/organizations/_components/pages/ReviewChallengeData";
 import Modal from "~~/components/Modal";
+import { useChallengeForm } from "~~/hooks/backoffice/useChallengeForm";
 import { useDeployedContractInfo, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
-import { ChallengeData, getEncodedValidatorConfig } from "~~/utils/challenges/challengeParam";
+import { getEncodedValidatorConfig } from "~~/utils/challenges/challengeParam";
 
 interface CreateChallengeModalProps {
   organizationId: bigint;
   onClose: () => void;
+  challengeFormHook: ReturnType<typeof useChallengeForm>;
 }
 
-const CreateChallengeForm: React.FC<CreateChallengeModalProps> = ({ organizationId, onClose }) => {
+const CreateChallengeFlow: React.FC<CreateChallengeModalProps> = ({ organizationId, onClose, challengeFormHook }) => {
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-
-  const now = new Date();
-  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-  const defaultStartTime = now.toISOString().slice(0, 16);
-  const oneWeekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const defaultEndTime = oneWeekLater.toISOString().slice(0, 16);
-
-  const [challengeForm, setChallengeForm] = useState<ChallengeData>({
-    organizationId: organizationId,
-    description: "",
-    prizeAmount: 0,
-    maxPrizeAmount: 0n,
-    startTime: defaultStartTime,
-    endTime: defaultEndTime,
-    maxWinners: 1,
-    validatorUID: "",
-    validatorAddress: "0x0000000000000000000000000000000000000000",
-    params: {},
-  });
-
+  const { challengeForm, handleInputChange, setChallengeForm } = challengeFormHook;
   const { writeContractAsync: challengeManager } = useScaffoldWriteContract("ChallengeManager");
   const challengeManagerAddress = useDeployedContractInfo("ChallengeManager").data?.address;
 
+  // useEffect(() => {
+  // }, [challengeForm.maxPrizeAmount]);
   const handleChallengeSubmit = async () => {
+    if (challengeForm.organizationId !== organizationId) {
+      console.warn("Form organizationId mismatch. Syncing...");
+      setChallengeForm(prev => ({ ...prev, organizationId: organizationId }));
+    }
     try {
       setLoading(true);
       const {
@@ -76,8 +65,8 @@ const CreateChallengeForm: React.FC<CreateChallengeModalProps> = ({ organization
           hexParams,
         ],
       });
-      alert("Challenge created successfully!");
       onClose();
+      challengeFormHook.resetChallengeForm(organizationId);
     } catch (error) {
       console.error("Error creating challenge:", error);
     } finally {
@@ -90,10 +79,6 @@ const CreateChallengeForm: React.FC<CreateChallengeModalProps> = ({ organization
     !challengeForm.prizeAmount ||
     !challengeForm.maxWinners ||
     parseUnits(challengeForm.prizeAmount.toString(), DECIMALS_TOKEN) > challengeForm.maxPrizeAmount;
-
-  const handleInputChange = (field: keyof ChallengeData, value: string | bigint | Record<string, any>) => {
-    setChallengeForm(prev => ({ ...prev, [field]: value }));
-  };
 
   const handleStepClick = (step: number) => {
     setCurrentStep(step);
@@ -148,4 +133,4 @@ const CreateChallengeForm: React.FC<CreateChallengeModalProps> = ({ organization
   );
 };
 
-export default CreateChallengeForm;
+export default CreateChallengeFlow;

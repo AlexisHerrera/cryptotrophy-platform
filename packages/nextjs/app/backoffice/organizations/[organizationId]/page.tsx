@@ -7,6 +7,7 @@ import ChallengeList from "~~/app/backoffice/organizations/_components/Challenge
 import CreateChallengeModal from "~~/app/backoffice/organizations/_components/CreateChallengeModal";
 import Modal from "~~/components/Modal";
 import { BackButton } from "~~/components/common/BackButton";
+import { useChallengeForm } from "~~/hooks/backoffice/useChallengeForm";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 interface OrganizationDetails {
@@ -20,7 +21,7 @@ interface OrganizationDetails {
 const OrganizationPage: React.FC = () => {
   const { organizationId } = useParams();
   const router = useRouter();
-
+  const challengeFormHook = useChallengeForm(BigInt(organizationId as string));
   const [organization, setOrganization] = useState<OrganizationDetails | null>(null);
   const [showCreateChallengeModal, setShowCreateChallengeModal] = useState(false);
   const [showAdminPanelModal, setShowAdminPanelModal] = useState(false);
@@ -101,7 +102,11 @@ const OrganizationPage: React.FC = () => {
         </div>
 
         {showCreateChallengeModal && (
-          <CreateChallengeModal organizationId={organization.id} onClose={() => setShowCreateChallengeModal(false)} />
+          <CreateChallengeModal
+            challengeFormHook={challengeFormHook}
+            organizationId={organization.id}
+            onClose={() => setShowCreateChallengeModal(false)}
+          />
         )}
 
         {showAdminPanelModal && (
