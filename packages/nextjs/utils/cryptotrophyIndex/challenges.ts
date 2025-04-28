@@ -7,10 +7,12 @@ export type Challenge = {
   startTime: bigint;
   endTime: bigint;
   maxWinners: number;
-  prizeAmount: bigint;
   orgId: string;
-  validatorUID?: string;
-  active: boolean;
+  prizeAmount: bigint;
+  isActive: boolean;
+  validatorUID: string;
+  validatorAddr: string;
+  validationId: number;
 };
 
 export interface PageInfo {
@@ -34,13 +36,17 @@ const GET_CHALLENGE_QUERY = `
     challenges(limit: $limit, after: $after, before: $before, where: {description_contains: $description, orgId: $orgId}) {
         totalCount
         items {
-            id
-            description
-            startTime
-            endTime
-            maxWinners
-            orgId
-            prizeAmount
+          validatorUID
+          validatorAddr
+          validationId
+          startTime
+          prizeAmount
+          orgId
+          maxWinners
+          isActive
+          id
+          endTime
+          description
         }
         pageInfo {
             endCursor

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import ChallengeList from "../_components/ChallengeList";
+import { ChallengeGrid } from "../_components/ChallengeGrid";
 import { BackButton } from "~~/components/common/BackButton";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
@@ -15,7 +15,7 @@ interface OrganizationDetails {
 }
 
 const OrganizationPage: React.FC = () => {
-  const { organizationId } = useParams();
+  const { organizationId } = useParams() as { organizationId: string };
   const router = useRouter();
 
   const [organization, setOrganization] = useState<OrganizationDetails | null>(null);
@@ -56,10 +56,10 @@ const OrganizationPage: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-between">
-      <BackButton />
-      <div className="max-w-4xl mx-auto">
-        <div className="relative flex items-center justify-center">
+    <div className="w-full flex justify-between">
+      <div className="w-full mx-auto">
+        <BackButton />
+        <div className="max-w-4xl w-full relative flex items-center justify-center">
           <h1 className="text-4xl text-center text-gray-700 font-mono grayscale mb-4 dark:text-gray-300">
             {organization.name}
           </h1>
@@ -79,7 +79,7 @@ const OrganizationPage: React.FC = () => {
 
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-semibold mb-4">Active Challenges</h2>
-            <ChallengeList challengeIds={challengeIds ?? []} orgId={BigInt(organizationId as string)} />
+            <ChallengeGrid orgId={organizationId} />
           </div>
         </div>
       </div>

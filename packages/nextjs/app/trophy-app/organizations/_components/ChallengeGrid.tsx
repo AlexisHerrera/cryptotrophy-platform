@@ -11,9 +11,5 @@ export const ChallengeGrid: React.FC<{ orgId: string }> = ({ orgId }) => {
       pageInfo: result.challenges.pageInfo,
     };
   };
-  return (
-    <div>
-      <PaginatedGrid fetchData={fetchData} CardComponent={ChallengeCard} pageSize={2} title="Challenges" />
-    </div>
-  );
+  return <PaginatedGrid fetchData={fetchData} CardComponent={ChallengeCard} pageSize={4} title="Challenges" />;
 };
