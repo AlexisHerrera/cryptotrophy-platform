@@ -16,6 +16,7 @@ interface OrganizationDetails {
   token: string;
   admins: string[];
   userIsAdmin: boolean;
+  baseURI: string;
 }
 
 const OrganizationPage: React.FC = () => {
@@ -42,12 +43,13 @@ const OrganizationPage: React.FC = () => {
 
   useEffect(() => {
     if (organizationData) {
-      const [id, name, token, admins, userIsAdmin] = organizationData as [
+      const [id, name, token, admins, userIsAdmin, baseURI] = organizationData as [
         bigint, // id
         string, // name
         string, // token
         string[], // admins
         boolean, // userIsAdmin
+        string, // baseURI
       ];
       setOrganization({
         id,
@@ -55,6 +57,7 @@ const OrganizationPage: React.FC = () => {
         token,
         admins,
         userIsAdmin: userIsAdmin,
+        baseURI,
       });
     }
   }, [organizationData]);

@@ -3,9 +3,16 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ChallengeGrid } from "../_components/ChallengeGrid";
-import { BackButton } from "~~/components/common/BackButton";
-import ChallengeList from "~~/components/common/ChallengeList";
+import { HeroSection } from "../_components/HeroSection";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+
+// Utility function to convert IPFS links
+const convertIpfsUrl = (ipfsUrl: string): string => {
+  if (ipfsUrl.startsWith("ipfs://")) {
+    return ipfsUrl.replace("ipfs://", "https://ipfs.io/ipfs/");
+  }
+  return ipfsUrl;
+};
 
 interface OrganizationDetails {
   id: bigint;
@@ -13,12 +20,14 @@ interface OrganizationDetails {
   token: string;
   admins: string[];
   userIsAdmin: boolean;
+  baseURI: string;
 }
 
 const OrganizationPage: React.FC = () => {
   const { organizationId } = useParams() as { organizationId: string };
   const router = useRouter();
 
+  const [metadata, setMetadata] = useState<{ logo?: string; name?: string; description?: string }>({});
   const [organization, setOrganization] = useState<OrganizationDetails | null>(null);
 
   const { data: organizationData, isLoading: isLoadingOrganization } = useScaffoldReadContract({
@@ -27,61 +36,66 @@ const OrganizationPage: React.FC = () => {
     args: [BigInt(organizationId as string)],
   });
 
-  const { data: challengeIds } = useScaffoldReadContract({
-    contractName: "ChallengeManager",
-    functionName: "getChallengesByOrg",
-    args: [BigInt(organizationId as string)],
-  });
-
+  // Step 1: Setup organization data
   useEffect(() => {
     if (organizationData) {
-      const [id, name, token, admins, userIsAdmin] = organizationData as [
-        bigint, // id
-        string, // name
-        string, // token
-        string[], // admins
-        boolean, // userIsAdmin
+      const [id, name, token, admins, userIsAdmin, baseURI] = organizationData as [
+        bigint,
+        string,
+        string,
+        string[],
+        boolean,
+        string,
       ];
       setOrganization({
         id,
         name,
         token,
         admins,
-        userIsAdmin: userIsAdmin,
+        userIsAdmin,
+        baseURI,
       });
     }
   }, [organizationData]);
+
+  // Step 2: Fetch metadata when organization is ready
+  useEffect(() => {
+    const fetchMetadata = async () => {
+      if (organization?.baseURI) {
+        try {
+          const metadataUrl = convertIpfsUrl(organization.baseURI) + "/metadata.json";
+          const res = await fetch(metadataUrl);
+          const data = await res.json();
+          setMetadata(data);
+        } catch (error) {
+          console.error("Error fetching IPFS metadata:", error);
+        }
+      }
+    };
+
+    fetchMetadata();
+  }, [organization]);
 
   if (isLoadingOrganization || !organization) {
     return <span className="loading loading-spinner loading-lg"></span>;
   }
 
   return (
-    <div className="w-full flex justify-between">
-      <div className="w-full mx-auto">
-        <BackButton />
-        <div className="max-w-4xl w-full relative flex items-center justify-center">
-          <h1 className="text-4xl text-center text-gray-700 font-mono grayscale mb-4 dark:text-gray-300">
-            {organization.name}
-          </h1>
-        </div>
+    <div className="w-full flex justify-center">
+      <div className="w-full max-w-6xl p-4">
+        {/* Hero Section */}
+        <HeroSection
+          title={organization.name}
+          subtitle={metadata.description || "Welcome to your organization's dashboard!"}
+          imageUrl={metadata.logo ? convertIpfsUrl(metadata.logo) : undefined}
+          buttonLabel="Prize Center"
+          onButtonClick={() => router.push(`/trophy-app/organizations/${organization.id}/prizes`)}
+        />
 
-        <div className="text-center">
-          <div className="flex justify-center gap-4 mb-4">
-            <div>
-              <button
-                className="btn bg-amber-400 dark:text-gray-800 dark:btn-warning"
-                onClick={() => router.push(`/trophy-app/organizations/${organization.id}/prizes`)}
-              >
-                Prize Center
-              </button>
-            </div>
-          </div>
-
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-semibold mb-4">Active Challenges</h2>
-            <ChallengeGrid orgId={organizationId} />
-          </div>
+        {/* Challenges Section */}
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-semibold mb-4 text-center">Active Challenges</h2>
+          <ChallengeGrid orgId={organizationId} />
         </div>
       </div>
     </div>
