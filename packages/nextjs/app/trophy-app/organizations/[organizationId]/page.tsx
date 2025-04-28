@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ChallengeGrid } from "../_components/ChallengeGrid";
 import { BackButton } from "~~/components/common/BackButton";
+import ChallengeList from "~~/components/common/ChallengeList";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 interface OrganizationDetails {
