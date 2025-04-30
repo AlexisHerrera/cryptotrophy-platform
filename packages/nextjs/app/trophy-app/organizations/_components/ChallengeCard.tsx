@@ -91,7 +91,7 @@ export const ChallengeCard: React.FC<{ item: Challenge }> = ({ item: challenge }
       </div>
 
       {/* Bottom Section (Button) */}
-      <div className="mt-6">
+      <div className="mt-6 flex justify-center">
         {challenge.isActive ? (
           <ClaimChallengeButton
             orgId={BigInt(challenge.orgId)}

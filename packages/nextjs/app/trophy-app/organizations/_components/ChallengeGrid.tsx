@@ -1,19 +1,39 @@
+import React, { useState } from "react";
 import { ChallengeCard } from "./ChallengeCard";
 import { PaginatedGrid } from "./PaginatedGrid";
-import { fetchChallenges } from "~~/utils/cryptotrophyIndex/challenges";
-import { createIndexClient } from "~~/utils/cryptotrophyIndex/indexClient";
-
-const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || "http://localhost:42069";
-const client = createIndexClient(GRAPHQL_ENDPOINT);
+import { useChallenges } from "~~/hooks/cryptotrophyIndex/useChallenges";
 
 export const ChallengeGrid: React.FC<{ orgId: string }> = ({ orgId }) => {
-  const fetchData = async (pageSize: number, after?: string | null, before?: string | null, search?: string) => {
-    const result = await fetchChallenges(client, pageSize, after, before, orgId, search);
-    return {
-      items: result.challenges.items,
-      totalCount: result.challenges.totalCount,
-      pageInfo: result.challenges.pageInfo,
-    };
+  const [afterCursor, setAfterCursor] = useState<string | null>(null);
+  const [beforeCursor, setBeforeCursor] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const { data, isLoading } = useChallenges(orgId, 4, afterCursor, beforeCursor, searchTerm);
+
+  const handlePageChange = (after: string | null, before: string | null) => {
+    setAfterCursor(after);
+    setBeforeCursor(before);
   };
-  return <PaginatedGrid fetchData={fetchData} CardComponent={ChallengeCard} pageSize={4} title="Challenges" />;
+
+  const handleSearch = (search: string) => {
+    setSearchTerm(search);
+    setAfterCursor(null);
+    setBeforeCursor(null);
+  };
+
+  return (
+    <PaginatedGrid
+      data={{
+        items: data?.challenges.items || [],
+        totalCount: data?.challenges.totalCount || 0,
+        pageInfo: data?.challenges.pageInfo || null,
+      }}
+      CardComponent={ChallengeCard}
+      pageSize={4}
+      title="Challenges"
+      loading={isLoading}
+      onPageChange={handlePageChange}
+      onSearch={handleSearch}
+    />
+  );
 };

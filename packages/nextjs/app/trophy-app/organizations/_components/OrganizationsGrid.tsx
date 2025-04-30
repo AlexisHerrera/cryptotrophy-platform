@@ -1,20 +1,39 @@
+import React, { useState } from "react";
 import { OrganizationCard } from "./OrganizationCard";
 import { PaginatedGrid } from "./PaginatedGrid";
-import { createIndexClient } from "~~/utils/cryptotrophyIndex/indexClient";
-import { fetchOrganizations } from "~~/utils/cryptotrophyIndex/organizations";
-
-const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || "http://localhost:42069";
-const client = createIndexClient(GRAPHQL_ENDPOINT);
-
-const fetchData = async (pageSize: number, after?: string | null, before?: string | null, search?: string) => {
-  const result = await fetchOrganizations(client, pageSize, after, before, search);
-  return {
-    items: result.organizations.items,
-    totalCount: result.organizations.totalCount,
-    pageInfo: result.organizations.pageInfo,
-  };
-};
+import { useOrganizations } from "~~/hooks/cryptotrophyIndex/useOrganizations";
 
 export const OrganizationsGrid = () => {
-  return <PaginatedGrid fetchData={fetchData} CardComponent={OrganizationCard} pageSize={2} title="Organizations" />;
+  const [afterCursor, setAfterCursor] = useState<string | null>(null);
+  const [beforeCursor, setBeforeCursor] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const { data, isLoading } = useOrganizations(4, afterCursor, beforeCursor, searchTerm);
+
+  const handlePageChange = (after: string | null, before: string | null) => {
+    setAfterCursor(after);
+    setBeforeCursor(before);
+  };
+
+  const handleSearch = (search: string) => {
+    setSearchTerm(search);
+    setAfterCursor(null);
+    setBeforeCursor(null);
+  };
+
+  return (
+    <PaginatedGrid
+      data={{
+        items: data?.organizations.items || [],
+        totalCount: data?.organizations.totalCount || 0,
+        pageInfo: data?.organizations.pageInfo || null,
+      }}
+      CardComponent={OrganizationCard}
+      pageSize={4}
+      title="Challenges"
+      loading={isLoading}
+      onPageChange={handlePageChange}
+      onSearch={handleSearch}
+    />
+  );
 };
