@@ -49,7 +49,7 @@ export const OrganizationCard: React.FC<{ item: Organization }> = ({ item: organ
           {loading ? "Loading logo..." : "No logo available"}
         </div>
       )}
-      <h2 className="text-xl font-semibold dark:text-white">{metadata.name}</h2>
+      <h2 className="text-xl font-semibold dark:text-white">{organization.name}</h2>
       {metadata.description && <p className="text-gray-800 dark:text-gray-200 mt-2">{metadata.description}</p>}
       <p className="text-gray-600 dark:text-gray-300">ID: {organization.id}</p>
     </div>
