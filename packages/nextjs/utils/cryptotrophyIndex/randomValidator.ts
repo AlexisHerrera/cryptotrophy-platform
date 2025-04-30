@@ -1,15 +1,15 @@
-const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || "http://localhost:42069";
+import { executeQuery } from "./indexClient";
+import type { GraphQLClient } from "graphql-request";
 
-// Define the TypeScript types for organization data.
-export type RandomValidatorCall = {
+export type ValidatorCall = {
   validationId: string;
   claimer: string;
   requestId: string;
 };
 
 export interface RandomValidatorCallsData {
-  offchainApiCalls: {
-    items: RandomValidatorCall[];
+  randomValidatorCalls: {
+    items: ValidatorCall[];
   };
 }
 
@@ -26,23 +26,8 @@ const GET_LATEST_VALIDATOR_CALL_QUERY = `
   }
 `;
 
-// Helper function to fetch organizations from the GraphQL API.
-export async function fetchLatestRandomValidatorRequestId(): Promise<string | null> {
-  const res = await fetch(GRAPHQL_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      query: GET_LATEST_VALIDATOR_CALL_QUERY,
-    }),
-  });
-
-  const json = await res.json();
-
-  if (json.errors) {
-    throw new Error(json.errors.map((err: any) => err.message).join(", "));
-  }
-
-  const items = json.data?.randomValidatorCalls?.items;
-  console.log("=============", items[0].requestId);
+export async function fetchLatestRandomValidatorRequestId(client: GraphQLClient): Promise<string | null> {
+  const response = await executeQuery<RandomValidatorCallsData>(client, GET_LATEST_VALIDATOR_CALL_QUERY);
+  const items = response.randomValidatorCalls?.items;
   return items?.length ? items[0].requestId : null;
 }

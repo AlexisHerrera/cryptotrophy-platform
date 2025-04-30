@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Organization } from "~~/utils/cryptotrophyIndex/organizations";
+import { useRouter } from "next/navigation";
+import { Organization } from "~~/utils/cryptotrophyIndex/types";
 
 // Helper to convert ipfs:// URLs to a public gateway URL.
 const convertIpfsUrl = (baseURI: string): string => {
@@ -11,9 +12,11 @@ const convertIpfsUrl = (baseURI: string): string => {
 
 // A card component for displaying an individual organization's data.
 // It fetches additional metadata (logo and description) from IPFS.
-export const OrganizationCard: React.FC<{ organization: Organization }> = ({ organization }) => {
+export const OrganizationCard: React.FC<{ item: Organization }> = ({ item: organization }) => {
   const [metadata, setMetadata] = useState<{ logo?: string; name?: string; description?: string }>({});
   const [loading, setLoading] = useState<boolean>(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchMetadata = async () => {
@@ -35,7 +38,10 @@ export const OrganizationCard: React.FC<{ organization: Organization }> = ({ org
   }, [organization.baseURI]);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
+    <div
+      onClick={() => router.push(`/trophy-app/organizations/${organization.id.toString()}`)}
+      className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col cursor-pointer hover:shadow-lg transition-shadow duration-200"
+    >
       {metadata.logo ? (
         <img src={metadata.logo} alt={metadata.name} className="w-full h-60 object-cover rounded-md mb-4" />
       ) : (
@@ -43,7 +49,7 @@ export const OrganizationCard: React.FC<{ organization: Organization }> = ({ org
           {loading ? "Loading logo..." : "No logo available"}
         </div>
       )}
-      <h2 className="text-xl font-semibold dark:text-white">{metadata.name}</h2>
+      <h2 className="text-xl font-semibold dark:text-white">{organization.name}</h2>
       {metadata.description && <p className="text-gray-800 dark:text-gray-200 mt-2">{metadata.description}</p>}
       <p className="text-gray-600 dark:text-gray-300">ID: {organization.id}</p>
     </div>

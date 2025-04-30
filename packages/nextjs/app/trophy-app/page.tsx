@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { OrganizationsGrid } from "~~/app/(trophyapp)/_components/OrganizationsGrid";
 import { MotionDiv } from "~~/app/motions/use-motion";
+import { OrganizationsGrid } from "~~/app/trophy-app/organizations/_components/OrganizationsGrid";
 
 const Home: React.FC = () => {
   return (

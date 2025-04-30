@@ -1,3 +1,4 @@
+import { decodeBytes32String } from "ethers";
 import { ponder } from "ponder:registry";
 import { organization, organizationAdmin } from "ponder:schema";
 import { challenge } from "ponder:schema";
@@ -49,7 +50,8 @@ ponder.on("ChallengeManager:ChallengeCreated", async ({ event, context }) => {
       endTime,
       maxWinners,
       orgId: orgId.toString(),
-      prizeAmount
+      prizeAmount,
+      isActive: true
     });
   });
 
@@ -129,3 +131,27 @@ ponder.on("RandomValidator:RandomValidatorCalled", async ({ event, context }) =>
     });
   });
 
+
+  
+ponder.on("ChallengeManager:IsActiveChanged", async ({ event, context }) => {
+  const { challengeId, isActive } = event.args;
+
+  await context.db
+    .update(challenge, { id: challengeId.toString() })
+    .set((row) => ({
+      isActive: isActive,
+    }));
+});
+
+
+ponder.on("ChallengeManager:ValidatorChanged", async ({ event, context }) => {
+  const { challengeId, validatorUID, validatorAddr, validationId } = event.args;
+
+  await context.db
+    .update(challenge, {id: challengeId.toString()})
+    .set((row) => ({
+      validatorUID: decodeBytes32String(validatorUID), // bytes32 will be a hex string like "0xabc123..."
+      validatorAddr: validatorAddr,
+      validationId: validationId,
+    }));
+});
