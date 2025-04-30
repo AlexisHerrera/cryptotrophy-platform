@@ -1,7 +1,7 @@
-const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || "http://localhost:42069";
+import { executeQuery } from "./indexClient";
+import type { GraphQLClient } from "graphql-request";
 
-// Define the TypeScript types for organization data.
-export type OffchainApiCall = {
+export type ValidatorCall = {
   validationId: string;
   claimer: string;
   requestId: string;
@@ -9,7 +9,7 @@ export type OffchainApiCall = {
 
 export interface OffchainApiCallsData {
   offchainApiCalls: {
-    items: OffchainApiCall[];
+    items: ValidatorCall[];
   };
 }
 
@@ -26,22 +26,8 @@ const GET_LATEST_VALIDATOR_CALL_QUERY = `
   }
 `;
 
-// Helper function to fetch organizations from the GraphQL API.
-export async function fetchLatestOffChainApiRequestId(): Promise<string | null> {
-  const res = await fetch(GRAPHQL_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      query: GET_LATEST_VALIDATOR_CALL_QUERY,
-    }),
-  });
-
-  const json = await res.json();
-
-  if (json.errors) {
-    throw new Error(json.errors.map((err: any) => err.message).join(", "));
-  }
-
-  const items = json.data?.offchainApiCalls?.items;
+export async function fetchLatestOffChainApiRequestId(client: GraphQLClient): Promise<string | null> {
+  const response = await executeQuery<OffchainApiCallsData>(client, GET_LATEST_VALIDATOR_CALL_QUERY);
+  const items = response.offchainApiCalls?.items;
   return items?.length ? items[0].requestId : null;
 }

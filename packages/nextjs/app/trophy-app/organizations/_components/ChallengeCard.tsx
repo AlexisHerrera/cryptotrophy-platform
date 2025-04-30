@@ -1,7 +1,7 @@
 import React from "react";
 import { formatUnits } from "ethers";
 import { ClaimChallengeButton } from "~~/app/trophy-app/organizations/_components/ClaimChallengeButton";
-import { Challenge } from "~~/utils/cryptotrophyIndex/challenges";
+import { Challenge } from "~~/utils/cryptotrophyIndex/types";
 
 export const ChallengeCard: React.FC<{ item: Challenge }> = ({ item: challenge }) => {
   const formattedPrize = formatUnits(BigInt(challenge.prizeAmount), 18);
