@@ -30,7 +30,7 @@ export const OrganizationsGrid = () => {
       }}
       CardComponent={OrganizationCard}
       pageSize={4}
-      title="Challenges"
+      title="Organizations"
       loading={isLoading}
       onPageChange={handlePageChange}
       onSearch={handleSearch}
