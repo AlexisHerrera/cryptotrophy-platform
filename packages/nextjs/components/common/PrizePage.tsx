@@ -1,22 +1,34 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
+import React, { useCallback, useState } from "react";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 import { BackButton } from "~~/components/common/BackButton";
+import PrizeTable from "~~/components/common/PrizeTable";
+import CreatePrizeModal from "~~/components/common/_components/CreatePrizeModal";
 import { useEthersSigner } from "~~/hooks/ethers/useEthersSigner";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
 import { checkAndApproveErc20 } from "~~/utils/orgTokens/approve";
 import { notification } from "~~/utils/scaffold-eth";
 
-const PrizeCenter: React.FC = () => {
-  const { organizationId } = useParams() as { organizationId: string };
+interface PrizePageProps {
+  organizationId: string;
+  mode: "user" | "admin";
+}
+
+const PrizePage: React.FC<PrizePageProps> = ({ organizationId, mode }) => {
   const { address } = useAccount();
   const signer = useEthersSigner();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [claimAmounts, setClaimAmounts] = useState<{ [prizeId: string]: string }>({});
+
+  const handleClaimAmountChange = useCallback((prizeId: bigint, value: string) => {
+    setClaimAmounts(prev => ({
+      ...prev,
+      [prizeId.toString()]: value,
+    }));
+  }, []);
 
   const {
     data: prizesData,
@@ -106,12 +118,7 @@ const PrizeCenter: React.FC = () => {
     return <span className="loading loading-spinner loading-lg"></span>;
   }
 
-  // Access the data directly without destructuring to handle readonly arrays
-  const ids = prizesData?.[0] || [];
-  const names = prizesData?.[1] || [];
-  const descriptions = prizesData?.[2] || [];
-  const prices = prizesData?.[3] || [];
-  const stocks = prizesData?.[4] || [];
+  const [ids = [], names = [], descriptions = [], prices = [], stocks = []] = prizesData || [];
 
   const prizes = ids.map((id: bigint, index: number) => ({
     id,
@@ -126,73 +133,40 @@ const PrizeCenter: React.FC = () => {
       <BackButton />
       <div className="container mx-auto p-4 max-w-4xl">
         <h1 className="text-4xl text-gray-700 font-mono grayscale mb-4 dark:text-gray-300 text-center">Prize Center</h1>
+        {mode === "user" && (
+          <div className="mb-4 text-center">
+            <span className="font-bold">Your Balance:</span>{" "}
+            {ethers.formatUnits(balanceData ? balanceData[0] : 0n, DECIMALS_TOKEN)}{" "}
+            {balanceData ? balanceData[1] : "Tokens"}
+          </div>
+        )}
+        {mode === "admin" && (
+          <div className="flex justify-center mb-6">
+            <button className="btn btn-primary" onClick={() => setIsCreateModalOpen(true)}>
+              Create Prize
+            </button>
+          </div>
+        )}
 
-        <div className="mb-4 text-center">
-          <span className="font-bold">Your Balance:</span>{" "}
-          {ethers.formatUnits(balanceData ? balanceData[0] : 0n, DECIMALS_TOKEN)}{" "}
-          {balanceData ? balanceData[1] : "Tokens"}
-        </div>
-
-        <div className="flex justify-center gap-4 mb-6">
-          <Link href={`/trophy-app/organizations/${organizationId}/my-prizes`} className="btn btn-secondary">
-            View My NFTs
-          </Link>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="table table-zebra w-full border border-gray-300">
-            <thead>
-              <tr>
-                <th>Prize ID</th>
-                <th>Name</th>
-                <th>Price (tokens)</th>
-                <th>Stock</th>
-                <th>Claim</th>
-              </tr>
-            </thead>
-            <tbody>
-              {prizes.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="text-center">
-                    No prizes found.
-                  </td>
-                </tr>
-              ) : (
-                prizes.map(prize => (
-                  <tr key={prize.id.toString()}>
-                    <td>{prize.id.toString()}</td>
-                    <td>{prize.name}</td>
-                    <td>{ethers.formatUnits(prize.price, 18)}</td>
-                    <td>{prize.stock.toString()}</td>
-                    <td>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          min={1}
-                          placeholder="Qty"
-                          className="input input-bordered w-20"
-                          value={claimAmounts[prize.id.toString()] || ""}
-                          onChange={e =>
-                            setClaimAmounts(prev => ({
-                              ...prev,
-                              [prize.id.toString()]: e.target.value,
-                            }))
-                          }
-                        />
-                        <button className="btn btn-secondary" onClick={() => handleClaim(prize.id)}>
-                          Claim
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        <PrizeTable
+          prizes={prizes}
+          claimAmounts={claimAmounts}
+          onClaimAmountChange={handleClaimAmountChange}
+          onClaim={handleClaim}
+          isLoading={isPrizesLoading || isBalanceLoading}
+          mode={mode}
+        />
+        <CreatePrizeModal
+          orgId={organizationId}
+          isOpen={isCreateModalOpen}
+          onClose={async () => {
+            setIsCreateModalOpen(false);
+            await refetchPrizes();
+          }}
+        />
       </div>
     </div>
   );
 };
 
-export default PrizeCenter;
+export default PrizePage;

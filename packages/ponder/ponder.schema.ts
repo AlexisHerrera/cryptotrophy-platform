@@ -16,7 +16,6 @@ export const organizationAdmin = onchainTable("organizationAdmin", (t) => ({
 }));
 
 
-
 export const challenge = onchainTable("challenge", (t) => ({
   id: t.text().primaryKey(), // Store challengeId as a string
   description: t.text(),
@@ -25,6 +24,10 @@ export const challenge = onchainTable("challenge", (t) => ({
   maxWinners: t.integer(),
   orgId: t.text(),
   prizeAmount: t.bigint(),
+  isActive: t.boolean(),
+  validatorUID: t.text(),
+  validatorAddr: t.text(),
+  validationId: t.bigint(),
 }));
 
 
@@ -71,4 +74,3 @@ export const randomValidatorCall = onchainTable("randomValidatorCall", (t) => ({
   validationId: t.text(),
   claimer: t.text(),
 }));
-

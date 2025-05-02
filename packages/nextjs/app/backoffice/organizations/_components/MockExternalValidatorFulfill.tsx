@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import { ValidatorContractName } from "./KnownValidators";
+import type { GraphQLClient } from "graphql-request";
 import Modal from "~~/components/Modal";
 import { useScaffoldContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { createIndexClient } from "~~/utils/cryptotrophyIndex/indexClient";
 import { fetchLatestOffChainApiRequestId } from "~~/utils/cryptotrophyIndex/offChainApiValidator";
 import { fetchLatestRandomValidatorRequestId } from "~~/utils/cryptotrophyIndex/randomValidator";
 
-type FetchValidatorRequestId = () => Promise<string | null>;
+const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || "http://localhost:42069";
+const indexClient = createIndexClient(GRAPHQL_ENDPOINT);
+
+type FetchValidatorRequestId = (client: GraphQLClient) => Promise<string | null>;
 
 type ExecuteExternalFulfillFunction = (
   validatorContractAddress: string,
@@ -153,7 +158,7 @@ const MockExternalValidatorFulfill: React.FC<MockExternalOffchainValidatorProps>
     try {
       setLoading(true);
 
-      const latestRequestId = await fetchLatestRequestId();
+      const latestRequestId = await fetchLatestRequestId(indexClient);
 
       if (deployedContract !== undefined && latestRequestId !== undefined && latestRequestId !== null) {
         executeExternalFulfill(deployedContract.address, latestRequestId as `0x${string}`, mockWriteContract, formData);
@@ -176,8 +181,9 @@ const MockExternalValidatorFulfill: React.FC<MockExternalOffchainValidatorProps>
       <div className="p-4">
         <h2 className="text-xl font-bold mb-4 text-center">Mock Validator Response</h2>
         <p className="mb-4 text-center">
-          Mocking external validator response: <strong>{challengeId.toString()}</strong>?
+          Challenge: <strong>{challengeId.toString()}</strong>
         </p>
+        <p className="mb-4 text-center">Mocking external validator response.</p>
 
         <FulfillForm formData={formData} setFormData={setFormData} />
 

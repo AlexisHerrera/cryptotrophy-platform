@@ -233,7 +233,8 @@ contract OrganizationManager is IOrganizationManager {
 		string memory name,
 		address token,
 		address[] memory admins,
-		bool userIsAdmin
+		bool userIsAdmin,
+		string memory baseURI
 		) {
 		Organization storage org = organizations[_orgId];
 		require(org.exists, "Organization does not exist");
@@ -243,5 +244,6 @@ contract OrganizationManager is IOrganizationManager {
 		token = org.token;
 		admins = org.admins;
 		userIsAdmin = org.adminExists[msg.sender];
+		baseURI = org.baseURI;
 	}
 }

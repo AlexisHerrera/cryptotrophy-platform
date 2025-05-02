@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AdminPanel from "~~/app/backoffice/organizations/_components/AdminPanel";
-import ChallengeList from "~~/app/backoffice/organizations/_components/ChallengeList";
 import CreateChallengeModal from "~~/app/backoffice/organizations/_components/CreateChallengeModal";
 import Modal from "~~/components/Modal";
 import { BackButton } from "~~/components/common/BackButton";
+import ChallengeList from "~~/components/common/ChallengeList";
+import { useChallengeForm } from "~~/hooks/backoffice/useChallengeForm";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 interface OrganizationDetails {
@@ -15,12 +16,13 @@ interface OrganizationDetails {
   token: string;
   admins: string[];
   userIsAdmin: boolean;
+  baseURI: string;
 }
 
 const OrganizationPage: React.FC = () => {
   const { organizationId } = useParams();
   const router = useRouter();
-
+  const challengeFormHook = useChallengeForm(BigInt(organizationId as string));
   const [organization, setOrganization] = useState<OrganizationDetails | null>(null);
   const [showCreateChallengeModal, setShowCreateChallengeModal] = useState(false);
   const [showAdminPanelModal, setShowAdminPanelModal] = useState(false);
@@ -41,19 +43,17 @@ const OrganizationPage: React.FC = () => {
 
   useEffect(() => {
     if (organizationData) {
-      const [id, name, token, admins, userIsAdmin] = organizationData as [
-        bigint, // id
-        string, // name
-        string, // token
-        string[], // admins
-        boolean, // userIsAdmin
-      ];
+      const orgData = organizationData as unknown as [bigint, string, string, string[], boolean, string];
+
+      const [id, name, token, admins, userIsAdmin, baseURI] = orgData;
+
       setOrganization({
         id,
         name,
         token,
         admins,
         userIsAdmin: userIsAdmin,
+        baseURI,
       });
     }
   }, [organizationData]);
@@ -87,7 +87,7 @@ const OrganizationPage: React.FC = () => {
             <div>
               <button
                 className="btn bg-amber-400 dark:text-gray-800 dark:btn-warning"
-                onClick={() => router.push(`/trophy-app/organizations/${organization.id}/prizes`)}
+                onClick={() => router.push(`/backoffice/organizations/${organization.id}/prizes`)}
               >
                 Prize Center
               </button>
@@ -96,12 +96,16 @@ const OrganizationPage: React.FC = () => {
 
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-semibold mb-4">Active Challenges</h2>
-            <ChallengeList challengeIds={challengeIds ?? []} orgId={BigInt(organizationId as string)} />
+            <ChallengeList mode={"admin"} challengeIds={challengeIds ?? []} orgId={BigInt(organizationId as string)} />
           </div>
         </div>
 
         {showCreateChallengeModal && (
-          <CreateChallengeModal organizationId={organization.id} onClose={() => setShowCreateChallengeModal(false)} />
+          <CreateChallengeModal
+            challengeFormHook={challengeFormHook}
+            organizationId={organization.id}
+            onClose={() => setShowCreateChallengeModal(false)}
+          />
         )}
 
         {showAdminPanelModal && (

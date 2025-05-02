@@ -55,8 +55,14 @@ const MyPrizesPage: React.FC = () => {
         setIsLoadingNFTs(true);
         const nfts: NFTItem[] = [];
 
-        // Extract prize data
-        const [ids, names, , , , nftContracts] = prizesData;
+        // Extract prize data safely using optional chaining and type assertion
+        const prizesResult = prizesData as unknown as [bigint[], string[], string[], bigint[], bigint[], string[]];
+        const ids = prizesResult[0] || [];
+        const names = prizesResult[1] || [];
+        // const descriptions = prizesResult[2] || [];
+        // const prices = prizesResult[3] || [];
+        // const stocks = prizesResult[4] || [];
+        const nftContracts = prizesResult[5] || [];
 
         // For each prize, check if user owns any NFTs
         for (let i = 0; i < ids.length; i++) {

@@ -57,6 +57,7 @@
     "@chainlink/functions-toolkit": "^0.3.2",
     "@heroicons/react": "^2.2.0",
     "@openzeppelin/contracts": "^5.1.0",
+    "@tanstack/react-query": "^5.74.11",
     "circomlib": "^2.0.5",
     "circomlibjs": "^0.1.7",
     "lucide-react": "^0.485.0"

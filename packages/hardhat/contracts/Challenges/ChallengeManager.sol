@@ -46,12 +46,23 @@ contract ChallengeManager is IChallengeManager, IValidatorCallback {
         , uint256 maxWinners
         , uint256 orgId
         , uint256 prizeAmount
+        , bool active
     );
     event RewardClaimed(
         uint256 indexed challengeId
         , address indexed user
         , uint256 claimTime
         , uint256 prizeAmountInBaseUnits
+    );
+    event ValidatorChanged(
+        uint256 indexed challengeId
+        , bytes32 validatorUID
+        , address validatorAddr
+        , uint256 validationId
+    );
+    event IsActiveChanged(
+        uint256 indexed challengeId
+        , bool isActive
     );
 
     constructor(address _orgManagerAddr) {
@@ -135,7 +146,6 @@ contract ChallengeManager is IChallengeManager, IValidatorCallback {
         challenge.orgId = _orgId;
         challenge.active = true;
         challenge.exists = true;
-        challenge.validatorUID = bytes32(0);
 
         orgChallenges[_orgId].push(challengeId);
         challengeIds.push(challengeId);
@@ -148,8 +158,8 @@ contract ChallengeManager is IChallengeManager, IValidatorCallback {
             , _maxWinners
             , _orgId
             , _prizeAmount
+            , true
         );
-
         return challengeId;
     }
 
@@ -171,6 +181,12 @@ contract ChallengeManager is IChallengeManager, IValidatorCallback {
         challenge.validationId = _validationId;
         challenge.validatorUID = _validatorUID;
         validationChallenge[_validatorUID][_validationId] = _challengeId;
+        emit ValidatorChanged(
+            _challengeId,
+            _validatorUID,
+            _validatorAddr,
+            _validationId
+        );
     }
 
     /// @notice Permite que un validador reclame un desafío
@@ -241,6 +257,10 @@ contract ChallengeManager is IChallengeManager, IValidatorCallback {
         // Si se alcanzó el número máximo de ganadores, marcar el desafío como inactivo
         if (_challenge.winnerCount >= _challenge.maxWinners) {
             _challenge.active = false;
+            emit IsActiveChanged(
+                _challenge.id
+                , false
+            );
         }
 
         // Transferir tokens al ganador
