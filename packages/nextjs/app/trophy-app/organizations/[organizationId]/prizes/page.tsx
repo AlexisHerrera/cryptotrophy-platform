@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import CreatePrizeModal from "./_components/CreatePrizeModal";
 import { ethers } from "ethers";
@@ -129,11 +130,14 @@ const PrizeCenter: React.FC = () => {
           {balanceData ? balanceData[1] : "Tokens"}
         </div>
 
-        {/*<div className="flex justify-center mb-6">*/}
-        {/*  <button className="btn btn-primary" onClick={() => setIsCreateModalOpen(true)}>*/}
-        {/*    Create Prize*/}
-        {/*  </button>*/}
-        {/*</div>*/}
+        <div className="flex justify-center gap-4 mb-6">
+          <button className="btn btn-primary" onClick={() => setIsCreateModalOpen(true)}>
+            Create Prize
+          </button>
+          <Link href={`/trophy-app/organizations/${organizationId}/my-prizes`} className="btn btn-secondary">
+            View My NFTs
+          </Link>
+        </div>
 
         <div className="overflow-x-auto">
           <table className="table table-zebra w-full border border-gray-300">

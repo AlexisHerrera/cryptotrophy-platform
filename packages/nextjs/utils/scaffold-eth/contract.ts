@@ -9,6 +9,7 @@ import {
   ExtractAbiFunction,
 } from "abitype";
 import type { ExtractAbiFunctionNames } from "abitype";
+import * as ethers from "ethers";
 import type { Simplify } from "type-fest";
 import type { MergeDeepRecord } from "type-fest/source/merge-deep";
 import {
@@ -314,3 +315,27 @@ export type UseScaffoldEventHistoryData<
   | undefined;
 
 export type AbiParameterTuple = Extract<AbiParameter, { type: "tuple" | `tuple[${string}]` }>;
+
+/**
+ * @dev Creates a new ethers contract instance for PrizeNFT with given contractAddress
+ */
+export const getPrizeNFTContract = ({
+  contractAddress,
+  signer,
+}: {
+  contractAddress: string;
+  signer: ethers.Signer;
+}) => {
+  // ABI for PrizeNFT's essential functions
+  const prizeNFTAbi = [
+    "function balanceOf(address owner) view returns (uint256)",
+    "function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)",
+    "function tokenURI(uint256 tokenId) view returns (string)",
+    "function name() view returns (string)",
+    "function symbol() view returns (string)",
+    "function ownerOf(uint256 tokenId) view returns (address)",
+    "function supportsInterface(bytes4 interfaceId) view returns (bool)",
+  ];
+
+  return new ethers.Contract(contractAddress, prizeNFTAbi, signer);
+};
