@@ -21,6 +21,7 @@ interface NFTItem {
   prizeName: string;
   symbol: string;
   contractAddress: string;
+  balance?: number;
 }
 
 const MyPrizesPage: React.FC = () => {
@@ -102,6 +103,7 @@ const MyPrizesPage: React.FC = () => {
                       prizeName,
                       symbol: nftSymbol,
                       contractAddress,
+                      balance: Number(balance),
                     });
                   }
                 } else {
@@ -111,9 +113,10 @@ const MyPrizesPage: React.FC = () => {
                     tokenId: -1,
                     prizeId: Number(prizeId),
                     name: nftName,
-                    prizeName: `${prizeName} (${balance} owned)`,
+                    prizeName,
                     symbol: nftSymbol,
                     contractAddress,
+                    balance: Number(balance),
                   });
                 }
               } catch (error) {
@@ -124,9 +127,10 @@ const MyPrizesPage: React.FC = () => {
                   tokenId: -1,
                   prizeId: Number(prizeId),
                   name: nftName,
-                  prizeName: `${prizeName} (${balance} owned)`,
+                  prizeName,
                   symbol: nftSymbol,
                   contractAddress,
+                  balance: Number(balance),
                 });
               }
             }
@@ -182,26 +186,17 @@ const MyPrizesPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {userNFTs.map(nft => (
               <div key={nft.id} className="card bg-base-100 shadow-xl">
-                <div className="card-body">
+                <div className="card-body relative">
+                  {nft.balance && nft.balance > 1 && (
+                    <div className="absolute top-2 right-2">
+                      <div className="badge badge-accent font-bold">x{nft.balance}</div>
+                    </div>
+                  )}
                   <h2 className="card-title">{nft.prizeName}</h2>
                   <div className="badge badge-primary">
                     {nft.symbol} {nft.tokenId >= 0 ? `#${nft.tokenId}` : ""}
                   </div>
                   <p className="mt-2">This NFT represents ownership of the prize: {nft.prizeName}</p>
-                  <div className="card-actions justify-end mt-4">
-                    {nft.tokenId >= 0 ? (
-                      <a
-                        href={`https://etherscan.io/token/${nft.contractAddress}?a=${nft.tokenId}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-sm btn-outline"
-                      >
-                        View on Etherscan
-                      </a>
-                    ) : (
-                      <span className="text-sm text-gray-500">Multiple NFTs owned</span>
-                    )}
-                  </div>
                 </div>
               </div>
             ))}
