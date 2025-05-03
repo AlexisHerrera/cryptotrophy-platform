@@ -45,13 +45,14 @@ contract Prizes {
         uint256 stock;
         uint256 orgId;
         address nftContract; // Address of the deployed NFT contract for this prize
+        string imageCID; // Image cid in Filebase
     }
 
     mapping(uint256 => Prize) private prizes; // prizeId => Prize
     uint256 private nextPrizeId;
 
     // prizesByOrg[orgId] => array dinámico de premios de esa organización
-    mapping(uint256 => Prize[]) private prizesByOrg;
+    mapping(uint256 => uint256[]) private prizeIdsByOrg;
 
     // Referencia al OrganizationManager para verificar admins y miembros,
     // y para obtener el token de la org.
@@ -65,14 +66,15 @@ contract Prizes {
         string description,
         uint256 price,
         uint256 stock,
-        address nftContract
+        address nftContract,
+        string imageCID
     );
 
     event PrizeClaimed(
         uint256 indexed prizeId,
         uint256 indexed orgId,
         uint256 amount,
-		address claimer,
+        address claimer,
         uint256 cost,
         uint256[] nftIds
     );
@@ -102,55 +104,105 @@ contract Prizes {
     // FUNCIONES PRINCIPALES
     // -------------------------------------------------------------------------
 
+    /// @notice Step 1: Create NFT contract for a prize
+    /// @param name Name of the prize (and NFT)
+    /// @param imageCID Image cid in Filebase
+    /// @return NFT contract address
+    function _createNFTContract(string memory name, uint256 prizeIndex, string memory imageCID)
+    internal
+    returns (address)
+    {
+        string memory symbol = string(abi.encodePacked("PRIZE", Strings.toString(prizeIndex)));
+        
+        PrizeNFT nftContract = new PrizeNFT(name, symbol, imageCID);
+        return address(nftContract);
+    }
+    
+    /// @notice Step 2: Store prize data and link to organization
+    /// @param prizeId ID for the new prize
+    /// @param orgId Organization ID
+    /// @param name Prize name
+    /// @param description Prize description
+    /// @param price Prize price in org tokens
+    /// @param stock Initial stock amount
+    /// @param nftContract Address of the NFT contract
+    /// @param imageCID Image cid in Filebase
+    function _storePrize(
+        uint256 prizeId,
+        uint256 orgId,
+        string memory name,
+        string memory description,
+        uint256 price,
+        uint256 stock,
+        address nftContract,
+        string memory imageCID
+    )
+    internal
+    {
+        Prize memory newPrize = Prize({
+            name: name,
+            description: description,
+            price: price,
+            stock: stock,
+            orgId: orgId,
+            nftContract: nftContract,
+            imageCID: imageCID
+        });
+        
+        prizes[prizeId] = newPrize;
+        prizeIdsByOrg[orgId].push(prizeId);
+        
+        emit PrizeCreated(
+            prizeId,
+            orgId,
+            name,
+            description,
+            price,
+            stock,
+            nftContract,
+            imageCID
+        );
+    }
+
     /// @notice Crea un nuevo premio para la organización `orgId`.
     /// @param orgId ID de la organización
     /// @param name Nombre del premio
     /// @param description Descripción del premio
     /// @param price Precio (en tokens de la organización) para reclamar 1 unidad
     /// @param stock Cantidad inicial de unidades disponibles de este premio
+    /// @param imageCID Image cid in Filebase
     function createPrize(
         uint256 orgId,
         string calldata name,
         string calldata description,
         uint256 price,
-        uint256 stock
+        uint256 stock,
+        string calldata imageCID
     )
     external
     onlyOrgAdmin(orgId)
     {
-        // Deploy a new NFT contract for this prize
-        string memory symbol = string(abi.encodePacked("PRIZE", Strings.toString(nextPrizeId)));
-        string memory baseURI = ""; // Can be set later by admin
-        PrizeNFT nftContract = new PrizeNFT(name, symbol, baseURI);
+        uint256 prizeId = nextPrizeId++;
         
-        Prize memory _prize = Prize({
-            name: name,
-            description: description,
-            price: price,
-            stock: stock,
-            orgId: orgId,
-            nftContract: address(nftContract)
-        });
-        uint256 _prizeId = nextPrizeId++;
-		prizes[_prizeId] = _prize;
-
-        // Almacenar el nuevo premio
-        prizesByOrg[orgId].push(_prize);
-
-        emit PrizeCreated(
-            _prizeId,
+        // Step 1: Create NFT contract
+        address nftContract = _createNFTContract(name, prizeId, imageCID);
+        
+        // Step 2: Store prize data
+        _storePrize(
+            prizeId,
             orgId,
             name,
             description,
             price,
             stock,
-            address(nftContract)
+            nftContract,
+            imageCID
         );
     }
 
-	function getPrize(uint256 prizeId) external view returns (Prize memory) {
-		return prizes[prizeId];
-	}
+    function getPrize(uint256 prizeId) external view returns (Prize memory) {
+        return prizes[prizeId];
+    }
 
     /// @notice Lista todos los premios de una organización, incluyendo su ID e información.
     /// @dev Retorna un array de structs `Prize` pero en Solidity 0.8.x se puede usar
@@ -163,6 +215,7 @@ contract Prizes {
     /// @return prices Lista de precios
     /// @return stocks Lista de stocks
     /// @return nftContracts Lista de direcciones de contratos NFT
+    /// @return imageCID Lista de cids de imágenes de premios
     function listPrizes(uint256 orgId)
     external
     view
@@ -172,11 +225,12 @@ contract Prizes {
         string[] memory descriptions,
         uint256[] memory prices,
         uint256[] memory stocks,
-        address[] memory nftContracts
+        address[] memory nftContracts,
+        string[] memory imageCID
     )
     {
-        Prize[] storage _prizes = prizesByOrg[orgId];
-        uint256 length = _prizes.length;
+        uint256[] memory prizeIds = prizeIdsByOrg[orgId];
+        uint256 length = prizeIds.length;
 
         ids = new uint256[](length);
         names = new string[](length);
@@ -184,15 +238,19 @@ contract Prizes {
         prices = new uint256[](length);
         stocks = new uint256[](length);
         nftContracts = new address[](length);
+        imageCID = new string[](length);
 
         for (uint256 i = 0; i < length; i++) {
-            Prize storage p = _prizes[i];
-            ids[i] = i;  // El ID es simplemente el índice en el array
+            uint256 prizeId = prizeIds[i];
+            Prize storage p = prizes[prizeId];
+            
+            ids[i] = prizeId;
             names[i] = p.name;
             descriptions[i] = p.description;
             prices[i] = p.price;
             stocks[i] = p.stock;
             nftContracts[i] = p.nftContract;
+            imageCID[i] = p.imageCID;
         }
     }
 
@@ -200,14 +258,15 @@ contract Prizes {
     /// @dev El usuario debe haber aprobado previamente a este contrato (`Prizes`)
     ///      para gastar `amount * price` tokens de la organización.
     /// @param orgId ID de la organización
-    /// @param prizeId Índice del premio (retornado por listPrizes)
+    /// @param prizeId ID del premio 
     /// @param amount Cantidad de unidades que se reclaman
     function claimPrize(uint256 orgId, uint256 prizeId, uint256 amount)
     external
     {
         require(amount > 0, "Prizes: amount must be > 0");
 
-        Prize storage p = prizesByOrg[orgId][prizeId];
+        Prize storage p = prizes[prizeId];
+        require(p.orgId == orgId, "Prizes: prize not from this org");
         require(p.stock >= amount, "Prizes: not enough stock");
 
         // Costo total en tokens
@@ -229,7 +288,7 @@ contract Prizes {
         // Disminuir el stock
         p.stock -= amount;
 
-		emit PrizeClaimed(prizeId, orgId, amount, msg.sender, cost, nftIds);
+        emit PrizeClaimed(prizeId, orgId, amount, msg.sender, cost, nftIds);
 
         // Opcionalmente: "quemar" tokens o lo que se desee hacer con esos tokens
         // Si se pueden quemar:

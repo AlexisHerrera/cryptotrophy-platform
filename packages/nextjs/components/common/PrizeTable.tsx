@@ -7,6 +7,7 @@ export interface Prize {
   description: string;
   price: bigint;
   stock: bigint;
+  imageCID?: string;
 }
 
 export interface ClaimAmounts {
@@ -44,6 +45,7 @@ const PrizeTable: React.FC<PrizeTableProps> = ({
         <thead>
           <tr>
             <th>Prize ID</th>
+            <th>Image</th>
             <th>Name</th>
             <th>Price (tokens)</th>
             <th>Stock</th>
@@ -53,7 +55,7 @@ const PrizeTable: React.FC<PrizeTableProps> = ({
         <tbody>
           {prizes.length === 0 ? (
             <tr>
-              <td colSpan={5} className="text-center py-4">
+              <td colSpan={6} className="text-center py-4">
                 {" "}
                 No prizes found.
               </td>
@@ -63,6 +65,27 @@ const PrizeTable: React.FC<PrizeTableProps> = ({
               <tr key={prize.id.toString()} className="hover:bg-base-200">
                 {" "}
                 <td>{prize.id.toString()}</td>
+                <td>
+                  {prize.imageCID ? (
+                    <div className="w-16 h-16 rounded-md overflow-hidden">
+                      <img
+                        src={`https://ipfs.filebase.io/ipfs/${prize.imageCID}`}
+                        alt={`Prize ${prize.name}`}
+                        className="w-full h-full object-cover"
+                        onError={e => {
+                          console.error("Error loading image:", prize.imageCID);
+                          // Set a fallback image on error
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/placeholder-prize.svg";
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center text-gray-500 dark:text-gray-400">
+                      No Image
+                    </div>
+                  )}
+                </td>
                 <td>{prize.name}</td>
                 <td>{ethers.formatUnits(prize.price, 18)}</td>
                 <td>{prize.stock.toString()}</td>

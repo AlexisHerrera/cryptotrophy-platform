@@ -118,7 +118,10 @@ const PrizePage: React.FC<PrizePageProps> = ({ organizationId, mode }) => {
     return <span className="loading loading-spinner loading-lg"></span>;
   }
 
-  const [ids = [], names = [], descriptions = [], prices = [], stocks = []] = prizesData || [];
+  console.log(prizesData);
+  const [ids = [], names = [], descriptions = [], prices = [], stocks = [], _, imageCID = []] = prizesData || [];
+
+  console.log("Raw image cids from contract:", imageCID);
 
   const prizes = ids.map((id: bigint, index: number) => ({
     id,
@@ -126,7 +129,11 @@ const PrizePage: React.FC<PrizePageProps> = ({ organizationId, mode }) => {
     description: descriptions[index],
     price: prices[index],
     stock: stocks[index],
+    imageCID: imageCID[index] || "",
   }));
+
+  // For debugging
+  console.log("Prizes with image cids:", prizes);
 
   return (
     <div className="flex justify-between">
