@@ -22,6 +22,7 @@ interface NFTItem {
   symbol: string;
   contractAddress: string;
   balance?: number;
+  imageCID?: string;
 }
 
 const MyPrizesPage: React.FC = () => {
@@ -57,19 +58,29 @@ const MyPrizesPage: React.FC = () => {
         const nfts: NFTItem[] = [];
 
         // Extract prize data safely using optional chaining and type assertion
-        const prizesResult = prizesData as unknown as [bigint[], string[], string[], bigint[], bigint[], string[]];
+        const prizesResult = prizesData as unknown as [
+          bigint[],
+          string[],
+          string[],
+          bigint[],
+          bigint[],
+          string[],
+          string[],
+        ];
         const ids = prizesResult[0] || [];
         const names = prizesResult[1] || [];
         // const descriptions = prizesResult[2] || [];
         // const prices = prizesResult[3] || [];
         // const stocks = prizesResult[4] || [];
         const nftContracts = prizesResult[5] || [];
+        const imageCIDs = prizesResult[6] || [];
 
         // For each prize, check if user owns any NFTs
         for (let i = 0; i < ids.length; i++) {
           const prizeId = ids[i];
           const prizeName = names[i];
           const contractAddress = nftContracts[i];
+          const imageCID = imageCIDs[i];
 
           try {
             // Get NFT contract instance using the Prize NFT ABI from artifacts
@@ -104,6 +115,7 @@ const MyPrizesPage: React.FC = () => {
                       symbol: nftSymbol,
                       contractAddress,
                       balance: Number(balance),
+                      imageCID,
                     });
                   }
                 } else {
@@ -117,6 +129,7 @@ const MyPrizesPage: React.FC = () => {
                     symbol: nftSymbol,
                     contractAddress,
                     balance: Number(balance),
+                    imageCID,
                   });
                 }
               } catch (error) {
@@ -131,6 +144,7 @@ const MyPrizesPage: React.FC = () => {
                   symbol: nftSymbol,
                   contractAddress,
                   balance: Number(balance),
+                  imageCID,
                 });
               }
             }
@@ -190,6 +204,27 @@ const MyPrizesPage: React.FC = () => {
                   {nft.balance && nft.balance > 1 && (
                     <div className="absolute top-2 right-2">
                       <div className="badge badge-accent font-bold">x{nft.balance}</div>
+                    </div>
+                  )}
+                  {nft.imageCID ? (
+                    <figure className="px-4 pt-4">
+                      <img
+                        src={`https://ipfs.filebase.io/ipfs/${nft.imageCID}`}
+                        alt={`Prize ${nft.prizeName}`}
+                        className="rounded-xl object-cover w-full h-48"
+                        onError={e => {
+                          console.error("Error loading image:", nft.imageCID);
+                          // Set a fallback image on error
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/placeholder-prize.svg";
+                        }}
+                      />
+                    </figure>
+                  ) : (
+                    <div className="px-4 pt-4 flex justify-center">
+                      <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-xl flex items-center justify-center text-gray-500 dark:text-gray-400">
+                        No Image
+                      </div>
                     </div>
                   )}
                   <h2 className="card-title">{nft.prizeName}</h2>
