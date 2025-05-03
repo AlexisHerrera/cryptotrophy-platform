@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 import { BackButton } from "~~/components/common/BackButton";
+import PrizeTable, { ClaimAmounts } from "~~/components/common/PrizeTable";
 import { useEthersSigner } from "~~/hooks/ethers/useEthersSigner";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
@@ -16,7 +17,7 @@ const PrizeCenter: React.FC = () => {
   const { organizationId } = useParams() as { organizationId: string };
   const { address } = useAccount();
   const signer = useEthersSigner();
-  const [claimAmounts, setClaimAmounts] = useState<{ [prizeId: string]: string }>({});
+  const [claimAmounts, setClaimAmounts] = useState<ClaimAmounts>({});
 
   const {
     data: prizesData,
@@ -43,10 +44,18 @@ const PrizeCenter: React.FC = () => {
     functionName: "getTokenOfOrg",
     args: [BigInt(organizationId)],
   });
+
   const { data: prizesDeployed } = useDeployedContractInfo("Prizes");
   const prizesContractAddress = prizesDeployed?.address ?? ethers.ZeroAddress;
 
   const { writeContractAsync: claimPrize } = useScaffoldWriteContract("Prizes");
+
+  const handleClaimAmountChange = (prizeId: bigint, value: string) => {
+    setClaimAmounts(prev => ({
+      ...prev,
+      [prizeId.toString()]: value,
+    }));
+  };
 
   const handleClaim = async (prizeId: bigint) => {
     try {
@@ -112,6 +121,8 @@ const PrizeCenter: React.FC = () => {
   const descriptions = prizesData?.[2] || [];
   const prices = prizesData?.[3] || [];
   const stocks = prizesData?.[4] || [];
+  const nftContracts = prizesData?.[5] || [];
+  const imageCIDs = prizesData?.[6] || [];
 
   const prizes = ids.map((id: bigint, index: number) => ({
     id,
@@ -119,6 +130,7 @@ const PrizeCenter: React.FC = () => {
     description: descriptions[index],
     price: prices[index],
     stock: stocks[index],
+    imageCID: imageCIDs[index] || undefined,
   }));
 
   return (
@@ -139,57 +151,14 @@ const PrizeCenter: React.FC = () => {
           </Link>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="table table-zebra w-full border border-gray-300">
-            <thead>
-              <tr>
-                <th>Prize ID</th>
-                <th>Name</th>
-                <th>Price (tokens)</th>
-                <th>Stock</th>
-                <th>Claim</th>
-              </tr>
-            </thead>
-            <tbody>
-              {prizes.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="text-center">
-                    No prizes found.
-                  </td>
-                </tr>
-              ) : (
-                prizes.map(prize => (
-                  <tr key={prize.id.toString()}>
-                    <td>{prize.id.toString()}</td>
-                    <td>{prize.name}</td>
-                    <td>{ethers.formatUnits(prize.price, 18)}</td>
-                    <td>{prize.stock.toString()}</td>
-                    <td>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          min={1}
-                          placeholder="Qty"
-                          className="input input-bordered w-20"
-                          value={claimAmounts[prize.id.toString()] || ""}
-                          onChange={e =>
-                            setClaimAmounts(prev => ({
-                              ...prev,
-                              [prize.id.toString()]: e.target.value,
-                            }))
-                          }
-                        />
-                        <button className="btn btn-secondary" onClick={() => handleClaim(prize.id)}>
-                          Claim
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        <PrizeTable
+          prizes={prizes}
+          claimAmounts={claimAmounts}
+          onClaimAmountChange={handleClaimAmountChange}
+          onClaim={handleClaim}
+          isLoading={isPrizesLoading}
+          mode="user"
+        />
       </div>
     </div>
   );
