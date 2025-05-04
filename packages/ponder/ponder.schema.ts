@@ -1,4 +1,4 @@
-import { onchainTable } from "ponder";
+import { onchainTable, primaryKey } from "ponder";
 
 
 export const organization = onchainTable("organization", (t) => ({
@@ -43,22 +43,41 @@ export const rewardClaim = onchainTable("rewardClaim", (t) => ({
 
 export const prize = onchainTable("prize", (t) => ({
   id: t.text().primaryKey(), // prizeId as string
-  orgId: t.text().notNull(), // foreign key to organization.id
+  orgId: t.text(), // foreign key to organization, stored as string
   name: t.text(),
   description: t.text(),
   price: t.bigint(),
-  stock: t.integer(),
+  stock: t.bigint(),
+  nftContract: t.text(),
+  baseURI: t.text(),
 }));
 
 
-export const prizeClaim = onchainTable("prizeClaim", (t) => ({
-  id: t.text().primaryKey(),
-  prizeId: t.text(), // storing as string for consistency
-  orgId: t.text(),
-  amount: t.integer(),
-  claimer: t.text(),
-  cost: t.bigint(),
-}));
+export const prizeClaim = onchainTable(
+  "prizeClaim",
+  (t) => ({
+    id: t.text().primaryKey(),
+    prizeId: t.text(),
+    claimer: t.text(),
+    orgId: t.text(),
+    amount: t.bigint(),
+    cost: t.bigint(),
+  })
+);
+
+
+export const prizeToken = onchainTable(
+  "prizeToken",
+  (t) => ({
+    claimId: t.text(),
+    nftId: t.bigint(),
+    prizeId: t.text(),
+    claimer: t.text(),
+  }),
+  (table) => ({
+    pk: primaryKey({ columns: [table.claimId, table.nftId] }),
+  })
+);
 
 
 export const offchainApiCall = onchainTable("offchainApiCall", (t) => ({
