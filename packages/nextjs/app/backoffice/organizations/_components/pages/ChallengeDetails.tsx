@@ -63,74 +63,77 @@ const ChallengeDetailsForm: React.FC<ChallengeDetailsFormProps> = ({ formData, h
           />
         </div>
 
-        <div>
-          <label htmlFor="prizeAmount" className="block text-sm font-medium text-base-content mb-1">
-            Prize Amount per Winner
-          </label>
-          <div className="relative">
+        {/* Prize Amount and Max Winners in same row */}
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <label htmlFor="prizeAmount" className="block text-sm font-medium text-base-content mb-1">
+              Prize Amount per Winner
+            </label>
+            <div className="relative">
+              <input
+                id="prizeAmount"
+                type="number"
+                name="prizeAmount"
+                min="0"
+                step="any"
+                placeholder={`Amount`}
+                value={formData.prizeAmount === 0 ? "" : formData.prizeAmount}
+                onChange={e => handleNumericInputChange("prizeAmount", e.target.value)}
+                className="input input-bordered w-full text-base-content pr-24"
+              />
+              <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-base-content/70">
+                Max: {formattedMaxPrizeAmount}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex-1">
+            <label htmlFor="maxWinners" className="block text-sm font-medium text-base-content mb-1">
+              Maximum Number of Winners
+            </label>
             <input
-              id="prizeAmount"
+              id="maxWinners"
               type="number"
-              name="prizeAmount"
-              min="0"
-              step="any"
-              placeholder={`Amount (Max: ${formattedMaxPrizeAmount} tokens)`}
-              value={formData.prizeAmount === 0 ? "" : formData.prizeAmount}
-              onChange={e => handleNumericInputChange("prizeAmount", e.target.value)}
-              className="input input-bordered w-full text-base-content pr-24"
+              name="maxWinners"
+              min="1"
+              step="1"
+              placeholder="Max Winners (e.g., 1)"
+              value={formData.maxWinners === 0 ? "1" : formData.maxWinners}
+              onChange={e => handleNumericInputChange("maxWinners", e.target.value)}
+              className="input input-bordered w-full text-base-content"
             />
-            <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-base-content/70">
-              Max: {formattedMaxPrizeAmount}
-            </span>
           </div>
         </div>
 
-        {/* Start Time Field */}
-        <div>
-          <label htmlFor="startTime" className="block text-sm font-medium text-base-content mb-1">
-            Start Time
-          </label>
-          <input
-            id="startTime"
-            type="datetime-local"
-            name="startTime"
-            value={formData.startTime}
-            onChange={e => handleInputChange("startTime", e.target.value)}
-            className="input input-bordered w-full text-base-content"
-          />
-        </div>
+        {/* Start Time and End Time in same row */}
+        <div className="flex gap-4 max-w-full">
+          <div className="w-1/2">
+            <label htmlFor="startTime" className="block text-sm font-medium text-base-content mb-1">
+              Start Time
+            </label>
+            <input
+              id="startTime"
+              type="datetime-local"
+              name="startTime"
+              value={formData.startTime}
+              onChange={e => handleInputChange("startTime", e.target.value)}
+              className="input input-bordered w-full text-base-content"
+            />
+          </div>
 
-        {/* End Time Field */}
-        <div>
-          <label htmlFor="endTime" className="block text-sm font-medium text-base-content mb-1">
-            End Time
-          </label>
-          <input
-            id="endTime"
-            type="datetime-local"
-            name="endTime"
-            value={formData.endTime}
-            onChange={e => handleInputChange("endTime", e.target.value)}
-            className="input input-bordered w-full text-base-content"
-          />
-        </div>
-
-        {/* Max Winners Field */}
-        <div>
-          <label htmlFor="maxWinners" className="block text-sm font-medium text-base-content mb-1">
-            Maximum Number of Winners
-          </label>
-          <input
-            id="maxWinners"
-            type="number"
-            name="maxWinners"
-            min="1"
-            step="1"
-            placeholder="Max Winners (e.g., 1)"
-            value={formData.maxWinners === 0 ? "1" : formData.maxWinners}
-            onChange={e => handleNumericInputChange("maxWinners", e.target.value)}
-            className="input input-bordered w-full text-base-content"
-          />
+          <div className="w-1/2">
+            <label htmlFor="endTime" className="block text-sm font-medium text-base-content mb-1">
+              End Time
+            </label>
+            <input
+              id="endTime"
+              type="datetime-local"
+              name="endTime"
+              value={formData.endTime}
+              onChange={e => handleInputChange("endTime", e.target.value)}
+              className="input input-bordered w-full text-base-content"
+            />
+          </div>
         </div>
       </div>
     </div>

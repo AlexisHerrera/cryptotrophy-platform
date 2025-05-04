@@ -88,13 +88,13 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
 
   return (
     <div>
-      <div className="p-6 bg-base-100">
-        <h2 className="text-xl font-bold mb-4 text-center text-primary">Configure Validator</h2>
-        <p className="mb-6 text-center text-base-content">Setting validator for new challenge</p>
+      <div className="p-4 bg-base-100">
+        <h2 className="text-xl font-bold mb-1 text-center text-primary">Configure Validator</h2>
+        <p className="mb-3 text-center text-base-content">Setting validator for new challenge</p>
 
         {/* Algorithm Selection */}
-        <div className="mb-6">
-          <label htmlFor="algorithm-select" className="block mb-2 font-medium text-base-content">
+        <div className="mb-3">
+          <label htmlFor="algorithm-select" className="block mb-1 font-medium text-base-content">
             Select Algorithm/Function
           </label>
           <select
@@ -111,10 +111,10 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
           </select>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           {selectedAlgorithm === "OnChainValidatorV1" && (
             <div className="form-control">
-              <label className="label">
+              <label className="label py-1">
                 <span className="label-text text-base-content">Public Hash</span>
               </label>
               <textarea
@@ -130,7 +130,7 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
           {(selectedAlgorithm === "OffChainValidatorV1" || selectedAlgorithm === "OffChainValidatorV2") && (
             <>
               <div className="form-control">
-                <label className="label">
+                <label className="label py-1">
                   <span className="label-text text-base-content">External URL</span>
                 </label>
                 <textarea
@@ -142,7 +142,7 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
                 />
               </div>
               <div className="form-control">
-                <label className="label">
+                <label className="label py-1">
                   <span className="label-text text-base-content">JSON Path</span>
                 </label>
                 <textarea
@@ -158,7 +158,7 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
 
           {selectedAlgorithm === "SecretValidatorV1" && (
             <div className="form-control">
-              <label className="label">
+              <label className="label py-1">
                 <span className="label-text text-base-content font-medium">Secret Codes Generator</span>
                 <span className="label-text-alt">
                   <div
@@ -183,11 +183,12 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
                 </span>
               </label>
 
-              <div className="bg-base-200 p-4 rounded-lg">
-                <div className="flex items-end gap-2 mb-4">
-                  <div className="form-control w-full max-w-xs">
-                    <label className="label">
-                      <span className="label-text">Number of codes to generate</span>
+              <div className="bg-base-200 p-3 rounded-lg">
+                {/* Single line for input and all buttons */}
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="form-control flex-1">
+                    <label className="label py-1">
+                      <span className="label-text">How many codes?</span>
                     </label>
                     <input
                       type="number"
@@ -199,52 +200,139 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
                     />
                   </div>
 
-                  <button className="btn btn-primary" onClick={handleGenerateCodes}>
-                    Generate Codes
-                  </button>
+                  <div className="flex items-center gap-2 mt-7">
+                    <button
+                      className="btn btn-circle btn-primary"
+                      onClick={handleGenerateCodes}
+                      aria-label="Generate codes"
+                      title="Generate codes"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                        />
+                      </svg>
+                    </button>
+
+                    {generatedCodes.length > 0 && (
+                      <>
+                        <button
+                          className="btn btn-circle btn-secondary"
+                          onClick={() => setShowCodesPopup(true)}
+                          aria-label="View codes"
+                          title="View codes"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
+                          </svg>
+                        </button>
+
+                        <button
+                          className={`btn btn-circle ${codeCopied ? "btn-success" : "btn-info"}`}
+                          onClick={handleCopyAllCodes}
+                          aria-label={codeCopied ? "Copied!" : "Copy all codes"}
+                          title={codeCopied ? "Copied!" : "Copy all codes"}
+                        >
+                          {codeCopied ? (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+                              />
+                            </svg>
+                          )}
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
 
                 {/* Generated Codes Summary */}
                 {generatedCodes.length > 0 && (
-                  <div className="mt-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">Generated Codes:</span>
-                        <span className="badge badge-primary">{generatedCodes.length}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button className="btn btn-sm btn-secondary" onClick={() => setShowCodesPopup(true)}>
-                          View Codes
-                        </button>
-                        <button
-                          className={`btn btn-sm ${codeCopied ? "btn-success" : "btn-info"}`}
-                          onClick={handleCopyAllCodes}
-                        >
-                          {codeCopied ? (
-                            <span className="flex items-center gap-1">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                              </svg>
-                              Copied!
-                            </span>
-                          ) : (
-                            "Copy All"
-                          )}
-                        </button>
-                      </div>
-                    </div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 text-success"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="font-medium">{generatedCodes.length} Codes Generated</span>
+                  </div>
+                )}
 
-                    <div className="bg-warning/10 border border-warning p-3 rounded-md mb-3">
-                      <div className="flex items-start gap-2 text-warning-content">
+                {/* Warning Message */}
+                {generatedCodes.length > 0 && (
+                  <div className="bg-warning/10 border border-warning p-2 rounded-md">
+                    <div className="flex items-start gap-2 text-warning-content text-sm">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 flex-shrink-0 mt-0.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                        />
+                      </svg>
+                      <span>Codes can&apos;t be recovered later</span>
+                      <div
+                        className="tooltip tooltip-left"
+                        data-tip="These codes will be stored in a hashed format and cannot be recovered later. Please make sure to copy and save them now."
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="h-6 w-6 flex-shrink-0"
+                          className="h-4 w-4 text-info cursor-help"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -253,13 +341,9 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={2}
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                           />
                         </svg>
-                        <span>
-                          <strong>Important:</strong> These codes will be stored in a hashed format and cannot be
-                          recovered later. Please make sure to copy and save them now.
-                        </span>
                       </div>
                     </div>
                   </div>
@@ -270,7 +354,7 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
 
           {selectedAlgorithm === "RandomValidatorV1" && (
             <div className="form-control">
-              <label className="label">
+              <label className="label py-1">
                 <span className="label-text text-base-content">Probabilities</span>
               </label>
               <textarea
@@ -292,7 +376,7 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
           onClick={() => setShowCodesPopup(false)}
         >
           <div className="bg-base-100 rounded-lg shadow-xl max-w-md w-full p-4 m-4" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-3">
               <h3 className="text-lg font-bold">Secret Codes</h3>
               <button className="btn btn-sm btn-circle" onClick={() => setShowCodesPopup(false)}>
                 ✕
@@ -308,7 +392,7 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
               ))}
             </div>
 
-            <div className="flex justify-end mt-4 gap-2">
+            <div className="flex justify-end mt-3 gap-2">
               <button
                 className={`btn btn-sm ${codeCopied ? "btn-success" : "btn-primary"}`}
                 onClick={handleCopyAllCodes}
