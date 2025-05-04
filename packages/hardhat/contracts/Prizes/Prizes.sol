@@ -45,7 +45,7 @@ contract Prizes {
         uint256 stock;
         uint256 orgId;
         address nftContract; // Address of the deployed NFT contract for this prize
-        string imageCID; // Image cid in Filebase
+        string baseURI; // Image cid in Filebase
     }
 
     mapping(uint256 => Prize) private prizes; // prizeId => Prize
@@ -67,7 +67,7 @@ contract Prizes {
         uint256 price,
         uint256 stock,
         address nftContract,
-        string imageCID
+        string baseURI
     );
 
     event PrizeClaimed(
@@ -106,15 +106,15 @@ contract Prizes {
 
     /// @notice Step 1: Create NFT contract for a prize
     /// @param name Name of the prize (and NFT)
-    /// @param imageCID Image cid in Filebase
+    /// @param baseURI Image cid in Filebase
     /// @return NFT contract address
-    function _createNFTContract(string memory name, uint256 prizeIndex, string memory imageCID)
+    function _createNFTContract(string memory name, uint256 prizeIndex, string memory baseURI)
     internal
     returns (address)
     {
         string memory symbol = string(abi.encodePacked("PRIZE", Strings.toString(prizeIndex)));
         
-        PrizeNFT nftContract = new PrizeNFT(name, symbol, imageCID);
+        PrizeNFT nftContract = new PrizeNFT(name, symbol, baseURI);
         return address(nftContract);
     }
     
@@ -126,7 +126,7 @@ contract Prizes {
     /// @param price Prize price in org tokens
     /// @param stock Initial stock amount
     /// @param nftContract Address of the NFT contract
-    /// @param imageCID Image cid in Filebase
+    /// @param baseURI Image cid in Filebase
     function _storePrize(
         uint256 prizeId,
         uint256 orgId,
@@ -135,7 +135,7 @@ contract Prizes {
         uint256 price,
         uint256 stock,
         address nftContract,
-        string memory imageCID
+        string memory baseURI
     )
     internal
     {
@@ -146,7 +146,7 @@ contract Prizes {
             stock: stock,
             orgId: orgId,
             nftContract: nftContract,
-            imageCID: imageCID
+            baseURI: baseURI
         });
         
         prizes[prizeId] = newPrize;
@@ -160,7 +160,7 @@ contract Prizes {
             price,
             stock,
             nftContract,
-            imageCID
+            baseURI
         );
     }
 
@@ -170,14 +170,14 @@ contract Prizes {
     /// @param description Descripción del premio
     /// @param price Precio (en tokens de la organización) para reclamar 1 unidad
     /// @param stock Cantidad inicial de unidades disponibles de este premio
-    /// @param imageCID Image cid in Filebase
+    /// @param baseURI Image cid in Filebase
     function createPrize(
         uint256 orgId,
         string calldata name,
         string calldata description,
         uint256 price,
         uint256 stock,
-        string calldata imageCID
+        string calldata baseURI
     )
     external
     onlyOrgAdmin(orgId)
@@ -185,7 +185,7 @@ contract Prizes {
         uint256 prizeId = nextPrizeId++;
         
         // Step 1: Create NFT contract
-        address nftContract = _createNFTContract(name, prizeId, imageCID);
+        address nftContract = _createNFTContract(name, prizeId, baseURI);
         
         // Step 2: Store prize data
         _storePrize(
@@ -196,7 +196,7 @@ contract Prizes {
             price,
             stock,
             nftContract,
-            imageCID
+            baseURI
         );
     }
 
@@ -215,7 +215,7 @@ contract Prizes {
     /// @return prices Lista de precios
     /// @return stocks Lista de stocks
     /// @return nftContracts Lista de direcciones de contratos NFT
-    /// @return imageCID Lista de cids de imágenes de premios
+    /// @return baseURI Lista de cids de imágenes de premios
     function listPrizes(uint256 orgId)
     external
     view
@@ -226,7 +226,7 @@ contract Prizes {
         uint256[] memory prices,
         uint256[] memory stocks,
         address[] memory nftContracts,
-        string[] memory imageCID
+        string[] memory baseURI
     )
     {
         uint256[] memory prizeIds = prizeIdsByOrg[orgId];
@@ -238,7 +238,7 @@ contract Prizes {
         prices = new uint256[](length);
         stocks = new uint256[](length);
         nftContracts = new address[](length);
-        imageCID = new string[](length);
+        baseURI = new string[](length);
 
         for (uint256 i = 0; i < length; i++) {
             uint256 prizeId = prizeIds[i];
@@ -250,7 +250,7 @@ contract Prizes {
             prices[i] = p.price;
             stocks[i] = p.stock;
             nftContracts[i] = p.nftContract;
-            imageCID[i] = p.imageCID;
+            baseURI[i] = p.baseURI;
         }
     }
 
