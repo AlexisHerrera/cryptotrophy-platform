@@ -3,135 +3,26 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { PrizesGrid } from "../../_components/PrizesGrid";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 import { BackButton } from "~~/components/common/BackButton";
-import PrizeTable, { ClaimAmounts } from "~~/components/common/PrizeTable";
-import { useEthersSigner } from "~~/hooks/ethers/useEthersSigner";
-import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
-import { checkAndApproveErc20 } from "~~/utils/orgTokens/approve";
-import { notification } from "~~/utils/scaffold-eth";
 
 const PrizeCenter: React.FC = () => {
   const { organizationId } = useParams() as { organizationId: string };
   const { address } = useAccount();
-  const signer = useEthersSigner();
-  const [claimAmounts, setClaimAmounts] = useState<ClaimAmounts>({});
 
-  const {
-    data: prizesData,
-    isLoading: isPrizesLoading,
-    refetch: refetchPrizes,
-  } = useScaffoldReadContract({
-    contractName: "Prizes",
-    functionName: "listPrizes",
-    args: [BigInt(organizationId)],
-  });
-
-  const {
-    data: balanceData,
-    isLoading: isBalanceLoading,
-    refetch: refetchBalance,
-  } = useScaffoldReadContract({
+  const { data: balanceData, isLoading: isBalanceLoading } = useScaffoldReadContract({
     contractName: "OrganizationManager",
     functionName: "getBalanceOfUser",
     args: [BigInt(organizationId), address || ethers.ZeroAddress],
   });
 
-  const { data: orgTokenAddressData } = useScaffoldReadContract({
-    contractName: "OrganizationManager",
-    functionName: "getTokenOfOrg",
-    args: [BigInt(organizationId)],
-  });
-
-  const { data: prizesDeployed } = useDeployedContractInfo("Prizes");
-  const prizesContractAddress = prizesDeployed?.address ?? ethers.ZeroAddress;
-
-  const { writeContractAsync: claimPrize } = useScaffoldWriteContract("Prizes");
-
-  const handleClaimAmountChange = (prizeId: bigint, value: string) => {
-    setClaimAmounts(prev => ({
-      ...prev,
-      [prizeId.toString()]: value,
-    }));
-  };
-
-  const handleClaim = async (prizeId: bigint) => {
-    try {
-      if (
-        address === undefined ||
-        prizesData === undefined ||
-        balanceData === undefined ||
-        orgTokenAddressData === undefined
-      ) {
-        notification.error("Error fetching data.");
-        return;
-      }
-      const amountStr = claimAmounts[prizeId.toString()] || "0";
-      const amountBN = BigInt(amountStr);
-      if (amountBN <= 0n) {
-        notification.error("Invalid amount.");
-        return;
-      }
-
-      const idx = prizesData[0].indexOf(prizeId);
-      if (idx < 0) {
-        notification.error("Prize not found.");
-        return;
-      }
-      const unitPriceBN = prizesData[3][idx];
-      const totalCostBN = amountBN * unitPriceBN;
-
-      if (totalCostBN > balanceData[0]) {
-        notification.error("Insufficient token balance.");
-        return;
-      }
-
-      console.log("Claiming prize:", prizeId.toString(), amountBN, totalCostBN.toString());
-
-      const tokenAddress = orgTokenAddressData as string;
-      const ok = await checkAndApproveErc20(tokenAddress, prizesContractAddress, totalCostBN, address, signer);
-
-      if (!ok) {
-        notification.error("User canceled or allowance is still insufficient");
-        return;
-      }
-
-      await claimPrize({
-        functionName: "claimPrize",
-        args: [BigInt(organizationId), prizeId, amountBN],
-      });
-
-      notification.success(`Prize #${prizeId.toString()} claimed successfully!`);
-      await refetchPrizes();
-      await refetchBalance();
-    } catch (error) {
-      console.error("Error claiming prize:", error);
-    }
-  };
-
-  if (isPrizesLoading || isBalanceLoading) {
+  if (isBalanceLoading) {
     return <span className="loading loading-spinner loading-lg"></span>;
   }
-
-  // Access the data directly without destructuring to handle readonly arrays
-  const ids = prizesData?.[0] || [];
-  const names = prizesData?.[1] || [];
-  const descriptions = prizesData?.[2] || [];
-  const prices = prizesData?.[3] || [];
-  const stocks = prizesData?.[4] || [];
-  const nftContracts = prizesData?.[5] || [];
-  const imageCIDs = prizesData?.[6] || [];
-
-  const prizes = ids.map((id: bigint, index: number) => ({
-    id,
-    name: names[index],
-    description: descriptions[index],
-    price: prices[index],
-    stock: stocks[index],
-    imageCID: imageCIDs[index] || undefined,
-  }));
 
   return (
     <div className="flex justify-between">
@@ -151,14 +42,7 @@ const PrizeCenter: React.FC = () => {
           </Link>
         </div>
 
-        <PrizeTable
-          prizes={prizes}
-          claimAmounts={claimAmounts}
-          onClaimAmountChange={handleClaimAmountChange}
-          onClaim={handleClaim}
-          isLoading={isPrizesLoading}
-          mode="user"
-        />
+        <PrizesGrid orgId={organizationId} />
       </div>
     </div>
   );
