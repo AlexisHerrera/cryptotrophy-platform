@@ -119,9 +119,9 @@ const PrizePage: React.FC<PrizePageProps> = ({ organizationId, mode }) => {
   }
 
   console.log(prizesData);
-  const [ids = [], names = [], descriptions = [], prices = [], stocks = [], _, imageCID = []] = prizesData || [];
+  const [ids = [], names = [], descriptions = [], prices = [], stocks = [], _, baseURI = []] = prizesData || [];
 
-  console.log("Raw image cids from contract:", imageCID);
+  console.log("Raw image baseURI from contract:", baseURI);
 
   const prizes = ids.map((id: bigint, index: number) => ({
     id,
@@ -129,7 +129,7 @@ const PrizePage: React.FC<PrizePageProps> = ({ organizationId, mode }) => {
     description: descriptions[index],
     price: prices[index],
     stock: stocks[index],
-    imageCID: imageCID[index] || "",
+    baseURI: baseURI[index] || "",
   }));
 
   // For debugging

@@ -7,7 +7,7 @@ export interface Prize {
   description: string;
   price: bigint;
   stock: bigint;
-  imageCID?: string;
+  baseURI?: string;
 }
 
 export interface ClaimAmounts {
@@ -66,14 +66,14 @@ const PrizeTable: React.FC<PrizeTableProps> = ({
                 {" "}
                 <td>{prize.id.toString()}</td>
                 <td>
-                  {prize.imageCID ? (
+                  {prize.baseURI ? (
                     <div className="w-16 h-16 rounded-md overflow-hidden">
                       <img
-                        src={`https://ipfs.filebase.io/ipfs/${prize.imageCID}`}
+                        src={`https://ipfs.filebase.io/ipfs/${prize.baseURI}`}
                         alt={`Prize ${prize.name}`}
                         className="w-full h-full object-cover"
                         onError={e => {
-                          console.error("Error loading image:", prize.imageCID);
+                          console.error("Error loading image:", prize.baseURI);
                           // Set a fallback image on error
                           const target = e.target as HTMLImageElement;
                           target.src = "/placeholder-prize.svg";
