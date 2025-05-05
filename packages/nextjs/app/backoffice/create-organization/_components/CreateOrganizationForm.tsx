@@ -8,6 +8,7 @@ import StepEthereumBacking from "~~/app/backoffice/create-organization/_componen
 import StepOrganizationData from "~~/app/backoffice/create-organization/_components/steps/StepOrganizationData";
 import StepReviewData from "~~/app/backoffice/create-organization/_components/steps/StepReviewData";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { ExternalResource, createNoneResource, generateContractBaseUri } from "~~/utils/externalResource";
 
 export interface CreateOrganizationFormProps {
   organizationName: string;
@@ -15,7 +16,7 @@ export interface CreateOrganizationFormProps {
   tokenSymbol: string;
   initialMint: string;
   ethBacking: string;
-  baseURI: string;
+  externalResource: ExternalResource;
 }
 
 const CreateOrganizationForm = () => {
@@ -26,7 +27,7 @@ const CreateOrganizationForm = () => {
     tokenSymbol: "",
     initialMint: "1000",
     ethBacking: "0",
-    baseURI: "",
+    externalResource: createNoneResource(),
   });
   const [loading, setLoading] = useState(false);
 
@@ -54,8 +55,10 @@ const CreateOrganizationForm = () => {
     }
   }, [receipt, router]);
 
-  const handleInputChange = (field: keyof CreateOrganizationFormProps, value: string | string[]) => {
+  const handleInputChange = (field: keyof CreateOrganizationFormProps, value: string | string[] | ExternalResource) => {
     setOrganizationForm(prev => ({ ...prev, [field]: value }));
+    console.log("field->value: ", field, value);
+    console.log(organizationForm.externalResource);
   };
 
   const handleStepClick = (step: number) => {
@@ -66,12 +69,15 @@ const CreateOrganizationForm = () => {
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
   const handleSubmit = async () => {
-    const { organizationName, tokenSymbol, initialMint, ethBacking, admins, baseURI } = organizationForm;
+    const { organizationName, tokenSymbol, initialMint, ethBacking, admins, externalResource } = organizationForm;
 
     if (!organizationName || !tokenSymbol) {
       alert("Please fill all required fields.");
       return;
     }
+
+    const baseURI = await generateContractBaseUri(externalResource);
+    console.log("handleSubmit baseURI:", baseURI);
 
     try {
       setLoading(true);

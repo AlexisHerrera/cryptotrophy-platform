@@ -2,18 +2,24 @@ import React from "react";
 import AddressManager from "~~/app/backoffice/create-organization/_components/AddressManager";
 import { CreateOrganizationFormProps } from "~~/app/backoffice/create-organization/_components/CreateOrganizationForm";
 import FormInput from "~~/app/backoffice/create-organization/_components/FormInput";
+import { ExternalResourceInput } from "~~/components/common/_components/ExternalResourceInput";
+import { ExternalResource } from "~~/utils/externalResource";
 
 interface StepOrganizationDataProps {
   formData: {
     organizationName: string;
-    baseURI: string;
+    externalResource: ExternalResource;
     admins: string[];
   };
-  handleInputChange: (field: keyof CreateOrganizationFormProps, value: string | string[]) => void;
+  handleInputChange: (field: keyof CreateOrganizationFormProps, value: string | string[] | ExternalResource) => void;
   address: string | undefined;
 }
 
 const StepOrganizationData: React.FC<StepOrganizationDataProps> = ({ formData, handleInputChange, address }) => {
+  const handleResourceChange = (externalResource: ExternalResource) => {
+    handleInputChange("externalResource", externalResource);
+  };
+
   return (
     <div>
       <FormInput
@@ -22,12 +28,8 @@ const StepOrganizationData: React.FC<StepOrganizationDataProps> = ({ formData, h
         value={formData.organizationName}
         onChange={value => handleInputChange("organizationName", value)}
       />
-      <FormInput
-        label="Organization Repository"
-        placeholder="Enter organization repository path"
-        value={formData.baseURI}
-        onChange={value => handleInputChange("baseURI", value)}
-      />
+      <label className="label text-lg">Organization resource</label>
+      <ExternalResourceInput externalResource={formData.externalResource} setExternalResource={handleResourceChange} />
       <div className="form-control">
         <label className="label text-lg">Add Admins</label>
         <AddressManager

@@ -3,6 +3,7 @@ import { CreateOrganizationFormProps } from "~~/app/backoffice/create-organizati
 import FormInput from "~~/app/backoffice/create-organization/_components/FormInput";
 import { IntegerInput, IntegerVariant } from "~~/components/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
+import { ExternalResource } from "~~/utils/externalResource";
 
 interface StepEthereumBackingProps {
   formData: {
@@ -10,7 +11,7 @@ interface StepEthereumBackingProps {
     initialMint: string;
     ethBacking: string;
   };
-  handleInputChange: (field: keyof CreateOrganizationFormProps, value: string | string[]) => void;
+  handleInputChange: (field: keyof CreateOrganizationFormProps, value: string | string[] | ExternalResource) => void;
 }
 
 const StepEthereumBacking: React.FC<StepEthereumBackingProps> = ({ formData, handleInputChange }) => {

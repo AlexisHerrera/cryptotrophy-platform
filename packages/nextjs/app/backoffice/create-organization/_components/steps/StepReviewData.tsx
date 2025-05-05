@@ -1,6 +1,7 @@
 import React from "react";
 import { useAccount } from "wagmi";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
+import { ExternalResource, getDescription } from "~~/utils/externalResource";
 
 interface StepReviewDataProps {
   formData: {
@@ -9,7 +10,7 @@ interface StepReviewDataProps {
     tokenSymbol: string;
     initialMint: string;
     ethBacking: string;
-    baseURI: string;
+    externalResource: ExternalResource;
   };
 }
 
@@ -29,7 +30,7 @@ const StepReviewData: React.FC<StepReviewDataProps> = ({ formData }) => {
       </div>
 
       <div>
-        <strong>Organization Repository:</strong> {formData.baseURI}
+        <strong>Organization resource:</strong> {getDescription(formData.externalResource)}
       </div>
 
       <div>
