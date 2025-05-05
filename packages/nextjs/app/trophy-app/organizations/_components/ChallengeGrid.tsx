@@ -28,7 +28,7 @@ export const ChallengeGrid: React.FC<{ orgId: string }> = ({ orgId }) => {
         totalCount: data?.challenges.totalCount || 0,
         pageInfo: data?.challenges.pageInfo || null,
       }}
-      CardComponent={ChallengeCard}
+      renderCard={(item, index) => <ChallengeCard key={index} item={item} />}
       pageSize={4}
       title="Challenges"
       loading={isLoading}

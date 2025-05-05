@@ -15,7 +15,7 @@ interface PaginatedData<T> {
 
 interface PaginatedGridProps<T> {
   data: PaginatedData<T>;
-  CardComponent: React.ComponentType<{ item: T }>;
+  renderCard: (item: T, index: number) => React.ReactNode; // instead of CardComponent
   pageSize?: number;
   title?: string;
   loading?: boolean;
@@ -25,7 +25,7 @@ interface PaginatedGridProps<T> {
 
 export const PaginatedGrid = <T,>({
   data,
-  CardComponent,
+  renderCard,
   pageSize = 4,
   title = "Items",
   loading = false,
@@ -60,9 +60,7 @@ export const PaginatedGrid = <T,>({
       {loading && <p className="dark:text-gray-300">Loading...</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {data.items.map((item, index) => (
-          <CardComponent key={index} item={item} />
-        ))}
+        {data.items.map((item, index) => renderCard(item, index))}
       </div>
 
       <div className="flex justify-center items-center mt-6 space-x-4">
