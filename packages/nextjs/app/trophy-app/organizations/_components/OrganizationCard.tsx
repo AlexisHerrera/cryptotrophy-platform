@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Organization } from "~~/utils/cryptotrophyIndex/types";
+import { loadMetadata } from "~~/utils/loadMetadata";
 
-// Helper to convert ipfs:// URLs to a public gateway URL.
-const convertIpfsUrl = (baseURI: string): string => {
-  if (baseURI.startsWith("ipfs://")) {
-    return baseURI.replace("ipfs://", "https://ipfs.io/ipfs/");
-  }
-  return baseURI;
+type OrganizationMetadata = {
+  logo?: string;
+  name?: string;
+  description?: string;
 };
 
 // A card component for displaying an individual organization's data.
@@ -23,9 +22,10 @@ export const OrganizationCard: React.FC<{ item: Organization }> = ({ item: organ
       if (organization.baseURI) {
         setLoading(true);
         try {
-          const metadataUrl = convertIpfsUrl(organization.baseURI) + "/metadata.json";
-          const res = await fetch(metadataUrl);
-          const data = await res.json();
+          const data = await loadMetadata<OrganizationMetadata>(organization.baseURI, {
+            allowImageOnly: true,
+            defaultField: "logo",
+          });
           setMetadata(data);
         } catch (error) {
           console.error("Error fetching IPFS metadata:", error);
@@ -43,7 +43,7 @@ export const OrganizationCard: React.FC<{ item: Organization }> = ({ item: organ
       className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col cursor-pointer hover:shadow-lg transition-shadow duration-200"
     >
       {metadata.logo ? (
-        <img src={metadata.logo} alt={metadata.name} className="w-full h-60 object-cover rounded-md mb-4" />
+        <img src={metadata.logo} alt={organization.name} className="w-full h-60 object-cover rounded-md mb-4" />
       ) : (
         <div className="w-full h-60 bg-gray-200 dark:bg-gray-700 rounded-md mb-4 flex items-center justify-center text-gray-500">
           {loading ? "Loading logo..." : "No logo available"}
