@@ -4,6 +4,7 @@ import { organization, organizationAdmin } from "ponder:schema";
 import { challenge } from "ponder:schema";
 import { prize } from "ponder:schema";
 import { prizeClaim } from "ponder:schema";
+import { prizeToken } from "ponder:schema";
 import { rewardClaim } from "ponder:schema";
 import { offchainApiCall } from "ponder:schema";
 import { randomValidatorCall } from "ponder:schema";
@@ -75,38 +76,65 @@ ponder.on("ChallengeManager:RewardClaimed", async ({ event, context }) => {
       prizeAmountInBaseUnits
     });
   });
-  
-
 
 
 ponder.on("Prizes:PrizeCreated", async ({ event, context }) => {
-    const { prizeId, orgId, name, description, price, stock } = event.args;
-  
-    await context.db.insert(prize).values({
-      id: prizeId.toString(),
-      orgId: orgId.toString(),
-      name,
-      description,
-      price,
-      stock: Number(stock),
-    });
+  const {
+    prizeId,
+    orgId,
+    name,
+    description,
+    price,
+    stock,
+    nftContract,
+    baseURI,
+  } = event.args;
+
+  console.log(event.args)
+
+  await context.db.insert(prize).values({
+    id: prizeId.toString(),
+    orgId: orgId.toString(),
+    name,
+    description,
+    price,
+    stock,
+    nftContract,
+    baseURI: baseURI,
   });
+});
 
 
 ponder.on("Prizes:PrizeClaimed", async ({ event, context }) => {
-    const { prizeId, orgId, amount, claimer, cost } = event.args;
-  
-    const uniqueId = `${orgId.toString()}-${prizeId.toString()}-${claimer.toLowerCase()}-${event.block.timestamp}`;
-  
-    await context.db.insert(prizeClaim).values({
-      id: uniqueId,
-      prizeId: prizeId.toString(),
-      orgId: orgId.toString(),
-      amount,
-      claimer,
-      cost,
-    });
+  const { prizeId, orgId, amount, claimer, cost, nftIds } = event.args;
+  const uniqueId = `${orgId.toString()}-${prizeId.toString()}-${claimer.toLowerCase()}-${event.block.timestamp}`;
+
+  await context.db.insert(prizeClaim).values({
+    id: uniqueId,
+    prizeId: prizeId.toString(),
+    orgId: orgId.toString(),
+    amount,
+    claimer,
+    cost,
   });
+
+  await context.db
+    .update(prize, { id: prizeId.toString() })
+    .set((row) => ({
+      stock: row.stock ? row.stock - amount : null,
+    }));
+
+  for (const nftId of nftIds) {
+    await context.db
+      .insert(prizeToken)
+      .values({
+        claimId: uniqueId,
+        prizeId: prizeId.toString(),
+        nftId,
+        claimer,
+      });
+  }
+});
 
 
 ponder.on("OffChainApiValidator:OffChainApiValidatorCalled", async ({ event, context }) => {

@@ -4,7 +4,13 @@ import { ethers as ethersHardhat } from "hardhat";
 import { ethers } from "ethers";
 
 // Importa los tipos de TypeChain (ajusta según tu configuración)
-import { OrganizationManager, Prizes, OrganizationManager__factory, Prizes__factory } from "../typechain-types";
+import {
+  OrganizationManager,
+  Prizes,
+  OrganizationManager__factory,
+  Prizes__factory,
+  PrizeNFT__factory,
+} from "../typechain-types";
 
 describe("Prizes contract", function () {
   // ----------------------------------------------------------------
@@ -92,6 +98,27 @@ describe("Prizes contract", function () {
       expect(descriptions[0]).to.equal("T-Shirt con logo");
       expect(prices[0]).to.equal(10n);
       expect(stocks[0]).to.equal(100n);
+    });
+
+    it("Should deploy a new NFT contract when creating a prize", async function () {
+      const { prizes, orgId, admin1 } = await loadFixture(deployPrizesFixture);
+
+      // Create a prize
+      await prizes.connect(admin1).createPrize(orgId, "T-Shirt", "T-Shirt con logo", 10, 100);
+
+      // Get prize info including NFT contract
+      const [, , , , , nftContracts] = await prizes.listPrizes(orgId);
+
+      // Verify NFT contract was deployed
+      expect(nftContracts[0]).to.not.equal(ethers.ZeroAddress);
+
+      // Check the NFT contract properties
+      const prizeNFT = PrizeNFT__factory.connect(nftContracts[0], admin1);
+
+      // Verify NFT contract has correct name and symbol
+      expect(await prizeNFT.name()).to.equal("T-Shirt");
+      expect(await prizeNFT.symbol()).to.equal("PRIZE0"); // PRIZE + prizeId (0)
+      expect(await prizeNFT.owner()).to.equal(await prizes.getAddress()); // Prizes contract should be the owner
     });
 
     it("Should revert if caller is not an admin of the org", async function () {
@@ -204,6 +231,30 @@ describe("Prizes contract", function () {
       // Contrato Prizes ahora tiene 50 tokens
       const prizesBalance = await orgToken.balanceOf(await prizes.getAddress());
       expect(prizesBalance).to.equal(ethers.parseUnits("50", 18));
+    });
+
+    it("Should give the user NFTs when claiming a prize", async function () {
+      const { prizes, orgId, user1 } = await loadFixture(createPrizeAndApproveFixture);
+
+      // Get initial data
+      const [prizeIds, , , , , nftContracts] = await prizes.listPrizes(orgId);
+      const prizeId = prizeIds[0];
+      const nftContractAddress = nftContracts[0];
+
+      // Connect to the NFT contract
+      const prizeNFT = PrizeNFT__factory.connect(nftContractAddress, user1);
+
+      // Claim 3 prize units
+      await prizes.connect(user1).claimPrize(orgId, prizeId, 3);
+
+      // Check NFT ownership using balanceOf
+      const nftBalance = await prizeNFT.balanceOf(user1.address);
+      expect(nftBalance).to.equal(3n);
+
+      // Verify ownership of the first 3 NFTs (IDs 0, 1, 2)
+      for (let i = 0; i < 3; i++) {
+        expect(await prizeNFT.ownerOf(i)).to.equal(user1.address);
+      }
     });
 
     it("Debe revertir si no hay suficiente stock", async function () {

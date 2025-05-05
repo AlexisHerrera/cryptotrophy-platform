@@ -2,7 +2,9 @@
 
 import React, { useState } from "react";
 import { ethers } from "ethers";
+import { ExternalResourceInput } from "~~/components/common/_components/ExternalResourceInput";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { ExternalResource, createNoneResource, generateContractBaseUri } from "~~/utils/externalResource";
 import { notification } from "~~/utils/scaffold-eth";
 
 interface CreatePrizeModalProps {
@@ -17,6 +19,7 @@ const CreatePrizeModal: React.FC<CreatePrizeModalProps> = ({ orgId, isOpen, onCl
   const [price, setPrice] = useState("0");
   const [stock, setStock] = useState("0");
   const [isLoading, setIsLoading] = useState(false);
+  const [externalResource, setExternalResource] = useState<ExternalResource>(createNoneResource());
 
   // Hook para escribir al contrato "Prizes" -> "createPrize"
   const { writeContractAsync: createPrize } = useScaffoldWriteContract("Prizes");
@@ -28,13 +31,23 @@ const CreatePrizeModal: React.FC<CreatePrizeModalProps> = ({ orgId, isOpen, onCl
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
+      const baseURI = await generateContractBaseUri(externalResource);
+      if (baseURI === "") {
+        notification.error("Please select an image or url for the prize");
+        setIsLoading(false);
+        return;
+      }
+
       // Convertir price y stock a BigInt
       const priceBN = ethers.parseUnits(price || "0", 18);
       const stockBN = BigInt(stock || "0");
 
+      notification.info("Creating prize on blockchain...");
+
+      console.log("Using URL: ", baseURI);
       await createPrize({
         functionName: "createPrize",
-        args: [BigInt(orgId), name, description, priceBN, stockBN],
+        args: [BigInt(orgId), name, description, priceBN, stockBN, baseURI],
       });
 
       notification.success("Prize created successfully!");
@@ -43,10 +56,12 @@ const CreatePrizeModal: React.FC<CreatePrizeModalProps> = ({ orgId, isOpen, onCl
       setDescription("");
       setPrice("0");
       setStock("0");
+      setExternalResource(createNoneResource());
 
       onClose();
     } catch (error) {
       console.error("Error creating prize:", error);
+      notification.error("Failed to create prize");
     } finally {
       setIsLoading(false);
     }
@@ -56,6 +71,11 @@ const CreatePrizeModal: React.FC<CreatePrizeModalProps> = ({ orgId, isOpen, onCl
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white dark:bg-gray-800 p-6 rounded-md w-full max-w-md">
         <h2 className="text-xl font-bold mb-4">Create a new Prize</h2>
+
+        <label className="block mb-4">
+          <span className="text-sm">Prize Image</span>
+          <ExternalResourceInput externalResource={externalResource} setExternalResource={setExternalResource} />
+        </label>
 
         <label className="block mb-2">
           <span className="text-sm">Name</span>

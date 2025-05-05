@@ -19,6 +19,17 @@ export type Organization = {
   baseURI: string;
 };
 
+export type Prize = {
+  id: string;
+  orgId: string;
+  name: string;
+  description: string;
+  price: bigint;
+  stock: bigint;
+  nftContract: string;
+  baseURI: string;
+};
+
 export interface PageInfo {
   endCursor: string;
   startCursor: string;
@@ -38,4 +49,8 @@ export interface ChallengeData {
 
 export interface OrganizationData {
   organizations: PaginatedResult<Organization>;
+}
+
+export interface PrizeData {
+  prizes: PaginatedResult<Prize>;
 }

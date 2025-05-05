@@ -28,7 +28,7 @@ export const OrganizationsGrid = () => {
         totalCount: data?.organizations.totalCount || 0,
         pageInfo: data?.organizations.pageInfo || null,
       }}
-      CardComponent={OrganizationCard}
+      renderCard={(item, index) => <OrganizationCard key={index} item={item} />}
       pageSize={4}
       title="Organizations"
       loading={isLoading}

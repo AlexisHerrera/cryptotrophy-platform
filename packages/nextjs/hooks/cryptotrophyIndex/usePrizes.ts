@@ -1,8 +1,8 @@
 import { useGraphQLClient } from "./useGraphQLClient";
 import { useQuery } from "@tanstack/react-query";
-import { fetchChallenges } from "~~/utils/cryptotrophyIndex/challenges";
+import { fetchPrizes } from "~~/utils/cryptotrophyIndex/prizes";
 
-export const useChallenges = (
+export const usePrizes = (
   orgId: string,
   pageSize: number,
   after?: string | null,
@@ -12,8 +12,8 @@ export const useChallenges = (
   const client = useGraphQLClient();
 
   return useQuery({
-    queryKey: ["challenges", orgId, pageSize, after, before, search],
-    queryFn: () => fetchChallenges(client, pageSize, after, before, orgId, search),
+    queryKey: ["prizes", pageSize, after, before, search],
+    queryFn: () => fetchPrizes(client, pageSize, after, before, orgId, search),
     refetchInterval: 10000, // auto-refresh every 10 seconds
     refetchIntervalInBackground: true,
   });
