@@ -2,8 +2,6 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { ValidatorContractName } from "./KnownValidators";
-import { ethers } from "ethers";
-import { useAccount } from "wagmi";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
@@ -77,9 +75,13 @@ const ClaimChallengeTwoStepButton: React.FC<ClaimRewardButtonProps> = ({
   const handlePreValidation = async () => {
     if (validatorConfig !== undefined) {
       try {
+        const configJson = JSON.parse(validatorConfig);
+        const requiredPayment: bigint =
+          configJson.requiredPaymentWei !== undefined ? BigInt(configJson.requiredPaymentWei) : 0n;
         await twoStepValidator({
           functionName: "preValidation",
           args: [challengeId, "0x"],
+          value: requiredPayment,
         });
       } catch (error) {
         console.error("Error in pre validation step:", error);

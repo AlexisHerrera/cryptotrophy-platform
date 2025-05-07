@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { formatEther, parseEther } from "viem";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 import { ChallengeData } from "~~/utils/challenges/challengeParam";
 
@@ -24,6 +25,11 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
   const [generatedCodes, setGeneratedCodes] = useState<string[]>(formData.params.generatedCodes ?? []);
   const [successProbability, setSuccessProbability] = useState<number>(
     typeof formData.params.successProbability === "string" ? parseFloat(formData.params.successProbability) / 100 : 0,
+  );
+  const [ethAmount, setEthAmount] = useState<string>(
+    typeof formData.params.requiredPaymentWei === "string"
+      ? formatEther(BigInt(formData.params.requiredPaymentWei))
+      : "0",
   );
   const [codeCopied, setCodeCopied] = useState(false);
   const [showCodesPopup, setShowCodesPopup] = useState(false);
@@ -293,6 +299,25 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
                   if (!isNaN(percentageValue) && percentageValue >= 0 && percentageValue <= 100) {
                     setSuccessProbability(percentageValue);
                     handleParameterChange("successProbability", Math.round(percentageValue * 100).toString());
+                  }
+                }}
+                className="input input-bordered w-full bg-base-200 text-base-content"
+              />
+              <label className="label">
+                <span className="label-text text-base-content">Required ETH</span>
+              </label>
+              <input
+                type="number"
+                step="0.00001"
+                min="0"
+                name="ethAmountDisplay"
+                placeholder="Enter amount in ETH (e.g., 0.01)"
+                value={ethAmount}
+                onChange={e => {
+                  const amountInWei = parseEther(e.target.value);
+                  if (amountInWei >= 0) {
+                    setEthAmount(e.target.value);
+                    handleParameterChange("requiredPaymentWei", amountInWei.toString());
                   }
                 }}
                 className="input input-bordered w-full bg-base-200 text-base-content"

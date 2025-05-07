@@ -2363,7 +2363,7 @@ const deployedContracts = {
               type: "bytes32",
             },
           ],
-          stateMutability: "nonpayable",
+          stateMutability: "payable",
           type: "function",
         },
         {
@@ -2836,7 +2836,7 @@ const deployedContracts = {
               type: "bytes32",
             },
           ],
-          stateMutability: "nonpayable",
+          stateMutability: "payable",
           type: "function",
         },
         {
@@ -4697,6 +4697,11 @@ const deployedContracts = {
               name: "callback",
               type: "address",
             },
+            {
+              internalType: "uint256",
+              name: "requiredPaymentWei",
+              type: "uint256",
+            },
           ],
           stateMutability: "view",
           type: "function",
@@ -4773,7 +4778,7 @@ const deployedContracts = {
               type: "bytes32",
             },
           ],
-          stateMutability: "nonpayable",
+          stateMutability: "payable",
           type: "function",
         },
         {
@@ -4823,6 +4828,11 @@ const deployedContracts = {
               internalType: "address",
               name: "_callback",
               type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "_requiredPayment",
+              type: "uint256",
             },
           ],
           name: "setConfig",

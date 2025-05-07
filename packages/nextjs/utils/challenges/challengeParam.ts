@@ -77,8 +77,11 @@ export const getEncodedValidatorConfig = async (
       throw new Error("Invalid challangeManagerAddress address");
     }
     const successProbability = BigInt(params.successProbability);
-    console.log("successProbability", successProbability);
-    hexParams = abiCoder.encode(["uint256", "address"], [successProbability, challangeManagerAddress]) as `0x${string}`;
+    const requiredPaymentWei = BigInt(params.requiredPaymentWei);
+    hexParams = abiCoder.encode(
+      ["uint256", "address", "uint256"],
+      [successProbability, challangeManagerAddress, requiredPaymentWei],
+    ) as `0x${string}`;
   } else if (algorithm === "") {
     hexParams = abiCoder.encode([], []) as `0x${string}`;
   } else {
