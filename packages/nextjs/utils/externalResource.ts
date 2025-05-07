@@ -40,6 +40,7 @@ export async function generateContractBaseUri(resource: ExternalResource): Promi
       return resource.value;
 
     case "file":
+    case "image":
       const cid = await uploadToIPFS(resource.value);
       console.log("File uploaded successfully, cid:", cid);
       return "ipfs://" + cid;
