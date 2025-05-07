@@ -74,7 +74,7 @@ contract OffChainApiValidator is TwoStepValidator, FunctionsClient, ConfirmedOwn
         return string(abi.encodePacked('{"apiUrl":"', _validatorConfig.apiUrl, '"}'));
     }
 
-    function preValidation(uint256 _validationId, bytes calldata /* preValidationParams */) external returns (bytes32) {
+    function preValidation(uint256 _validationId, bytes calldata /* preValidationParams */) external payable returns (bytes32) {
         OffChainApiConfig storage _validatorConfir = config[_validationId];
 		require(_validatorConfir.exists, "Error. Invalid configuration. No API configured for validationId.");
 
