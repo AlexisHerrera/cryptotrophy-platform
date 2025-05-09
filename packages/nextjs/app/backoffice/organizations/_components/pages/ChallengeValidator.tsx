@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { formatEther, parseEther } from "viem";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 import { ChallengeData } from "~~/utils/challenges/challengeParam";
 
@@ -22,6 +23,14 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
   const [selectedAlgorithm, setSelectedAlgorithm] = useState(formData.validatorUID);
   const [codeCount, setCodeCount] = useState<number>(formData.params.generatedCodes?.length ?? 5);
   const [generatedCodes, setGeneratedCodes] = useState<string[]>(formData.params.generatedCodes ?? []);
+  const [successProbability, setSuccessProbability] = useState<number>(
+    typeof formData.params.successProbability === "string" ? parseFloat(formData.params.successProbability) / 100 : 0,
+  );
+  const [ethAmount, setEthAmount] = useState<string>(
+    typeof formData.params.requiredPaymentWei === "string"
+      ? formatEther(BigInt(formData.params.requiredPaymentWei))
+      : "0",
+  );
   const [codeCopied, setCodeCopied] = useState(false);
   const [showCodesPopup, setShowCodesPopup] = useState(false);
   const codesRef = useRef<HTMLDivElement>(null);
@@ -52,8 +61,12 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
     handleInputChange("validatorAddress", validatorAddress);
   };
 
-  const handleParameterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const newParameterData = { ...parameterData, [e.target.name]: e.target.value };
+  const handleParameterChangeEvent = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    handleParameterChange(e.target.name, e.target.value);
+  };
+
+  const handleParameterChange = (name: string, value: string) => {
+    const newParameterData = { ...parameterData, [name]: value };
     setParameterData(newParameterData);
     handleInputChange("params", newParameterData);
   };
@@ -121,7 +134,7 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
                 name="challengeHash"
                 placeholder="Set the full public hash for the challenge"
                 value={parameterData.challengeHash}
-                onChange={handleParameterChange}
+                onChange={handleParameterChangeEvent}
                 className="textarea textarea-bordered w-full bg-base-200 text-base-content"
               />
             </div>
@@ -137,7 +150,7 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
                   name="url"
                   placeholder="Set the external url that should be called"
                   value={parameterData.url}
-                  onChange={handleParameterChange}
+                  onChange={handleParameterChangeEvent}
                   className="textarea textarea-bordered w-full bg-base-200 text-base-content"
                 />
               </div>
@@ -149,7 +162,7 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
                   name="path"
                   placeholder="Set the path in the json response with the validation result"
                   value={parameterData.path}
-                  onChange={handleParameterChange}
+                  onChange={handleParameterChangeEvent}
                   className="textarea textarea-bordered w-full bg-base-200 text-base-content"
                 />
               </div>
@@ -271,14 +284,43 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
           {selectedAlgorithm === "RandomValidatorV1" && (
             <div className="form-control">
               <label className="label">
-                <span className="label-text text-base-content">Probabilities</span>
+                <span className="label-text text-base-content">Success Probability (%)</span>
               </label>
-              <textarea
-                name="successProbability"
-                placeholder="Set the challenge success probability"
-                value={parameterData.successProbability}
-                onChange={handleParameterChange}
-                className="textarea textarea-bordered w-full bg-base-200 text-base-content"
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                max="100"
+                name="successProbabilityDisplay"
+                placeholder="Set the challenge success probability (e.g., 85.5)"
+                value={successProbability}
+                onChange={e => {
+                  const percentageValue = parseFloat(e.target.value);
+                  if (!isNaN(percentageValue) && percentageValue >= 0 && percentageValue <= 100) {
+                    setSuccessProbability(percentageValue);
+                    handleParameterChange("successProbability", Math.round(percentageValue * 100).toString());
+                  }
+                }}
+                className="input input-bordered w-full bg-base-200 text-base-content"
+              />
+              <label className="label">
+                <span className="label-text text-base-content">Required ETH</span>
+              </label>
+              <input
+                type="number"
+                step="0.00001"
+                min="0"
+                name="ethAmountDisplay"
+                placeholder="Enter amount in ETH (e.g., 0.01)"
+                value={ethAmount}
+                onChange={e => {
+                  const amountInWei = parseEther(e.target.value);
+                  if (amountInWei >= 0) {
+                    setEthAmount(e.target.value);
+                    handleParameterChange("requiredPaymentWei", amountInWei.toString());
+                  }
+                }}
+                className="input input-bordered w-full bg-base-200 text-base-content"
               />
             </div>
           )}

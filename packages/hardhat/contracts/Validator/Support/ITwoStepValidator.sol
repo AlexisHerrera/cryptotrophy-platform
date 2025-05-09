@@ -7,5 +7,5 @@ interface ITwoStepValidator {
 
     function getValidationState(uint256 validationId) external returns (string memory);
 
-    function preValidation(uint256 validationId, bytes calldata preValidationParams) external returns (bytes32);
+    function preValidation(uint256 validationId, bytes calldata preValidationParams) external payable returns (bytes32);
 }

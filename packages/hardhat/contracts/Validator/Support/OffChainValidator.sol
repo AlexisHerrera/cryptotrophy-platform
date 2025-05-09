@@ -58,7 +58,7 @@ contract OffChainValidator is TwoStepValidator, ChainlinkClient, ConfirmedOwner 
         return string.concat("{\"apiUrl\": \"", paramsStruct.apiUrl, "\"}");
     }
 
-    function preValidation(uint256 _validationId, bytes calldata /* preValidationParams */) external returns (bytes32) {
+    function preValidation(uint256 _validationId, bytes calldata /* preValidationParams */) external payable returns (bytes32) {
         OffChainConfig memory paramsStruct = config[_validationId];
 		require(paramsStruct.exists, "Error. Invalid configuration. No API configured for validationId.");
 

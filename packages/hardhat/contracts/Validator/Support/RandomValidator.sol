@@ -13,6 +13,7 @@ struct RandomValidatorConfig {
     // Set the probability in basis points (1% = 100; 0.01% = 1)
     uint256 successProbability;
     address callback;
+    uint256 requiredPaymentWei;
 }
 
 
@@ -67,27 +68,30 @@ contract RandomValidator is TwoStepValidator, VRFConsumerBaseV2Plus {
     }
 
 	function setConfigFromParams(uint256 _validationId, bytes calldata _params) public {
-		( uint256 _successProbability, address _callback ) = abi.decode(_params, (uint256, address));
+		( uint256 _successProbability, address _callback, uint256 _requiredPayment ) = abi.decode(_params, (uint256, address, uint256));
         require(_successProbability <= 10000, "Probability must be <= 10000 (100%)");
-        configs[_validationId] = RandomValidatorConfig(true, _successProbability, _callback);
+        configs[_validationId] = RandomValidatorConfig(true, _successProbability, _callback, _requiredPayment);
 	}
 
-    function setConfig(uint256 _validationId, uint256 _successProbability, address _callback) public {
+    function setConfig(uint256 _validationId, uint256 _successProbability, address _callback, uint256 _requiredPayment) public {
         require(_successProbability <= 10000, "Probability must be <= 10000 (100%)");
-        configs[_validationId] = RandomValidatorConfig(true, _successProbability, _callback);
+        configs[_validationId] = RandomValidatorConfig(true, _successProbability, _callback, _requiredPayment);
     }
 
     function getConfig(uint256 _validationId) external view returns (string memory) {
         RandomValidatorConfig storage _validatorConfig = configs[_validationId];
 		require(_validatorConfig.exists, "Error. Invalid configuration. Nothing configured for validationId.");
-        return string(abi.encodePacked('{"successProbability":"', _validatorConfig.successProbability, '"}'));
+        return string(abi.encodePacked('{"successProbability":"', Strings.toString(_validatorConfig.successProbability), '","requiredPaymentWei":"', Strings.toString(_validatorConfig.requiredPaymentWei), '"}'));
     }
 
     /**
      * @notice Requests randomness
      * Assumes the subscription is funded sufficiently; "Words" refers to unit of data in Computer Science
      */
-    function preValidation(uint256 _validationId, bytes calldata /* preValidationParams */) external returns (bytes32) {
+    function preValidation(uint256 _validationId, bytes calldata /* preValidationParams */) external payable returns (bytes32) {
+        RandomValidatorConfig storage _validatorConfig = configs[_validationId];
+        require(msg.value >= _validatorConfig.requiredPaymentWei, "Minimum ETH payment required for this validator");
+
         // Will revert if subscription is not set and funded.
         uint256 requestId = s_vrfCoordinator.requestRandomWords(
             VRFV2PlusClient.RandomWordsRequest({

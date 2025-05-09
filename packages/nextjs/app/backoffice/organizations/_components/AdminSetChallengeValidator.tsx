@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { buildPoseidon } from "circomlibjs";
 import { encodeBytes32String } from "ethers";
+import { parseEther } from "viem";
 import Modal from "~~/components/Modal";
 import { useScaffoldContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
@@ -34,6 +35,8 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
   const [generatedCodes, setGeneratedCodes] = useState<string[]>([]);
   const [codeCopied, setCodeCopied] = useState(false);
   const [showCodesPopup, setShowCodesPopup] = useState(false);
+  const [successProbability, setSuccessProbability] = useState<number>(0);
+  const [ethAmount, setEthAmount] = useState<string>("0");
   const codesRef = useRef<HTMLDivElement>(null);
 
   const handleAlgorithmChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -129,9 +132,14 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
         });
       } else if (selectedAlgorithm === "RandomValidatorV1") {
         console.log("Set config", formData.successProbability);
+        if (challangeAddress === undefined) {
+          throw new Error("Invalid challangeAddress address");
+        }
+        const successProbability = BigInt(formData.successProbability);
+        const requiredPaymentWei = BigInt(formData.requiredPaymentWei);
         await RandomValidator({
           functionName: "setConfig",
-          args: [challengeId, BigInt(formData.successProbability), challangeAddress],
+          args: [challengeId, successProbability, challangeAddress, requiredPaymentWei],
         });
       } else {
         throw new Error("Invalid validator");
@@ -153,8 +161,12 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleInputChangeEvent = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    handleInputChange(e.target.name, e.target.value);
+  };
+
+  const handleInputChange = (name: string, value: string) => {
+    setFormData({ ...formData, [name]: value });
   };
 
   // Generate random secret codes
@@ -219,7 +231,7 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
                 name="challengeHash"
                 placeholder="Set the full public hash for the challenge"
                 value={formData.challengeHash}
-                onChange={handleInputChange}
+                onChange={handleInputChangeEvent}
                 className="textarea textarea-bordered w-full bg-base-200 text-base-content"
               />
             </div>
@@ -235,7 +247,7 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
                   name="url"
                   placeholder="Set the external url that should be called"
                   value={formData.url}
-                  onChange={handleInputChange}
+                  onChange={handleInputChangeEvent}
                   className="textarea textarea-bordered w-full bg-base-200 text-base-content"
                 />
               </div>
@@ -247,7 +259,7 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
                   name="path"
                   placeholder="Set the path in the json response with the validation result"
                   value={formData.path}
-                  onChange={handleInputChange}
+                  onChange={handleInputChangeEvent}
                   className="textarea textarea-bordered w-full bg-base-200 text-base-content"
                 />
               </div>
@@ -369,14 +381,43 @@ const AdminSetChallengeValidator: React.FC<AdminSetChallengeValidatorProps> = ({
           {selectedAlgorithm === "RandomValidatorV1" && (
             <div className="form-control">
               <label className="label">
-                <span className="label-text text-base-content">Probabilities</span>
+                <span className="label-text text-base-content">Success Probability (%)</span>
               </label>
-              <textarea
-                name="successProbability"
-                placeholder="Set the challenge success probability"
-                value={formData.successProbability}
-                onChange={handleInputChange}
-                className="textarea textarea-bordered w-full bg-base-200 text-base-content"
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                max="100"
+                name="successProbabilityDisplay"
+                placeholder="Set the challenge success probability (e.g., 85.5)"
+                value={successProbability}
+                onChange={e => {
+                  const percentageValue = parseFloat(e.target.value);
+                  if (!isNaN(percentageValue) && percentageValue >= 0 && percentageValue <= 100) {
+                    setSuccessProbability(percentageValue);
+                    handleInputChange("successProbability", Math.round(percentageValue * 100).toString());
+                  }
+                }}
+                className="input input-bordered w-full bg-base-200 text-base-content"
+              />
+              <label className="label">
+                <span className="label-text text-base-content">Required ETH</span>
+              </label>
+              <input
+                type="number"
+                step="0.00001"
+                min="0"
+                name="ethAmountDisplay"
+                placeholder="Enter amount in ETH (e.g., 0.01)"
+                value={ethAmount}
+                onChange={e => {
+                  const amountInWei = parseEther(e.target.value);
+                  if (amountInWei >= 0) {
+                    setEthAmount(e.target.value);
+                    handleInputChange("requiredPaymentWei", amountInWei.toString());
+                  }
+                }}
+                className="input input-bordered w-full bg-base-200 text-base-content"
               />
             </div>
           )}

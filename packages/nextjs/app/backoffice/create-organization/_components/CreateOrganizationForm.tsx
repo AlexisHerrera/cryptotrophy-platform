@@ -39,7 +39,7 @@ const CreateOrganizationForm = () => {
 
   useEffect(() => {
     const contractInterface = new Interface([
-      "event OrganizationCreated(uint256 indexed orgId, string name, address token)",
+      "event OrganizationCreated(uint256 indexed orgId, string name, address token, string baseURI)",
     ]);
     if (receipt?.logs) {
       const log = receipt.logs.find(
@@ -57,8 +57,6 @@ const CreateOrganizationForm = () => {
 
   const handleInputChange = (field: keyof CreateOrganizationFormProps, value: string | string[] | ExternalResource) => {
     setOrganizationForm(prev => ({ ...prev, [field]: value }));
-    console.log("field->value: ", field, value);
-    console.log(organizationForm.externalResource);
   };
 
   const handleStepClick = (step: number) => {
