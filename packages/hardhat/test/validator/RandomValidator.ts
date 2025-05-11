@@ -54,7 +54,7 @@ describe("RandomValidator contract", function () {
       const { owner, randomValidator, coord } = await loadFixture(deployRandomValidatorFixture);
 
       // Configure validator
-      const tx = await randomValidator.setConfig(1n, 100n, "0x0000000000000000000000000000000000000000");
+      const tx = await randomValidator.setConfig(1n, 100n, "0x0000000000000000000000000000000000000000", 0);
       await tx.wait();
 
       // Make VRF call
