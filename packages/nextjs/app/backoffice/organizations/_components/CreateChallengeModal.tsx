@@ -89,10 +89,10 @@ const CreateChallengeFlow: React.FC<CreateChallengeModalProps> = ({ organization
 
   return (
     <Modal onClose={onClose}>
-      <div className="p-8 bg-base-100 rounded-xl shadow-xl max-w-4xl mx-auto">
+      <div className="p-1 bg-base-100 rounded-xl shadow-xl max-w-4xl mx-auto">
         <h2 className="text-3xl font-bold text-center mb-6">Create Your Challenge</h2>
 
-        <ul className="steps steps-horizontal mb-8 space-x-3">
+        <ul className="steps steps-horizontal justify-center w-full mb-6 space-x-3">
           {["Challenge Data", "Validator", "Review"].map((label, index) => (
             <li
               key={index}
@@ -108,7 +108,7 @@ const CreateChallengeFlow: React.FC<CreateChallengeModalProps> = ({ organization
         {currentStep === 2 && <SetChallengeValidator formData={challengeForm} handleInputChange={handleInputChange} />}
         {currentStep === 3 && <ReviewChallengeData formData={challengeForm} />}
 
-        <div className="mt-6 flex justify-center gap-6">
+        <div className="mt-2 flex justify-center gap-6">
           {currentStep > 1 && (
             <button className="btn btn-secondary" onClick={prevStep}>
               Previous

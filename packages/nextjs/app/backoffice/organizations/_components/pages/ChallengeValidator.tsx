@@ -101,13 +101,12 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
 
   return (
     <div>
-      <div className="p-6 bg-base-100">
-        <h2 className="text-xl font-bold mb-4 text-center text-primary">Configure Validator</h2>
-        <p className="mb-6 text-center text-base-content">Setting validator for new challenge</p>
+      <div className="p-2 bg-base-100">
+        <h2 className="text-xl font-bold mb-2 text-center text-primary">Configure Validator</h2>
 
         {/* Algorithm Selection */}
-        <div className="mb-6">
-          <label htmlFor="algorithm-select" className="block mb-2 font-medium text-base-content">
+        <div className="mb-3">
+          <label htmlFor="algorithm-select" className="block mb-1 font-medium text-base-content">
             Select Algorithm/Function
           </label>
           <select
@@ -124,10 +123,10 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
           </select>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           {selectedAlgorithm === "OnChainValidatorV1" && (
             <div className="form-control">
-              <label className="label">
+              <label className="label py-0">
                 <span className="label-text text-base-content">Public Hash</span>
               </label>
               <textarea
@@ -143,7 +142,7 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
           {(selectedAlgorithm === "OffChainValidatorV1" || selectedAlgorithm === "OffChainValidatorV2") && (
             <>
               <div className="form-control">
-                <label className="label">
+                <label className="label py-0">
                   <span className="label-text text-base-content">External URL</span>
                 </label>
                 <textarea
@@ -155,7 +154,7 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
                 />
               </div>
               <div className="form-control">
-                <label className="label">
+                <label className="label py-0">
                   <span className="label-text text-base-content">JSON Path</span>
                 </label>
                 <textarea
@@ -171,7 +170,7 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
 
           {selectedAlgorithm === "SecretValidatorV1" && (
             <div className="form-control">
-              <label className="label">
+              <label className="label py-0">
                 <span className="label-text text-base-content font-medium">Secret Codes Generator</span>
                 <span className="label-text-alt">
                   <div
@@ -196,10 +195,10 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
                 </span>
               </label>
 
-              <div className="bg-base-200 p-4 rounded-lg">
-                <div className="flex items-end gap-2 mb-4">
+              <div className="bg-base-200 p-2 rounded-lg">
+                <div className="flex items-end gap-2 mb-2">
                   <div className="form-control w-full max-w-xs">
-                    <label className="label">
+                    <label className="label py-0">
                       <span className="label-text">Number of codes to generate</span>
                     </label>
                     <input
@@ -219,25 +218,25 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
 
                 {/* Generated Codes Summary */}
                 {generatedCodes.length > 0 && (
-                  <div className="mt-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
+                  <div className="mt-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-1">
                         <span className="font-medium">Generated Codes:</span>
                         <span className="badge badge-primary">{generatedCodes.length}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <button className="btn btn-sm btn-secondary" onClick={() => setShowCodesPopup(true)}>
+                      <div className="flex items-center gap-1">
+                        <button className="btn btn-xs btn-secondary" onClick={() => setShowCodesPopup(true)}>
                           View Codes
                         </button>
                         <button
-                          className={`btn btn-sm ${codeCopied ? "btn-success" : "btn-info"}`}
+                          className={`btn btn-xs ${codeCopied ? "btn-success" : "btn-info"}`}
                           onClick={handleCopyAllCodes}
                         >
                           {codeCopied ? (
                             <span className="flex items-center gap-1">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4"
+                                className="h-3 w-3"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -253,11 +252,11 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
                       </div>
                     </div>
 
-                    <div className="bg-warning/10 border border-warning p-3 rounded-md mb-3">
-                      <div className="flex items-start gap-2 text-warning-content">
+                    <div className="bg-warning/10 border border-warning p-2 rounded-md mb-2">
+                      <div className="flex items-start gap-1 text-warning-content text-sm">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="h-6 w-6 flex-shrink-0"
+                          className="h-4 w-4 flex-shrink-0"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -283,7 +282,7 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
 
           {selectedAlgorithm === "RandomValidatorV1" && (
             <div className="form-control">
-              <label className="label">
+              <label className="label py-0">
                 <span className="label-text text-base-content">Success Probability (%)</span>
               </label>
               <input
@@ -303,7 +302,7 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
                 }}
                 className="input input-bordered w-full bg-base-200 text-base-content"
               />
-              <label className="label">
+              <label className="label py-0 pt-1">
                 <span className="label-text text-base-content">Required ETH</span>
               </label>
               <input
@@ -333,31 +332,31 @@ const SetChallengeValidator: React.FC<SetChallengeValidatorProps> = ({ formData,
           className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
           onClick={() => setShowCodesPopup(false)}
         >
-          <div className="bg-base-100 rounded-lg shadow-xl max-w-md w-full p-4 m-4" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-4">
+          <div className="bg-base-100 rounded-lg shadow-xl max-w-md w-full p-3 m-2" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-2">
               <h3 className="text-lg font-bold">Secret Codes</h3>
-              <button className="btn btn-sm btn-circle" onClick={() => setShowCodesPopup(false)}>
+              <button className="btn btn-xs btn-circle" onClick={() => setShowCodesPopup(false)}>
                 ✕
               </button>
             </div>
 
-            <div ref={codesRef} className="bg-base-200 p-3 rounded-lg overflow-auto max-h-[300px] font-mono text-sm">
+            <div ref={codesRef} className="bg-base-200 p-2 rounded-lg overflow-auto max-h-[250px] font-mono text-sm">
               {generatedCodes.map((code, index) => (
-                <div key={index} className="flex items-center gap-2 mb-1">
-                  <span className="badge badge-sm">{index + 1}</span>
+                <div key={index} className="flex items-center gap-1 mb-1">
+                  <span className="badge badge-xs">{index + 1}</span>
                   <code>{code}</code>
                 </div>
               ))}
             </div>
 
-            <div className="flex justify-end mt-4 gap-2">
+            <div className="flex justify-end mt-2 gap-1">
               <button
-                className={`btn btn-sm ${codeCopied ? "btn-success" : "btn-primary"}`}
+                className={`btn btn-xs ${codeCopied ? "btn-success" : "btn-primary"}`}
                 onClick={handleCopyAllCodes}
               >
                 {codeCopied ? "Copied!" : "Copy All Codes"}
               </button>
-              <button className="btn btn-sm btn-outline" onClick={() => setShowCodesPopup(false)}>
+              <button className="btn btn-xs btn-outline" onClick={() => setShowCodesPopup(false)}>
                 Close
               </button>
             </div>
