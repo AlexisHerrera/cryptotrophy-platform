@@ -12,7 +12,7 @@
     "down": "docker compose down -v",
     "chain": "docker compose up -d --wait hardhat",
     "deploy": "docker compose exec hardhat npm run deploy",
-    "logs":  "docker compose logs -f hardhat",
+    "logs": "docker compose logs -f hardhat",
     "account": "yarn workspace @se-2/hardhat account",
     "compile": "docker compose exec hardhat npm run compile --network hardhat",
     "test": "yarn hardhat:test",
