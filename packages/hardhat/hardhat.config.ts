@@ -53,6 +53,10 @@ const config: HardhatUserConfig = {
   networks: {
     // View the networks that are pre-configured.
     // If the network you are looking for is not here you can add new network settings
+    localhost: {
+      url: process.env.RPC_URL_LOCALHOST || "http://hardhat:8545",
+      accounts: [deployerPrivateKey],
+    },
     hardhat: {
       forking: {
         url: forkingURL,

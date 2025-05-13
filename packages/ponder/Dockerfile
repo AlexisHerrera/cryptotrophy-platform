@@ -19,4 +19,3 @@ COPY --from=builder /usr/src/app ./
 COPY --from=builder /usr/src/config /usr/src/config
 
 EXPOSE 42069
-CMD ["npm","run","start"]
