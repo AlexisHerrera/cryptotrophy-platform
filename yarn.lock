@@ -4703,8 +4703,8 @@ __metadata:
 
 "@se-2/config@file:../config::locator=%40se-2%2Fponder%40workspace%3Apackages%2Fponder":
   version: 1.0.0
-  resolution: "@se-2/config@file:../config#../config::hash=5da146&locator=%40se-2%2Fponder%40workspace%3Apackages%2Fponder"
-  checksum: 05860cc7f1d455a2cf5a7ee5c6f30084f3ab75817112bc03bdf185cf3ceefd31121b425da7918c4db38cd141f729263abec13cb8ee5ab462f76e1649d72c8f97
+  resolution: "@se-2/config@file:../config#../config::hash=bedd94&locator=%40se-2%2Fponder%40workspace%3Apackages%2Fponder"
+  checksum: 78227d58634461657e8b76b21268e2fc0fa4b5036cf104a1a6f439834b5e00b9e8884d3ee13fa0e77972119c3a3eaf0f0be5b245310510c296321adfdf56fce2
   languageName: node
   linkType: hard
 

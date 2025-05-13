@@ -1,3 +1,4 @@
+import { deployedContracts as deployedContractsData } from "@se-2/config";
 import { MutateOptions } from "@tanstack/react-query";
 import {
   Abi,
@@ -25,7 +26,6 @@ import {
 import { Config, UseReadContractParameters, UseWatchContractEventParameters } from "wagmi";
 import { WriteContractParameters, WriteContractReturnType } from "wagmi/actions";
 import { WriteContractVariables } from "wagmi/query";
-import deployedContractsData from "~~/contracts/deployedContracts";
 import externalContractsData from "~~/contracts/externalContracts";
 import scaffoldConfig from "~~/scaffold.config";
 

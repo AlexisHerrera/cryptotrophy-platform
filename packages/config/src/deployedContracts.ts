@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     ChainlinkVrfCoordinatorMock: {
-      address: "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
+      address: "0x851356ae760d987E095750cCeb3bC6014560891C",
       abi: [
         {
           inputs: [
@@ -1191,7 +1191,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     ChallengeManager: {
-      address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      address: "0xc5a5C42992dECbae36851359345FE25997F5C42d",
       abi: [
         {
           inputs: [
@@ -1802,7 +1802,7 @@ const deployedContracts = {
       },
     },
     Groth16Verifier: {
-      address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+      address: "0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690",
       abi: [
         {
           inputs: [
@@ -1842,7 +1842,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     MockLinkToken: {
-      address: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+      address: "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf",
       abi: [
         {
           inputs: [],
@@ -1981,7 +1981,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     OffChainApiValidator: {
-      address: "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
+      address: "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
       abi: [
         {
           inputs: [
@@ -2525,7 +2525,7 @@ const deployedContracts = {
       },
     },
     OffChainValidator: {
-      address: "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
+      address: "0x8f86403A4DE0BB5791fa46B8e795C547942fE4Cf",
       abi: [
         {
           inputs: [
@@ -2955,7 +2955,7 @@ const deployedContracts = {
       },
     },
     OnChainValidator: {
-      address: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+      address: "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB",
       abi: [
         {
           inputs: [
@@ -3099,7 +3099,7 @@ const deployedContracts = {
       },
     },
     OracleMock: {
-      address: "0x68B1D87F95878fE05B998F19b66F4baba5De1aed",
+      address: "0x0E801D84Fa97b50751Dbf25036d067dCf18858bF",
       abi: [
         {
           inputs: [
@@ -3151,7 +3151,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     OrganizationManager: {
-      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      address: "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F",
       abi: [
         {
           anonymous: false,
@@ -3621,7 +3621,7 @@ const deployedContracts = {
       },
     },
     OrganizationToken: {
-      address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      address: "0x09635F643e140090A9A8Dcd712eD6285858ceBef",
       abi: [
         {
           inputs: [
@@ -4194,7 +4194,7 @@ const deployedContracts = {
       },
     },
     Prizes: {
-      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      address: "0x67d269191c92Caf3cD7723F116c85e6E9bf55933",
       abi: [
         {
           inputs: [
@@ -4515,7 +4515,7 @@ const deployedContracts = {
       },
     },
     RandomValidator: {
-      address: "0x9A676e781A523b5d0C0e43731313A708CB607508",
+      address: "0x998abeb3E57409262aE5b751f60747921B33613E",
       abi: [
         {
           inputs: [
@@ -4975,7 +4975,7 @@ const deployedContracts = {
       },
     },
     RewardSystem: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0x4A679253410272dd5232B3Ff7cF5dbB88f295319",
       abi: [
         {
           anonymous: false,
@@ -5125,7 +5125,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     RouterMock: {
-      address: "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
+      address: "0x36C02dA8a0983159322a80FFE9F24b1acfF8B570",
       abi: [
         {
           inputs: [],
@@ -5229,7 +5229,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     SecretValidator: {
-      address: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+      address: "0x9E545E3C0baAB3E08CdfD552C960A1050f373042",
       abi: [
         {
           inputs: [
@@ -5503,7 +5503,7 @@ const deployedContracts = {
       },
     },
     ValidatorRegistry: {
-      address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      address: "0xE6E340D132b5f46d1e472DebcD681B2aBc16e57E",
       abi: [
         {
           inputs: [
