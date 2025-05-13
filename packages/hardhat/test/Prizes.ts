@@ -89,11 +89,14 @@ describe("Prizes contract", function () {
     it("Should allow an org admin to create a prize", async function () {
       const { prizes, orgId, admin1 } = await loadFixture(deployPrizesFixture);
 
-      await prizes.connect(admin1).createPrize(orgId, "T-Shirt", "T-Shirt con logo", 10, 100);
+      await prizes
+        .connect(admin1)
+        .createPrize(orgId, "T-Shirt", "T-Shirt con logo", 10, 100, "http://localhost:3000/ipfs/prize");
 
       // Verificamos que realmente se haya creado
       const [ids, names, descriptions, prices, stocks] = await prizes.listPrizes(orgId);
       expect(ids.length).to.equal(1);
+      expect(ids[0]).to.equal(0n);
       expect(names[0]).to.equal("T-Shirt");
       expect(descriptions[0]).to.equal("T-Shirt con logo");
       expect(prices[0]).to.equal(10n);
@@ -104,7 +107,9 @@ describe("Prizes contract", function () {
       const { prizes, orgId, admin1 } = await loadFixture(deployPrizesFixture);
 
       // Create a prize
-      await prizes.connect(admin1).createPrize(orgId, "T-Shirt", "T-Shirt con logo", 10, 100);
+      await prizes
+        .connect(admin1)
+        .createPrize(orgId, "T-Shirt", "T-Shirt con logo", 10, 100, "http://localhost:3000/ipfs/prize");
 
       // Get prize info including NFT contract
       const [, , , , , nftContracts] = await prizes.listPrizes(orgId);
@@ -124,9 +129,9 @@ describe("Prizes contract", function () {
     it("Should revert if caller is not an admin of the org", async function () {
       const { prizes, orgId, user1 } = await loadFixture(deployPrizesFixture);
       const price = ethers.parseUnits("5", 18);
-      await expect(prizes.connect(user1).createPrize(orgId, "Mug", "Taza oficial", price, 50)).to.be.revertedWith(
-        "Prizes: caller is not an admin of this org",
-      );
+      await expect(
+        prizes.connect(user1).createPrize(orgId, "Mug", "Taza oficial", price, 50, "http://localhost:3000/ipfs/prize"),
+      ).to.be.revertedWith("Prizes: caller is not an admin of this org");
     });
   });
 
@@ -140,8 +145,12 @@ describe("Prizes contract", function () {
       // Creamos 2 premios
       const price1 = ethers.parseUnits("10", 18);
       const price2 = ethers.parseUnits("2", 18);
-      await prizes.connect(admin1).createPrize(orgId, "T-Shirt", "T-Shirt con logo", price1, 100);
-      await prizes.connect(admin1).createPrize(orgId, "Sticker Pack", "Stickers varios", price2, 500);
+      await prizes
+        .connect(admin1)
+        .createPrize(orgId, "T-Shirt", "T-Shirt con logo", price1, 100, "http://localhost:3000/ipfs/prize");
+      await prizes
+        .connect(admin1)
+        .createPrize(orgId, "Sticker Pack", "Stickers varios", price2, 500, "http://localhost:3000/ipfs/prize");
 
       const [ids, names, descriptions, prices, stocks] = await prizes.listPrizes(orgId);
 
@@ -179,7 +188,9 @@ describe("Prizes contract", function () {
 
       // 1. Creamos un premio con price=10 tokens y stock=100
       const price = ethers.parseUnits("10", 18);
-      await prizes.connect(admin1).createPrize(orgId, "T-Shirt", "T-Shirt con logo", price, 100);
+      await prizes
+        .connect(admin1)
+        .createPrize(orgId, "T-Shirt", "T-Shirt con logo", price, 100, "http://localhost:3000/ipfs/prize");
 
       // 2. user1 ya tiene 200 tokens (ver fixture).
       //    Debe dar "approve" al contrato `Prizes` para que pueda hacer transferFrom
@@ -257,7 +268,7 @@ describe("Prizes contract", function () {
       }
     });
 
-    it("Debe revertir si no hay suficiente stock", async function () {
+    it("Should revert if there is no stock available", async function () {
       const { prizes, orgId, user1 } = await loadFixture(createPrizeAndApproveFixture);
 
       // Solo hay stock=100
@@ -270,7 +281,9 @@ describe("Prizes contract", function () {
 
       // Creamos un premio con price=10 y stock=100
       const price = ethers.parseUnits("10", 18);
-      await prizes.connect(admin1).createPrize(orgId, "Camiseta", "Camiseta especial", price, 100);
+      await prizes
+        .connect(admin1)
+        .createPrize(orgId, "Camiseta", "Camiseta especial", price, 100, "http://localhost:3000/ipfs/prize");
 
       // user1 tiene 200 tokens, pero 0 allowance
       // Reclamamos 5 sin "approve"

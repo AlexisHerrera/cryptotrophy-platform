@@ -1,8 +1,8 @@
 import { TransactionWithFunction } from "./block";
 import { GenericContractsDeclaration } from "./contract";
+import { deployedContracts as contractData } from "@se-2/config";
 import { Abi, AbiFunction, decodeFunctionData, getAbiItem } from "viem";
 import { hardhat } from "viem/chains";
-import contractData from "~~/contracts/deployedContracts";
 
 type ContractsInterfaces = Record<string, Abi>;
 type TransactionType = TransactionWithFunction | null;

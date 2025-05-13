@@ -1,0 +1,87 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dev_db}
+      POSTGRES_USER: ${POSTGRES_USER:-dev_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dev_user} -d ${POSTGRES_DB:-dev_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  hardhat:
+    build:
+      context: .
+      dockerfile: packages/hardhat/Dockerfile
+    container_name: hardhat-node
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./packages/config:/usr/src/config
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s http://localhost:8545" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  app:
+    container_name: organization-backend
+    build:
+      context: ./packages/organization-backend
+      dockerfile: Dockerfile
+    ports:
+      - "80:${PORT:-8080}"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dev_db}
+      POSTGRES_USER: ${POSTGRES_USER:-dev_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
+      DB_HOST: db
+      PORT: ${PORT:-8080}
+      NODE_ENV: development
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    # Opcional: Montar volumen para desarrollo en vivo (hot-reload)
+    # volumes:
+    #   - ./src:/usr/src/app/src
+    #   - /usr/src/app/node_modules
+    # command: npm run dev
+
+  ponder:
+    container_name: ponder_indexer
+    build:
+      context: .
+      dockerfile: packages/ponder/Dockerfile
+    ports:
+      - "${PONDER_PORT:-42069}:42069"
+    command: [ "npm","run","dev" ]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dev_user}:${POSTGRES_PASSWORD:-dev_password}@db:5432/${POSTGRES_DB:-dev_db}?schema=${DATABASE_SCHEMA:-ponder_schema}
+      PONDER_RPC_URL_31337: "http://hardhat:8545"
+      PONDER_PORT: ${PONDER_PORT:-42069}
+      NODE_ENV: development
+    depends_on:
+      hardhat:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ponder-cache:/.ponder
+      - ./packages/config:/usr/src/config
+
+volumes:
+  db-data:
+    driver: local
+  ponder-cache:
+    driver: local

@@ -15,7 +15,9 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "~~/*": ["./*"]
+      "~~/*": ["./*"],
+      "@se-2/config": ["../config/src"],
+      "@se-2/config/*": ["../config/src/*"]
     },
     "plugins": [
       {
