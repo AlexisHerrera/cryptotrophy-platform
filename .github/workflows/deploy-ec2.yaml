@@ -1,0 +1,100 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build_and_push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [ organization-backend ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./packages/${{ matrix.service }}
+          file: ./packages/${{ matrix.service }}/Dockerfile
+          push: true
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
+
+  deploy:
+    name: Deploy to EC2
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+      - name: Add EC2 host to known_hosts
+        run: ssh-keyscan -H ${{ vars.EC2_HOST }} >> ~/.ssh/known_hosts
+      - name: Create app dir on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no "${{ vars.EC2_USER }}"@"${{ vars.EC2_HOST }}" \
+          "mkdir -p ~/app"
+      - name: Copy compose file to EC2
+        run: |
+          scp -o StrictHostKeyChecking=no docker-compose.prod.yml \
+            "${{ vars.EC2_USER }}"@"${{ vars.EC2_HOST }}":~/app/
+      - name: Install Docker, Compose & Deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no "${{ vars.EC2_USER }}"@"${{ vars.EC2_HOST }}" <<'EOF'
+          set -e
+          sudo systemctl enable --now docker.service containerd.service
+          if ! command -v docker >/dev/null; then
+          sudo dnf install --allowerasing -y \
+          docker containerd runc container-selinux cni-plugins \
+          oci-add-hooks amazon-ecr-credential-helper udica
+          sudo systemctl enable --now docker containerd
+          echo "Docker installed"
+          else
+          echo "Docker was already installed"
+          fi
+          
+          # 2) Instalar plugin de Docker Compose si falta
+          if ! docker compose version >/dev/null; then
+          sudo mkdir -p /usr/local/lib/docker/cli-plugins
+          sudo curl -sSL \
+          https://github.com/docker/compose/releases/latest/download/docker-compose-linux-$(uname -m) \
+          -o /usr/local/lib/docker/cli-plugins/docker-compose
+          sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+          echo "Docker Compose installed"
+          else
+          echo "Docker Compose was already installed"
+          fi
+          
+          mkdir -p ~/app
+          cd ~/app
+          
+          cat > .env <<EOT
+          POSTGRES_DB=${{ vars.POSTGRES_DB }}
+          POSTGRES_USER=${{ vars.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          PORT=${{ vars.PORT }}
+          DOCKERHUB_USERNAME=${{ vars.DOCKERHUB_USERNAME }}
+          EOT
+          
+          sudo docker pull "${{ vars.DOCKERHUB_USERNAME }}/organization-backend:latest"
+          sudo docker compose -f docker-compose.prod.yml pull
+          sudo docker compose -f docker-compose.prod.yml up -d
+          
+          sudo docker image prune -f
+          
+          echo "Deployment completed"
+          EOF
