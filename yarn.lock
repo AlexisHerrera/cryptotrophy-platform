@@ -4701,6 +4701,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@se-2/config@file:../config::locator=%40se-2%2Fponder%40workspace%3Apackages%2Fponder":
+  version: 1.0.0
+  resolution: "@se-2/config@file:../config#../config::hash=5da146&locator=%40se-2%2Fponder%40workspace%3Apackages%2Fponder"
+  checksum: 05860cc7f1d455a2cf5a7ee5c6f30084f3ab75817112bc03bdf185cf3ceefd31121b425da7918c4db38cd141f729263abec13cb8ee5ab462f76e1649d72c8f97
+  languageName: node
+  linkType: hard
+
+"@se-2/config@workspace:packages/config":
+  version: 0.0.0-use.local
+  resolution: "@se-2/config@workspace:packages/config"
+  languageName: unknown
+  linkType: soft
+
 "@se-2/hardhat@workspace:packages/hardhat":
   version: 0.0.0-use.local
   resolution: "@se-2/hardhat@workspace:packages/hardhat"
@@ -4796,6 +4809,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@se-2/ponder@workspace:packages/ponder"
   dependencies:
+    "@se-2/config": "file:../config"
     "@types/node": ^20.10.0
     drizzle-kit: 0.22.8
     eslint: ^8.54.0

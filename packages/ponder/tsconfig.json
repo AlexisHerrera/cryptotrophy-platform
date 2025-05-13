@@ -17,6 +17,10 @@
     "noEmit": true,
     "lib": ["ES2022"],
     "target": "ES2022",
+    "paths": {
+      "@se-2/config": ["../config/src"],
+      "@se-2/config/*": ["../config/src/*"]
+    },
 
     // Skip type checking for node modules
     "skipLibCheck": true
