@@ -1,9 +1,13 @@
-FROM node:20-alpine AS builder
-WORKDIR /usr/src/app
-# Install curl
-RUN apk add --no-cache curl
+FROM node:20-bullseye AS builder
 
-COPY packages/hardhat/package.json    ./package.json
+WORKDIR /usr/src/app
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    python3 python3-dev build-essential curl \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY packages/hardhat/package.json ./
 
 RUN npm install
 

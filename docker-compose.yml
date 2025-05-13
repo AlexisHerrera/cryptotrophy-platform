@@ -25,7 +25,7 @@ services:
     ports:
       - "8545:8545"
     volumes:
-      - ./packages/hardhat:/usr/src/app
+      - ./packages/config:/usr/src/config
     restart: unless-stopped
     healthcheck:
       test: [ "CMD-SHELL", "curl -s http://localhost:8545" ]
@@ -78,6 +78,7 @@ services:
     restart: unless-stopped
     volumes:
       - ponder-cache:/.ponder
+      - ./packages/config:/usr/src/config
 
 volumes:
   db-data:
