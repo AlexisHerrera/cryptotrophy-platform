@@ -4515,7 +4515,7 @@ const deployedContracts = {
       },
     },
     RandomValidator: {
-      address: "0x67d269191c92Caf3cD7723F116c85e6E9bf55933",
+      address: "0x9A676e781A523b5d0C0e43731313A708CB607508",
       abi: [
         {
           inputs: [
