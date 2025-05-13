@@ -50,7 +50,7 @@
     "lint-staged": "~13.2.2",
     "snarkjs": "^0.7.5"
   },
-  "packageManager": "yarn@3.2.3",
+  "packageManager": "yarn@4.9.1",
   "engines": {
     "node": ">=18.18.0"
   },
