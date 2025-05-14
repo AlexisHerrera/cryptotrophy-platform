@@ -36,8 +36,8 @@ jobs:
     needs: build_and_push
     runs-on: ubuntu-latest
     env:
-      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      POSTGRES_USER: ${{ vars.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       PORT: ${{ vars.PORT }}
       DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
