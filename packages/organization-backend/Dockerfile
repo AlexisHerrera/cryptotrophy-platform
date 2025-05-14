@@ -4,10 +4,11 @@ FROM node:20-alpine AS builder
 WORKDIR /usr/src/app
 
 # Copy package files and install all dependencies (including dev)
-COPY package*.json ./
+COPY packages/organization-backend/package*.json ./
 RUN npm ci
 
-COPY packages/organization-backend ./
+COPY packages/organization-backend/tsconfig.json ./
+COPY packages/organization-backend/src ./src
 
 # Build the TypeScript code
 RUN npm run build
@@ -16,8 +17,7 @@ RUN npm run build
 FROM node:20-alpine
 
 WORKDIR /usr/src/app
-
-COPY package*.json ./
+COPY packages/organization-backend/package*.json ./
 
 # Install *only* production dependencies
 RUN npm ci --only=production
