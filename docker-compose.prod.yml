@@ -28,7 +28,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
       DB_HOST: db
       PORT: ${PORT:-8080}
-      NODE_ENV: development
+      NODE_ENV: production
     depends_on:
       db:
         condition: service_healthy
