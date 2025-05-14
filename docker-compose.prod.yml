@@ -35,7 +35,7 @@ services:
     restart: unless-stopped
 
   ponder:
-    image: ${DOCKERHUB_USERNAME}/ponder_indexer:latest
+    image: ${DOCKERHUB_USERNAME}/ponder:latest
     container_name: ponder_indexer
     ports:
       - "${PONDER_PORT:-42069}:42069"
