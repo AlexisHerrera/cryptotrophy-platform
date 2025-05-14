@@ -67,7 +67,6 @@ jobs:
           echo "Docker was already installed"
           fi
           
-          # 2) Instalar plugin de Docker Compose si falta
           if ! docker compose version >/dev/null; then
           sudo mkdir -p /usr/local/lib/docker/cli-plugins
           sudo curl -sSL \
@@ -83,11 +82,18 @@ jobs:
           cd ~/app
           
           cat > .env <<EOT
+          # Postgres settings
           POSTGRES_DB=${{ vars.POSTGRES_DB }}
           POSTGRES_USER=${{ vars.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          # Backend
           PORT=${{ vars.PORT }}
           DOCKERHUB_USERNAME=${{ vars.DOCKERHUB_USERNAME }}
+          # Ponder indexer
+          DATABASE_URL=postgres://${{ vars.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ vars.POSTGRES_DB }}
+          DATABASE_SCHEMA=${{ vars.PONDER_SCHEMA }}
+          PONDER_PORT=${{ vars.PONDER_PORT }}
+          NODE_ENV=production
           EOT
           
           sudo docker pull "${{ vars.DOCKERHUB_USERNAME }}/organization-backend:latest"

@@ -17,6 +17,13 @@ if (!rpcUrl && !isDev) {
   );
 }
 
+if (!(targetNetwork.id in deployedContracts)) {
+  throw new Error(
+      `No deployedContracts entry found for chain ${targetNetwork.id} (${targetNetwork.name}).\n` +
+      `    Did you forget running "yarn deploy --network ${targetNetwork.name}" ?`
+  );
+}
+
 const networks = {
   [targetNetwork.name]: {
     chainId: targetNetwork.id,
