@@ -7,7 +7,6 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm ci
 
-COPY tsconfig.json ./
 COPY packages/organization-backend ./
 
 # Build the TypeScript code
