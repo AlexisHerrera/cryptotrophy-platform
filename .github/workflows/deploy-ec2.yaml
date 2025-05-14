@@ -93,6 +93,7 @@ jobs:
           DATABASE_URL=postgres://${{ vars.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ vars.POSTGRES_DB }}
           DATABASE_SCHEMA=${{ vars.PONDER_SCHEMA }}
           PONDER_PORT=${{ vars.PONDER_PORT }}
+          PONDER_RPC_URL_84532=${{ vars.PONDER_RPC_URL_84532 }}
           NODE_ENV=production
           EOT
           

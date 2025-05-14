@@ -61,3 +61,5 @@ services:
 volumes:
   db-data:
     driver: local
+  ponder-cache:
+    driver: local
