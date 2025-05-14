@@ -26,7 +26,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: ./packages/${{ matrix.service }}
+          context: .
           file: ./packages/${{ matrix.service }}/Dockerfile
           push: true
           tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
