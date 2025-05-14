@@ -103,7 +103,7 @@ jobs:
           NODE_ENV=production
           EOT
           
-          docker compose -f docker-compose.prod.yml exec -T db psql \
+          sudo docker compose -f docker-compose.prod.yml exec -T db psql \
               -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
               -c "DROP SCHEMA IF EXISTS ${PONDER_SCHEMA} CASCADE; \
                   DROP SCHEMA IF EXISTS ponder_sync CASCADE;"
