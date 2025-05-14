@@ -91,22 +91,20 @@ jobs:
           cd ~/app
           
           cat > .env <<EOT
-          # Postgres settings
-          POSTGRES_DB=$POSTGRES_DB
-          POSTGRES_USER=$POSTGRES_USER
-          POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-          # Backend
-          PORT=$PORT
-          DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME
-          # Ponder indexer
-          DATABASE_URL=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@db:5432/$POSTGRES_DB
-          DATABASE_SCHEMA=$PONDER_SCHEMA
-          PONDER_PORT=$PONDER_PORT
-          PONDER_RPC_URL_84532=$PONDER_RPC_URL_84532
+          POSTGRES_DB=${{ vars.POSTGRES_DB }}
+          POSTGRES_USER=${{ vars.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          PORT=${{ vars.PORT }}
+          DOCKERHUB_USERNAME=${{ vars.DOCKERHUB_USERNAME }}
+          DATABASE_URL=postgres://${{ vars.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ vars.POSTGRES_DB }}
+          DATABASE_SCHEMA=${{ vars.PONDER_SCHEMA }}
+          PONDER_PORT=${{ vars.PONDER_PORT }}
+          PONDER_RPC_URL_84532=${{ vars.PONDER_RPC_URL_84532 }}
           NODE_ENV=production
           EOT
           
-          sudo docker pull "${DOCKERHUB_USERNAME}/organization-backend:latest"
+          sudo docker pull "${{ vars.DOCKERHUB_USERNAME }}/organization-backend:latest"
+          sudo docker pull "${{ vars.DOCKERHUB_USERNAME }}/ponder:latest"
           sudo docker compose -f docker-compose.prod.yml pull
           sudo docker compose -f docker-compose.prod.yml up -d
           
