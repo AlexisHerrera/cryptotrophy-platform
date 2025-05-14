@@ -8,7 +8,7 @@ COPY package*.json ./
 RUN npm ci
 
 COPY tsconfig.json ./
-COPY src ./src
+COPY packages/organization-backend ./
 
 # Build the TypeScript code
 RUN npm run build
