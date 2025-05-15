@@ -29,7 +29,7 @@ contract OffChainApiValidator is TwoStepValidator, FunctionsClient, ConfirmedOwn
     bytes32 public donId;
     uint64 public subscriptionId;
     string public source;
-    uint32 public constant MAX_CALLBACK_GAS = 70_000;
+    uint32 public constant MAX_CALLBACK_GAS = 200_000;
 
     // validationId -> validatorConfig
     mapping(uint256 => OffChainApiConfig) public config;
@@ -77,7 +77,6 @@ contract OffChainApiValidator is TwoStepValidator, FunctionsClient, ConfirmedOwn
     function preValidation(uint256 _validationId, bytes calldata /* preValidationParams */) external payable returns (bytes32) {
         OffChainApiConfig storage _validatorConfir = config[_validationId];
 		require(_validatorConfir.exists, "Error. Invalid configuration. No API configured for validationId.");
-
         // Specify the url to call
         string memory url = string(
             abi.encodePacked(
@@ -101,7 +100,6 @@ contract OffChainApiValidator is TwoStepValidator, FunctionsClient, ConfirmedOwn
             MAX_CALLBACK_GAS,
             donId
         );
-        console.log(uint256(requestId));
 
         // Store the request to trace the fulfill
         bytes32 _claimUID = keccak256(abi.encodePacked(_validationId, msg.sender));
