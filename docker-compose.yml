@@ -36,8 +36,8 @@ services:
   app:
     container_name: organization-backend
     build:
-      context: ./packages/organization-backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./packages/organization-backend/Dockerfile
     ports:
       - "80:${PORT:-8080}"
     environment:
