@@ -46,7 +46,7 @@ const deployRandomValidator: DeployFunction = async function (hre: HardhatRuntim
     await fundsubs.wait();
   } else {
     // TODO: Configure subsId and coord based on network ID
-    subsId = 297;
+    subsId = 53249145698120724576307188417064942741942004713144067749431872073765674901205n;
     coord_addr = "0x5C210eF41CD1a72de73bF76eC39637bB0d3d7BEE";
     key_hash = "0x9e1344a1247c8a1785d0a4681a27152bffdb43666ae5bf7d14d24a5efd44bf71";
   }
