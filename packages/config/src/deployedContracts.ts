@@ -6282,7 +6282,7 @@ const deployedContracts = {
       startBlock: 25733628,
     },
     OffChainApiValidator: {
-      address: "0xA368Faa5De2189A24691BF7d25CDBB95B68BDae4",
+      address: "0xAA7E6C77B7A4A4844a8999DB8bea4339FBe53dDB",
       abi: [
         {
           inputs: [
@@ -6824,7 +6824,7 @@ const deployedContracts = {
         transferOwnership:
           "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol",
       },
-      startBlock: 25733657,
+      startBlock: 25791516,
     },
     OffChainValidator: {
       address: "0x9bb93CA5cBedE5258Fb4b12375BFC68E97749a8B",
@@ -8770,7 +8770,7 @@ const deployedContracts = {
       startBlock: 25733620,
     },
     RandomValidator: {
-      address: "0x73cfda0B00082afd7cfC2bbf5bc6171624616ffc",
+      address: "0x3259F5341fdf96f6430862D8e3c066bA8696afD3",
       abi: [
         {
           inputs: [
@@ -9228,7 +9228,7 @@ const deployedContracts = {
         transferOwnership:
           "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol",
       },
-      startBlock: 25733645,
+      startBlock: 25793187,
     },
     RewardSystem: {
       address: "0x92766997c4cC319E6608c956AEB7fa0bA4dFFd2c",

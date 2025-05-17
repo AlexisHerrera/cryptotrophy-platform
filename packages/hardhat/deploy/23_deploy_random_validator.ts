@@ -25,10 +25,12 @@ const deployRandomValidator: DeployFunction = async function (hre: HardhatRuntim
 
   let subsId;
   let coord_addr;
+  let key_hash;
 
   if (developmentChains.includes(network.name)) {
     const coord = await hre.ethers.getContract<Contract>("ChainlinkVrfCoordinatorMock", deployer);
     coord_addr = await coord.getAddress();
+    key_hash = "0x9e1344a1247c8a1785d0a4681a27152bffdb43666ae5bf7d14d24a5efd44bf71";
     console.log(`CoordinatorMock deployed to: ${coord_addr}`);
 
     // Set subscription
@@ -44,15 +46,16 @@ const deployRandomValidator: DeployFunction = async function (hre: HardhatRuntim
     await fundsubs.wait();
   } else {
     // TODO: Configure subsId and coord based on network ID
-    subsId = 297;
+    subsId = 53249145698120724576307188417064942741942004713144067749431872073765674901205n;
     coord_addr = "0x5C210eF41CD1a72de73bF76eC39637bB0d3d7BEE";
+    key_hash = "0x9e1344a1247c8a1785d0a4681a27152bffdb43666ae5bf7d14d24a5efd44bf71";
   }
 
   const validatorUID = hre.ethers.encodeBytes32String("RandomValidatorV1");
 
   await deploy("RandomValidator", {
     from: deployer,
-    args: [subsId, coord_addr, "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc", validatorUID],
+    args: [subsId, coord_addr, key_hash, validatorUID],
     log: true,
     autoMine: true,
   });

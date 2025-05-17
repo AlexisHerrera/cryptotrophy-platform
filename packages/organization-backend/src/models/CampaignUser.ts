@@ -34,7 +34,7 @@ CampaignUser.init(
             },
         },
         wallet_address: {
-            type: DataTypes.STRING(66),
+            type: DataTypes.STRING(100),
             allowNull: false,
         },
     },
