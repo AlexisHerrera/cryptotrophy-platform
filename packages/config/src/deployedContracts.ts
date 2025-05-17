@@ -1189,7 +1189,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      startBlock: 17,
+      startBlock: 0,
     },
     ChallengeManager: {
       address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
@@ -1801,7 +1801,7 @@ const deployedContracts = {
         getOrganizationId: "contracts/Challenges/IChallengeManager.sol",
         setChallengeValidator: "contracts/Challenges/IChallengeManager.sol",
       },
-      startBlock: 5,
+      startBlock: 0,
     },
     Groth16Verifier: {
       address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
@@ -1842,7 +1842,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      startBlock: 9,
+      startBlock: 0,
     },
     MockLinkToken: {
       address: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
@@ -1982,7 +1982,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      startBlock: 25,
+      startBlock: 0,
     },
     OffChainApiValidator: {
       address: "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
@@ -2527,7 +2527,7 @@ const deployedContracts = {
         transferOwnership:
           "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol",
       },
-      startBlock: 35,
+      startBlock: 0,
     },
     OffChainValidator: {
       address: "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
@@ -2958,7 +2958,7 @@ const deployedContracts = {
         transferOwnership:
           "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol",
       },
-      startBlock: 29,
+      startBlock: 0,
     },
     OnChainValidator: {
       address: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
@@ -3103,7 +3103,7 @@ const deployedContracts = {
         setConfigFromParams: "contracts/Challenges/IValidator.sol",
         validate: "contracts/Challenges/IValidator.sol",
       },
-      startBlock: 11,
+      startBlock: 0,
     },
     OracleMock: {
       address: "0x68B1D87F95878fE05B998F19b66F4baba5De1aed",
@@ -3156,7 +3156,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      startBlock: 27,
+      startBlock: 0,
     },
     OrganizationManager: {
       address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
@@ -3627,7 +3627,7 @@ const deployedContracts = {
         isAdmin: "contracts/Organization/IOrganizationManager.sol",
         transferTokensTo: "contracts/Organization/IOrganizationManager.sol",
       },
-      startBlock: 3,
+      startBlock: 0,
     },
     OrganizationToken: {
       address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
@@ -4201,7 +4201,7 @@ const deployedContracts = {
         burnFrom:
           "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol",
       },
-      startBlock: 4,
+      startBlock: 0,
     },
     Prizes: {
       address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
@@ -4523,7 +4523,7 @@ const deployedContracts = {
         renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
         transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
       },
-      startBlock: 6,
+      startBlock: 0,
     },
     RandomValidator: {
       address: "0x9A676e781A523b5d0C0e43731313A708CB607508",
@@ -4984,7 +4984,7 @@ const deployedContracts = {
         transferOwnership:
           "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol",
       },
-      startBlock: 21,
+      startBlock: 0,
     },
     RewardSystem: {
       address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
@@ -5135,7 +5135,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      startBlock: 1,
+      startBlock: 0,
     },
     RouterMock: {
       address: "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
@@ -5240,7 +5240,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      startBlock: 33,
+      startBlock: 0,
     },
     SecretValidator: {
       address: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
@@ -5515,7 +5515,7 @@ const deployedContracts = {
         setConfigFromParams: "contracts/Challenges/IValidator.sol",
         validate: "contracts/Challenges/IValidator.sol",
       },
-      startBlock: 13,
+      startBlock: 0,
     },
     ValidatorRegistry: {
       address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
@@ -5624,7 +5624,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      startBlock: 7,
+      startBlock: 0,
     },
   },
   84532: {
