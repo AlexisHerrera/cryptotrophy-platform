@@ -15,8 +15,9 @@ contract SecretValidator is IValidator {
 	mapping(address => uint256) public nonces; // Tracks user-specific nonces
 
 	mapping(uint256 => mapping(uint256 => bool)) public config;
-	// Array to store valid hashes for each validation ID (TODO: remove this, is just for debugging)
-	mapping(uint256 => uint256[]) public validHashes;
+
+	// Store used hashes for each validation ID
+	mapping(uint256 => mapping(uint256 => bool)) public usedHashes;
 
 	// Constructor: Called once on contract deployment
 	// Check packages/hardhat/deploy/00_deploy_challenge.ts
@@ -25,23 +26,30 @@ contract SecretValidator is IValidator {
 		verifier = Groth16Verifier(_groth16Addr);
 	}
 
-	function setConfigFromParams(uint256 _validationId, bytes calldata _params) public {
-		( uint256 length, uint256[] memory _hashes) = abi.decode(_params, (uint256, uint256[]));
+	function setConfigFromParams(
+		uint256 _validationId,
+		bytes calldata _params
+	) public {
+		(uint256 length, uint256[] memory _hashes) = abi.decode(
+			_params,
+			(uint256, uint256[])
+		);
 		for (uint256 i = 0; i < length; i++) {
 			uint256 _publicHash = _hashes[i];
 			config[_validationId][_publicHash] = true;
-			validHashes[_validationId].push(_publicHash);
 		}
 	}
 
 	/// @notice Add a list of hashes to the validator
 	/// @param _hashes The list of hashes to add
 	/// @dev This function is only callable by the owner of the validator
-	function setConfig(uint256 validationId, uint256[] calldata _hashes) public {
+	function setConfig(
+		uint256 validationId,
+		uint256[] calldata _hashes
+	) public {
 		for (uint256 i = 0; i < _hashes.length; i++) {
 			uint256 _publicHash = _hashes[i];
 			config[validationId][_publicHash] = true;
-			validHashes[validationId].push(_publicHash);
 		}
 	}
 
@@ -82,7 +90,7 @@ contract SecretValidator is IValidator {
 	function validate(
 		uint256 validationId,
 		bytes calldata params
-	) public view override returns (bool) {
+	) public override returns (bool) {
 		(
 			uint[2] memory _pA,
 			uint[2][2] memory _pB,
@@ -91,6 +99,8 @@ contract SecretValidator is IValidator {
 		) = abi.decode(params, (uint[2], uint[2][2], uint[2], uint256));
 
 		require(config[validationId][publicHash], "Invalid hash");
+		require(!usedHashes[validationId][publicHash], "Hash already used");
+		usedHashes[validationId][publicHash] = true;
 
 		require(
 			verifier.verifyProof(_pA, _pB, _pC, [publicHash]),
