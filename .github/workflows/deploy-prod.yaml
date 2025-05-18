@@ -53,15 +53,7 @@ jobs:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
       - name: Add EC2 host to known_hosts
         run: ssh-keyscan -H ${{ vars.EC2_HOST }} >> ~/.ssh/known_hosts
-      - name: Create app dir on EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no "${{ vars.EC2_USER }}"@"${{ vars.EC2_HOST }}" \
-          "mkdir -p ~/app"
-      - name: Copy compose file to EC2
-        run: |
-          scp -o StrictHostKeyChecking=no docker-compose.prod.yml \
-            "${{ vars.EC2_USER }}"@"${{ vars.EC2_HOST }}":~/app/
-      - name: Install Docker, Compose & Deploy
+      - name: Ensure Docker & Compose on EC2
         run: |
           ssh -o StrictHostKeyChecking=no "${{ vars.EC2_USER }}"@"${{ vars.EC2_HOST }}" <<EOF
           set -e
@@ -86,11 +78,14 @@ jobs:
           else
           echo "Docker Compose was already installed"
           fi
-          
+          EOF
+
+      - name: Create app dir & copy compose + env
+        run: |
+          scp -o StrictHostKeyChecking=no docker-compose.prod.yml "${{ vars.EC2_USER }}"@"${{ vars.EC2_HOST }}":~/app/
+          ssh -o StrictHostKeyChecking=no "${{ vars.EC2_USER }}"@"${{ vars.EC2_HOST }}" <<EOF
           mkdir -p ~/app
-          cd ~/app
-          
-          cat > .env <<EOT
+          cat > ~/app/.env <<EOT
           POSTGRES_DB=${POSTGRES_DB}
           POSTGRES_USER=${POSTGRES_USER}
           POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -102,9 +97,20 @@ jobs:
           PONDER_RPC_URL_84532=${PONDER_RPC_URL_84532}
           NODE_ENV=production
           EOT
-          
-          sudo docker compose -f docker-compose.prod.yml down -v
+          EOF
+
+      - name: Deploy (down, drop schema, pull & up)
+        run: |
+          ssh -o StrictHostKeyChecking=no "${{ vars.EC2_USER }}"@"${{ vars.EC2_HOST }}" <<EOF
+          set -e
+          cd ~/app          
+          sudo docker compose -f docker-compose.prod.yml down
           sudo docker compose -f docker-compose.prod.yml pull
+          sudo docker compose -f docker-compose.prod.yml up -d db
+          sudo docker exec -i postgres_db \
+          psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+          -c "DROP SCHEMA IF EXISTS \"$PONDER_SCHEMA\" CASCADE;"
+  
           sudo docker compose -f docker-compose.prod.yml up -d
           
           echo "Deployment completed"
