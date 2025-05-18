@@ -106,7 +106,7 @@ jobs:
           cd ~/app          
           sudo docker compose -f docker-compose.prod.yml down
           sudo docker compose -f docker-compose.prod.yml pull
-          sudo docker compose -f docker-compose.prod.yml up -d db
+          sudo docker compose -f docker-compose.prod.yml up -d --wait db
           sudo docker exec -i postgres_db \
           psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
           -c "DROP SCHEMA IF EXISTS \"$PONDER_SCHEMA\" CASCADE;"
