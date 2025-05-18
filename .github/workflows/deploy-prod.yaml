@@ -103,7 +103,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no "${{ vars.EC2_USER }}"@"${{ vars.EC2_HOST }}" <<EOF
           echo "DEBUG: Starting deployment script on remote host."
-          set -e
           
           cd ~/app          
           echo "DEBUG: Current directory on EC2: \$(pwd)"
