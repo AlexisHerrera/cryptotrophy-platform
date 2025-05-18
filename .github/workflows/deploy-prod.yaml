@@ -112,6 +112,6 @@ jobs:
           -c "DROP SCHEMA IF EXISTS \"$PONDER_SCHEMA\" CASCADE;"
   
           sudo docker compose -f docker-compose.prod.yml up -d
-          
           echo "Deployment completed"
+          
           EOF
