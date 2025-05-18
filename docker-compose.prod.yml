@@ -3,16 +3,16 @@ services:
     image: postgres:15-alpine
     container_name: postgres_db
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-dev_db}
-      POSTGRES_USER: ${POSTGRES_USER:-dev_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dev_user} -d ${POSTGRES_DB:-dev_db}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -21,13 +21,13 @@ services:
   app:
     image: ${DOCKERHUB_USERNAME}/organization-backend:latest
     ports:
-      - "80:${PORT:-8080}"
+      - "80:${PORT}"
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-dev_db}
-      POSTGRES_USER: ${POSTGRES_USER:-dev_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       DB_HOST: db
-      PORT: ${PORT:-8080}
+      PORT: ${PORT}
       NODE_ENV: production
     depends_on:
       db:
@@ -38,7 +38,7 @@ services:
     image: ${DOCKERHUB_USERNAME}/ponder:latest
     container_name: ponder_indexer
     ports:
-      - "${PONDER_PORT:-42069}:42069"
+      - "${PONDER_PORT}:42069"
     environment:
       DATABASE_URL: ${DATABASE_URL}
       DATABASE_SCHEMA: ${DATABASE_SCHEMA}
