@@ -110,8 +110,8 @@ jobs:
           sudo docker exec -i postgres_db \
           psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
           -c "DROP SCHEMA IF EXISTS \"$PONDER_SCHEMA\" CASCADE;"
-  
-          sudo docker compose -f docker-compose.prod.yml up -d
-          echo "Deployment completed"
+          
+          nohup sudo docker compose -f docker-compose.prod.yml up -d > /dev/null 2>&1 &
+          echo "Deployment initiated in background"
           
           EOF
