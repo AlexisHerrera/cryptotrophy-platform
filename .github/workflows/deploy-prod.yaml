@@ -102,16 +102,57 @@ jobs:
       - name: Deploy (down, drop schema, pull & up)
         run: |
           ssh -o StrictHostKeyChecking=no "${{ vars.EC2_USER }}"@"${{ vars.EC2_HOST }}" <<EOF
+          echo "DEBUG: Starting deployment script on remote host."
           set -e
           cd ~/app          
+          echo "DEBUG: Current directory: $(pwd)"
+          echo "DEBUG: Running docker compose down..."
           sudo docker compose -f docker-compose.prod.yml down
+          echo "DEBUG: docker compose down finished."
+          echo "DEBUG: Running docker compose pull..."
           sudo docker compose -f docker-compose.prod.yml pull
+          echo "DEBUG: docker compose pull finished."
+          echo "DEBUG: Running docker compose up -d --wait db..."
           sudo docker compose -f docker-compose.prod.yml up -d --wait db
+          echo "DEBUG: docker compose up -d --wait db finished."
+          echo "DEBUG: Dropping schema $PONDER_SCHEMA for user $POSTGRES_USER on db $POSTGRES_DB..."
           sudo docker exec -i postgres_db \
           psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
           -c "DROP SCHEMA IF EXISTS \"$PONDER_SCHEMA\" CASCADE;"
+          psql_exit_code=$? 
+          echo "DEBUG: psql exit code: $psql_exit_code"
+          if [ $psql_exit_code -ne 0 ]; then
+            echo "WARNING: psql command finished with a non-zero exit code ($psql_exit_code)."
+          fi
           
-          nohup sudo docker compose -f docker-compose.prod.yml up -d > /dev/null 2>&1 &
-          echo "Deployment initiated in background"
+          echo "DEBUG: Preparing to run final docker compose up -d with nohup."
           
+          nohup sudo docker compose -f docker-compose.prod.yml up -d > ~/app/nohup_deploy.log 2>&1 &
+          echo "DEBUG: Final docker compose up -d command has been launched in background."
+          echo "Deployment initiated. Check ~/app/nohup_deploy.log on the server for details."
+          sleep 3 
+          echo "DEBUG: Script on remote host finished."
+          EOF
+
+      - name: Check EC2 deployment status
+
+
+        if: always()
+        run: |
+          echo "Attempting to retrieve deployment logs and status from EC2..."
+          ssh -o StrictHostKeyChecking=no "${{ vars.EC2_USER }}"@"${{ vars.EC2_HOST }}" <<EOF
+          echo "--- Contents of ~/app/nohup_deploy.log (if any) ---"
+          cat ~/app/nohup_deploy.log || echo "INFO: ~/app/nohup_deploy.log not found or is empty."
+          echo "" 
+          echo "--- Output of 'sudo docker ps -a' ---"
+          sudo docker ps -a
+          echo ""
+          echo "--- Logs for 'app' service (last 20 lines, if container exists) ---"
+          
+          APP_CONTAINER_ID=$(sudo docker ps -a --filter "name=app_app" -q | head -n 1)
+          if [ -n "$APP_CONTAINER_ID" ]; then
+            sudo docker logs --tail 20 "$APP_CONTAINER_ID"
+          else
+            echo "INFO: Container for 'app' service not found."
+          fi
           EOF
