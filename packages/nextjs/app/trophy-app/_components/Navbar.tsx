@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 const navLinks = [
   { href: "/trophy-app", label: "Home" },
   { href: "/trophy-app/exchange", label: "Exchange" },
+  { href: "/docs/users", label: "Documentation" },
 ];
 
 export default function Navbar() {
