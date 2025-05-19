@@ -7,7 +7,7 @@ export const OrganizationsInfo = () => {
       {/* Placeholder for image */}
       <div className="flex-1 flex justify-center">
         <div className="w-full max-w-md h-auto shadow-lg rounded-md overflow-hidden">
-          <img src="HomeOrganizations.webp" alt="Organization" className="w-full h-full object-cover" />
+          <img src="/HomeOrganizations.webp" alt="Organization" className="w-full h-full object-cover" />
         </div>
       </div>
       <div className="flex-1">
