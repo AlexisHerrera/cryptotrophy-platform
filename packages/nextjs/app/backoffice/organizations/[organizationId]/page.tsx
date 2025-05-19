@@ -19,8 +19,12 @@ interface OrganizationDetails {
   baseURI: string;
 }
 
+type Params = {
+  organizationId: string;
+};
+
 const OrganizationPage: React.FC = () => {
-  const { organizationId } = useParams();
+  const { organizationId } = useParams() as Params;
   const router = useRouter();
   const challengeFormHook = useChallengeForm(BigInt(organizationId as string));
   const [organization, setOrganization] = useState<OrganizationDetails | null>(null);

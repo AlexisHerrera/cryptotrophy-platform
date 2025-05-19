@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import Navbar from "~~/app/trophy-app/_components/Navbar";
 
@@ -10,14 +11,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <div className="flex-shrink-0">
-              <Link
-                href="/trophy-app"
-                className="text-xl font-bold text-indigo-600 dark:text-indigo-400 hover:opacity-80 transition"
-              >
-                Home
-              </Link>
-            </div>
+            {/* Logo and Brand */}
+            <Link
+              href="/"
+              passHref
+              className="flex items-center gap-2 px-3 py-2 font-semibold font-sans text-gray-800 dark:text-gray-100 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 transition text-base tracking-tight ml-4 mr-6 shrink-0"
+            >
+              <div className="flex relative w-8 h-8">
+                <Image
+                  alt="CryptoTrophy logo"
+                  className="cursor-pointer rounded-lg aspect-square object-cover"
+                  fill
+                  src="/logo.ico"
+                />
+              </div>
+              {/* Show only on large screens */}
+              <div className="hidden lg:flex flex-col">
+                <span className="font-semibold leading-tight">CryptoTrophy</span>
+              </div>
+            </Link>
+
             <div className="flex items-center">
               {" "}
               <Navbar />

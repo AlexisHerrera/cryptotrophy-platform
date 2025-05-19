@@ -20,6 +20,8 @@
     "fork": "yarn workspace @se-2/hardhat fork",
     "format": "yarn next:format && yarn hardhat:format",
     "generate": "yarn workspace @se-2/hardhat generate",
+    "hardhat:chain": "yarn workspace @se-2/hardhat chain",
+    "hardhat:deploy": "yarn workspace @se-2/hardhat deploy",
     "hardhat-verify": "yarn workspace @se-2/hardhat hardhat-verify",
     "hardhat:format": "yarn workspace @se-2/hardhat format",
     "hardhat:lint": "yarn workspace @se-2/hardhat lint",

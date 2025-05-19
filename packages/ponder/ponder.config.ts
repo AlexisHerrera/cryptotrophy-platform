@@ -1,4 +1,4 @@
-import { createConfig } from "ponder";
+import { createConfig, DatabaseConfig } from "ponder";
 import { http } from "viem";
 import { hardhat, baseSepolia } from "viem/chains";
 import { deployedContracts } from "@se-2/config";
@@ -46,11 +46,16 @@ const contracts = Object.fromEntries(
     ])
 );
 
+let database_config : DatabaseConfig = undefined;
+if (!isDev || process.env.DATABASE_URL) {
+  database_config = {
+    kind: "postgres",
+    connectionString: process.env.DATABASE_URL!,
+  }
+}
+
 export default createConfig({
   networks,
   contracts,
-  database: {
-    kind: "postgres",
-    connectionString: process.env.DATABASE_URL!,
-  },
+  database: database_config,
 });
