@@ -37,7 +37,7 @@ export const HeroSection = () => {
         <div className="flex-1 flex justify-center" data-aos="fade-left" data-aos-delay="200">
           <div className="w-full max-w-md h-auto shadow-xl rounded-2xl overflow-hidden bg-white bg-opacity-10 backdrop-blur-lg border border-white/20">
             <img
-              src="HomeHeroSection.webp"
+              src="/HomeHeroSection.webp"
               alt="CryptoTrophy Hero"
               className="w-full h-full object-cover scale-105 transition-transform duration-300 hover:scale-110"
               style={{ minHeight: 320 }}

@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import AdminPanel from "~~/app/backoffice/organizations/_components/AdminPanel";
 import CreateChallengeModal from "~~/app/backoffice/organizations/_components/CreateChallengeModal";
 import Modal from "~~/components/Modal";
-import { BackButton } from "~~/components/common/BackButton";
 import ChallengeList from "~~/components/common/ChallengeList";
 import { useChallengeForm } from "~~/hooks/backoffice/useChallengeForm";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -68,7 +67,6 @@ const OrganizationPage: React.FC = () => {
 
   return (
     <div className="flex justify-between">
-      <BackButton />
       <div className="max-w-4xl mx-auto">
         <div className="relative flex items-center justify-center">
           <h1 className="text-4xl text-center text-gray-700 font-mono grayscale mb-4 dark:text-gray-300">
