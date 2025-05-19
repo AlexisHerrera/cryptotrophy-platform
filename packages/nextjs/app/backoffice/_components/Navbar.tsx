@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 const navLinks = [
   { href: "/backoffice/create-organization", label: "Create Organization" },
   { href: "/backoffice/organizations", label: "Administrated Organizations" },
+  { href: "/docs/organizations", label: "Documentation" },
 ];
 
 export default function BackofficeNavbar() {
@@ -15,47 +16,50 @@ export default function BackofficeNavbar() {
 
   return (
     <>
-      <nav className="hidden md:flex space-x-6 text-gray-700 dark:text-gray-200">
+      <nav className="hidden md:flex md:items-center md:space-x-4 lg:space-x-6">
         {navLinks.map(link => (
           <Link
             key={link.href}
             href={link.href}
-            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+            className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
           >
             {link.label}
           </Link>
         ))}
       </nav>
 
-      <div className="md:hidden relative">
+      <div className="md:hidden flex items-center">
         <button
-          className="text-gray-700 dark:text-gray-300"
           onClick={() => setIsOpen(!isOpen)}
+          className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
           aria-expanded={isOpen}
-          aria-controls="backoffice-mobile-menu"
+          aria-controls="mobile-menu"
         >
           <span className="sr-only">Open main menu</span>
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
+          {isOpen ? (
+            <X className="block h-6 w-6" aria-hidden="true" />
+          ) : (
+            <Menu className="block h-6 w-6" aria-hidden="true" />
+          )}
         </button>
 
         {isOpen && (
-          <nav
-            id="backoffice-mobile-menu"
-            className="absolute right-0 mt-2 w-full bg-white dark:bg-gray-800 border-t dark:border-gray-700 shadow-md md:hidden z-50"
-          >
-            <div className="flex flex-col px-4 py-2 space-y-2">
-              {navLinks.map(link => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="py-2 text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
-                  onClick={closeMenu}
-                >
-                  {link.label}
-                </Link>
-              ))}
+          <div id="mobile-menu" className="absolute inset-x-0 top-16 z-50 origin-top shadow-lg md:hidden">
+            <div className="rounded-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 dark:ring-gray-700 divide-y divide-gray-200 dark:divide-gray-700 mx-2">
+              <nav className="px-2 py-3 space-y-1" aria-label="Mobile navigation">
+                {navLinks.map(link => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+                    onClick={closeMenu}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
             </div>
-          </nav>
+          </div>
         )}
       </div>
     </>
