@@ -5,13 +5,12 @@ import { useParams, useRouter } from "next/navigation";
 import { ChallengeGrid } from "../_components/ChallengeGrid";
 import { HeroSection } from "../_components/HeroSection";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { loadMetadata } from "~~/utils/loadMetadata";
 
-// Utility function to convert IPFS links
-const convertIpfsUrl = (ipfsUrl: string): string => {
-  if (ipfsUrl.startsWith("ipfs://")) {
-    return ipfsUrl.replace("ipfs://", "https://ipfs.io/ipfs/");
-  }
-  return ipfsUrl;
+type OrganizationMetadata = {
+  logo?: string;
+  name?: string;
+  description?: string;
 };
 
 interface OrganizationDetails {
@@ -60,9 +59,10 @@ const OrganizationPage: React.FC = () => {
     const fetchMetadata = async () => {
       if (organization?.baseURI) {
         try {
-          const metadataUrl = convertIpfsUrl(organization.baseURI) + "/metadata.json";
-          const res = await fetch(metadataUrl);
-          const data = await res.json();
+          const data = await loadMetadata<OrganizationMetadata>(organization.baseURI, {
+            allowImageOnly: true,
+            defaultField: "logo",
+          });
           setMetadata(data);
         } catch (error) {
           console.error("Error fetching IPFS metadata:", error);
@@ -84,7 +84,7 @@ const OrganizationPage: React.FC = () => {
         <HeroSection
           title={organization.name}
           subtitle={metadata.description || "Welcome to your organization's dashboard!"}
-          imageUrl={metadata.logo ? convertIpfsUrl(metadata.logo) : undefined}
+          imageUrl={metadata.logo ? metadata.logo : undefined}
           buttonLabel="Prize Center"
           onButtonClick={() => router.push(`/trophy-app/organizations/${organization.id}/prizes`)}
         />
