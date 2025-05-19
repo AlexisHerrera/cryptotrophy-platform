@@ -6,7 +6,6 @@ import { Menu, X } from "lucide-react";
 
 const navLinks = [
   { href: "/trophy-app", label: "Home" },
-  { href: "/trophy-app/organizations", label: "Organizations" },
   { href: "/trophy-app/exchange", label: "Exchange" },
 ];
 
@@ -17,17 +16,15 @@ export default function Navbar() {
   return (
     <>
       <nav className="hidden md:flex md:items-center md:space-x-4 lg:space-x-6">
-        {navLinks
-          .filter(link => link.label !== "Home")
-          .map(link => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
-            >
-              {link.label}
-            </Link>
-          ))}
+        {navLinks.map(link => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+          >
+            {link.label}
+          </Link>
+        ))}
       </nav>
 
       <div className="md:hidden flex items-center">
