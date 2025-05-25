@@ -24,8 +24,6 @@ const CreateChallengeFlow: React.FC<CreateChallengeModalProps> = ({ organization
   const { writeContractAsync: challengeManager } = useScaffoldWriteContract("ChallengeManager");
   const challengeManagerAddress = useDeployedContractInfo("ChallengeManager").data?.address;
 
-  // useEffect(() => {
-  // }, [challengeForm.maxPrizeAmount]);
   const handleChallengeSubmit = async () => {
     if (challengeForm.organizationId !== organizationId) {
       console.warn("Form organizationId mismatch. Syncing...");

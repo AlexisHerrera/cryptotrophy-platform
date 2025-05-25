@@ -39,9 +39,9 @@ const OrganizationPage: React.FC = () => {
   useEffect(() => {
     if (organizationData) {
       // First cast to unknown to avoid readonly array issues, then to specific type
-      const orgData = organizationData as unknown as [bigint, string, string, string[], boolean, string];
+      const orgData = organizationData as unknown as [bigint, string, string, string, string[], boolean, string];
 
-      const [id, name, token, admins, userIsAdmin, baseURI] = orgData;
+      const [id, name, token, , admins, userIsAdmin, baseURI] = orgData;
 
       setOrganization({
         id,

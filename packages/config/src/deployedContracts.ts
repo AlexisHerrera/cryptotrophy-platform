@@ -3212,6 +3212,25 @@ const deployedContracts = {
           type: "event",
         },
         {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+          ],
+          name: "OrganizationFunded",
+          type: "event",
+        },
+        {
           inputs: [
             {
               internalType: "uint256",
@@ -3270,6 +3289,19 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
+          stateMutability: "payable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+          ],
+          name: "fundOrganization",
+          outputs: [],
           stateMutability: "payable",
           type: "function",
         },
@@ -3345,6 +3377,11 @@ const deployedContracts = {
               internalType: "address",
               name: "token",
               type: "address",
+            },
+            {
+              internalType: "string",
+              name: "tokenSymbol",
+              type: "string",
             },
             {
               internalType: "address[]",
@@ -3621,6 +3658,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
+        fundOrganization: "contracts/Organization/IOrganizationManager.sol",
         getBalanceOfOrg: "contracts/Organization/IOrganizationManager.sol",
         getBalanceOfUser: "contracts/Organization/IOrganizationManager.sol",
         getTokenOfOrg: "contracts/Organization/IOrganizationManager.sol",
@@ -7865,6 +7903,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
+        fundOrganization: "contracts/Organization/IOrganizationManager.sol",
         getBalanceOfOrg: "contracts/Organization/IOrganizationManager.sol",
         getBalanceOfUser: "contracts/Organization/IOrganizationManager.sol",
         getTokenOfOrg: "contracts/Organization/IOrganizationManager.sol",

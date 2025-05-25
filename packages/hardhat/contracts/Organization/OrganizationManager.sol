@@ -249,6 +249,7 @@ contract OrganizationManager is IOrganizationManager {
 		uint256 orgId,
 		string memory name,
 		address token,
+		string memory tokenSymbol,
 		address[] memory admins,
 		bool userIsAdmin,
 		string memory baseURI
@@ -259,6 +260,7 @@ contract OrganizationManager is IOrganizationManager {
 		orgId = org.id;
 		name = org.name;
 		token = org.token;
+		tokenSymbol = ERC20(org.token).symbol();
 		admins = org.admins;
 		userIsAdmin = org.adminExists[msg.sender];
 		baseURI = org.baseURI;
