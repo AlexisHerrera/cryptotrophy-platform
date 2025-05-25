@@ -39,6 +39,8 @@ contract OrganizationManager is IOrganizationManager {
 		address indexed adminAddress
 	);
 
+	event OrganizationFunded(uint256 indexed orgId, uint256 amount);
+
 	// Modificadores
 	modifier onlyAdmin(uint256 orgId) {
 		require(organizations[orgId].adminExists[msg.sender], "Not an admin");
@@ -76,6 +78,21 @@ contract OrganizationManager is IOrganizationManager {
 
 		// Hacer transferencia
 		ERC20(org.token).transfer(_destAddress, _amount);
+	}
+
+	function fundOrganization(uint256 _orgId)
+	external
+	payable
+	onlyAdmin(_orgId)
+	{
+		Organization storage org = organizations[_orgId];
+		require(org.exists, "Organization does not exist");
+		require(msg.value > 0, "Must send ETH");
+
+		(bool success, ) = org.token.call{value: msg.value}("");
+		require(success, "Failed to send ETH to token contract");
+
+		emit OrganizationFunded(_orgId, msg.value);
 	}
 
 	// Funciones

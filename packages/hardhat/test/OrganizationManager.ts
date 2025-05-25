@@ -392,13 +392,52 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
     });
   });
 
-  // Opcional: si descomentas require(msg.sender == challengeManagerAddr) dentro de transferTokensTo:
-  // it("Should revert if caller is not challengeManager", async function () {
-  //   const { orgManager, orgId, user1 } = await loadFixture(createOrgWithTokensFixture);
-  //   const amount = ethers.parseUnits("10", 18);
+  // ----------------------------------------------------------------
+  // 7. fundOrganization
+  // ----------------------------------------------------------------
+  describe("fundOrganization", function () {
+    async function createOrgWithAdminFixture() {
+      const f = await deployCoreContractsFixture();
+      const { orgManager, admin1 } = f;
+      const baseURI = "http://localhost:3000/ipfs/org";
 
-  //   await expect(
-  //     orgManager.transferTokensTo(orgId, user1.address, amount)
-  //   ).to.be.revertedWith("Only ChallengeManager can call");
-  // });
+      const tx = await orgManager.createOrganization(
+        "FundableOrg",
+        "FND",
+        1000,
+        ethers.parseEther("1"),
+        [admin1.address],
+        baseURI,
+        { value: ethers.parseEther("1") },
+      );
+      const receipt = await tx.wait();
+      const eventTopic = orgManager.interface.getEvent("OrganizationCreated");
+      const log = receipt.logs.find(l => l.topics[0] === eventTopic.topicHash)!;
+      const decoded = orgManager.interface.decodeEventLog("OrganizationCreated", log.data, log.topics);
+      const orgId: number = decoded.orgId;
+
+      return { ...f, orgId };
+    }
+
+    it("Should allow an admin to fund the organization with ETH", async function () {
+      const { orgManager, orgId, owner } = await loadFixture(createOrgWithAdminFixture);
+      const tokenAddr = await orgManager.getTokenOfOrg(orgId);
+      const provider = ethersHardhat.provider;
+      const initialEth = await provider.getBalance(tokenAddr);
+      const fundingAmount = ethers.parseEther("2");
+      await expect(() =>
+        orgManager.connect(owner).fundOrganization(orgId, { value: fundingAmount }),
+      ).to.changeEtherBalance(tokenAddr, fundingAmount);
+
+      const finalEth = await provider.getBalance(tokenAddr);
+      expect(initialEth + fundingAmount).to.equal(finalEth);
+    });
+
+    it("Should revert when a non-admin tries to fund", async function () {
+      const { orgManager, orgId, notAdmin } = await loadFixture(createOrgWithAdminFixture);
+      await expect(
+        orgManager.connect(notAdmin).fundOrganization(orgId, { value: ethers.parseEther("1") }),
+      ).to.be.revertedWith("Not an admin");
+    });
+  });
 });
