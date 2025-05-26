@@ -26,6 +26,7 @@ services:
       - "8545:8545"
     volumes:
       - ./packages/config:/usr/src/config
+      # - ./packages/hardhat:/usr/src/
     restart: unless-stopped
     healthcheck:
       test: [ "CMD-SHELL", "curl -s http://localhost:8545" ]

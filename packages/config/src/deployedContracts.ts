@@ -3227,7 +3227,7 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
-          name: "OrganizationFunded",
+          name: "OrganizationTokenMint",
           type: "event",
         },
         {
@@ -3289,19 +3289,6 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
-          stateMutability: "payable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_orgId",
-              type: "uint256",
-            },
-          ],
-          name: "fundOrganization",
-          outputs: [],
           stateMutability: "payable",
           type: "function",
         },
@@ -3525,6 +3512,19 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+          ],
+          name: "mintOrganizationToken",
+          outputs: [],
+          stateMutability: "payable",
+          type: "function",
+        },
+        {
           inputs: [],
           name: "orgCount",
           outputs: [
@@ -3658,11 +3658,12 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        fundOrganization: "contracts/Organization/IOrganizationManager.sol",
         getBalanceOfOrg: "contracts/Organization/IOrganizationManager.sol",
         getBalanceOfUser: "contracts/Organization/IOrganizationManager.sol",
         getTokenOfOrg: "contracts/Organization/IOrganizationManager.sol",
         isAdmin: "contracts/Organization/IOrganizationManager.sol",
+        mintOrganizationToken:
+          "contracts/Organization/IOrganizationManager.sol",
         transferTokensTo: "contracts/Organization/IOrganizationManager.sol",
       },
       startBlock: 0,
@@ -7903,11 +7904,12 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        fundOrganization: "contracts/Organization/IOrganizationManager.sol",
         getBalanceOfOrg: "contracts/Organization/IOrganizationManager.sol",
         getBalanceOfUser: "contracts/Organization/IOrganizationManager.sol",
         getTokenOfOrg: "contracts/Organization/IOrganizationManager.sol",
         isAdmin: "contracts/Organization/IOrganizationManager.sol",
+        mintOrganizationToken:
+          "contracts/Organization/IOrganizationManager.sol",
         transferTokensTo: "contracts/Organization/IOrganizationManager.sol",
       },
       startBlock: 25733609,

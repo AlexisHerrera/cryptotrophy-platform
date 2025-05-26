@@ -40,6 +40,7 @@ contract OrganizationManager is IOrganizationManager {
 	);
 
 	event OrganizationFunded(uint256 indexed orgId, uint256 amount);
+	event OrganizationTokenMint(uint256 indexed orgId, uint256 amount);
 
 	// Modificadores
 	modifier onlyAdmin(uint256 orgId) {
@@ -80,6 +81,7 @@ contract OrganizationManager is IOrganizationManager {
 		ERC20(org.token).transfer(_destAddress, _amount);
 	}
 
+	/// @notice Envía ETH al contrato de token para reforzar su backing
 	function fundOrganization(uint256 _orgId)
 	external
 	payable
@@ -89,10 +91,23 @@ contract OrganizationManager is IOrganizationManager {
 		require(org.exists, "Organization does not exist");
 		require(msg.value > 0, "Must send ETH");
 
-		(bool success, ) = org.token.call{value: msg.value}("");
+		(bool success, ) = payable(org.token).call{ value: msg.value }("");
 		require(success, "Failed to send ETH to token contract");
 
 		emit OrganizationFunded(_orgId, msg.value);
+	}
+
+
+	function mintOrganizationToken(uint256 _orgId, uint256 _amount)
+	  external
+	  onlyAdmin(_orgId)
+	{
+	  require(_amount > 0, "Amount must be > 0");
+	  Organization storage org = organizations[_orgId];
+	  require(org.exists, "Organization does not exist");
+	  OrganizationToken token = OrganizationToken(payable(org.token));
+	  token.mint(address(this), _amount);
+	  emit OrganizationTokenMint(_orgId, _amount);
 	}
 
 	// Funciones

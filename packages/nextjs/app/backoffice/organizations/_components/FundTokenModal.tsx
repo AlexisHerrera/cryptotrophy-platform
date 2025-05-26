@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { parseEther } from "ethers";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import Modal from "~~/components/Modal";
+import FormattedEth from "~~/components/common/FormattedEth";
+import { IntegerInput, IntegerVariant } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
+import formatToEth from "~~/utils/scaffold-eth/formatToEth";
 
 interface FundTokenModalProps {
   organizationId: bigint;
@@ -24,8 +26,8 @@ const FundTokenModal: React.FC<FundTokenModalProps> = ({
 }) => {
   const [amount, setAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-
-  const { writeContractAsync: fundOrganization } = useScaffoldWriteContract("OrganizationManager");
+  const formattedEth = formatToEth(amount);
+  const { writeContractAsync: mintOrganizationToken } = useScaffoldWriteContract("OrganizationManager");
 
   const handleFund = async () => {
     if (!amount || parseFloat(amount) <= 0) {
@@ -35,12 +37,12 @@ const FundTokenModal: React.FC<FundTokenModalProps> = ({
 
     setIsLoading(true);
     try {
-      await fundOrganization({
-        functionName: "fundOrganization",
+      await mintOrganizationToken({
+        functionName: "mintOrganizationToken",
         args: [organizationId],
-        value: parseEther(amount),
+        value: BigInt(amount),
       });
-      notification.success(`Successfully funded ${organizationName} with ${amount} ETH.`);
+      notification.success(`Successfully funded ${organizationName} with ${formattedEth} ETH.`);
       setAmount("");
       if (onFundSuccess) {
         onFundSuccess();
@@ -65,14 +67,13 @@ const FundTokenModal: React.FC<FundTokenModalProps> = ({
           <label className="label">
             <span className="label-text">Amount in ETH</span>
           </label>
-          <input
-            type="number"
-            placeholder="e.g., 0.1"
-            className="input input-bordered w-full"
+          <IntegerInput
             value={amount}
-            onChange={e => setAmount(e.target.value)}
-            disabled={isLoading}
+            onChange={value => setAmount(value)}
+            placeholder="Fund Amount in ETH"
+            variant={IntegerVariant.UINT256}
           />
+          <FormattedEth formattedEth={formattedEth} />
         </div>
         <div className="modal-action flex justify-center mt-6">
           <button className="btn btn-ghost mr-2" onClick={onClose} disabled={isLoading}>

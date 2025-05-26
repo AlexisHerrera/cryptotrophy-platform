@@ -143,7 +143,7 @@ const OrganizationPage: React.FC = () => {
         <div className="card bg-base-200 dark:bg-base-300 shadow-lg">
           <div className="card-body items-center text-center">
             <BanknotesIcon className="h-12 w-12 text-success mb-2" />
-            <h2 className="card-title text-neutral-content dark:text-base-content">Tokens Disponibles</h2>
+            <h2 className="card-title text-neutral-content dark:text-base-content">Tokens Available</h2>
             <p className="text-3xl font-semibold text-success dark:text-success-content">
               {isLoadingTokens ? <span className="loading loading-dots loading-sm"></span> : formattedAvailableTokens}
             </p>

@@ -7,5 +7,6 @@ interface IOrganizationManager {
     function getBalanceOfOrg(uint256 _orgId) external view returns (uint256);
     function getBalanceOfUser(uint256 _orgId, address _user) external view returns (uint256, string memory);
     function transferTokensTo(uint256 _orgId, address _destAddress, uint256 _amount) external;
+    function mintOrganizationToken(uint256 _orgId, uint256 _amount) external;
     function fundOrganization(uint256 _orgId) external payable;
 }
