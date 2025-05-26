@@ -27,6 +27,10 @@ contract OrganizationToken is ERC20, Ownable, ERC20Burnable, ReentrancyGuard {
         redemptionEnabled = true;
     }
 
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+
     function getCurrentExchangeRate() public view returns (uint256) {
         require(totalSupply() > 0, "No tokens in circulation");
         require(address(this).balance > 0, "No ETH available for redemption");

@@ -411,6 +411,7 @@ describe("OrganizationManager (with real ChallengeManager)", function () {
         { value: ethers.parseEther("1") },
       );
       const receipt = await tx.wait();
+      if (!receipt) throw new Error("No receipt found");
       const eventTopic = orgManager.interface.getEvent("OrganizationCreated");
       const log = receipt.logs.find(l => l.topics[0] === eventTopic.topicHash)!;
       const decoded = orgManager.interface.decodeEventLog("OrganizationCreated", log.data, log.topics);

@@ -324,24 +324,6 @@ contract ChallengeManager is IChallengeManager, IValidatorCallback {
 
     /// @notice Calcula la cantidad de tokens disponibles para crear desafíos (en unidades base)
     function tokensAvailable(uint256 _orgId) public view returns (uint256) {
-        uint256 tokenBalance = orgManager.getBalanceOfOrg(_orgId);
-        console.log("Token balance:", tokenBalance);
-
-        uint256 committedTokens = 0;
-
-        uint256[] storage orgChalls = orgChallenges[_orgId];
-        console.log("Organization challenges:", orgChalls.length);
-
-        for (uint256 i = 0; i < orgChalls.length; i++) {
-            uint256 cId = orgChalls[i];
-            Challenge storage challenge = challenges[cId];
-            if (challenge.active) {
-                uint256 stillNeeded = challenge.prizeAmount * (challenge.maxWinners - challenge.winnerCount);
-                committedTokens += stillNeeded;
-            }
-        }
-
-        return tokenBalance >= committedTokens ? tokenBalance - committedTokens : 0;
+        return orgManager.getBalanceOfOrg(_orgId);
     }
-
 }

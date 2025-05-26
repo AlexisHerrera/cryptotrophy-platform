@@ -79,15 +79,17 @@ const OrganizationPage: React.FC = () => {
   const { writeContractAsync: addAdmin } = useScaffoldWriteContract("OrganizationManager");
 
   const { data: deployedContract } = useDeployedContractInfo("OrganizationToken");
-  const {
-    data: exchangeRateData,
-    refetch: refetchRate,
-    isLoading: isLoadingRate,
-    isError: isRateError,
-  } = useReadContract({
+  const { data: exchangeRateData, refetch: refetchRate } = useReadContract({
     address: organization?.token as `0x${string}`,
     abi: deployedContract?.abi,
     functionName: "getCurrentExchangeRate",
+    chainId: targetNetwork.id,
+  });
+
+  const { data: totalBalance, refetch: refetchBalance } = useReadContract({
+    address: organization?.token as `0x${string}`,
+    abi: deployedContract?.abi,
+    functionName: "getBalance",
     chainId: targetNetwork.id,
   });
 
@@ -122,7 +124,7 @@ const OrganizationPage: React.FC = () => {
   const tokensFloat =
     availableTokens !== undefined ? parseFloat(formatUnits(availableTokens as bigint, DECIMALS_TOKEN)) : 0;
   const valueInEth = exchangeRate > 0n ? (1 / Number(exchangeRate)).toFixed(6) : "0.000000";
-  const totalBacking = exchangeRate > 0n ? (tokensFloat * (1 / Number(exchangeRate))).toFixed(4) : "0.00";
+  const totalBacking = parseFloat(formatUnits((totalBalance ?? 0n) as bigint, DECIMALS_TOKEN));
   const formattedAvailableTokens =
     availableTokens !== undefined
       ? tokensFloat.toLocaleString(undefined, {
@@ -135,6 +137,7 @@ const OrganizationPage: React.FC = () => {
 
   const handleFundSuccess = () => {
     void refetchRate();
+    void refetchBalance();
   };
 
   const handleMintSuccess = () => {
