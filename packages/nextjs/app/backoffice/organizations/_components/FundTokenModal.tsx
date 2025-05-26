@@ -27,7 +27,7 @@ const FundTokenModal: React.FC<FundTokenModalProps> = ({
   const [amount, setAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const formattedEth = formatToEth(amount);
-  const { writeContractAsync: mintOrganizationToken } = useScaffoldWriteContract("OrganizationManager");
+  const { writeContractAsync: fundOrganization } = useScaffoldWriteContract("OrganizationManager");
 
   const handleFund = async () => {
     if (!amount || parseFloat(amount) <= 0) {
@@ -37,8 +37,8 @@ const FundTokenModal: React.FC<FundTokenModalProps> = ({
 
     setIsLoading(true);
     try {
-      await mintOrganizationToken({
-        functionName: "mintOrganizationToken",
+      await fundOrganization({
+        functionName: "fundOrganization",
         args: [organizationId],
         value: BigInt(amount),
       });
@@ -61,7 +61,7 @@ const FundTokenModal: React.FC<FundTokenModalProps> = ({
       <div className="p-6 bg-base-100 rounded-lg shadow-xl max-w-md mx-auto">
         <h3 className="text-2xl font-semibold mb-4 text-center text-primary">Fund {organizationName}</h3>
         <p className="mb-2 text-center text-sm">
-          You are sending ETH to be converted into {currentTokenSymbol} tokens for this organization.
+          You are adding backing to {currentTokenSymbol} tokens for this organization.
         </p>
         <div className="form-control w-full mb-4">
           <label className="label">

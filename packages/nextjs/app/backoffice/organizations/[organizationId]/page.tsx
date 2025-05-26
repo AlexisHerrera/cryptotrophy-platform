@@ -3,25 +3,31 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { formatUnits } from "ethers";
+import { formatEther } from "viem";
+import { useReadContract } from "wagmi";
 import {
   BanknotesIcon,
-  BuildingOffice2Icon,
   Cog6ToothIcon,
-  CubeTransparentIcon,
   PlusCircleIcon,
   SparklesIcon,
   TrophyIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
+import { CubeTransparentIcon } from "@heroicons/react/24/solid";
 import AdminPanel from "~~/app/backoffice/organizations/_components/AdminPanel";
 import CreateChallengeModal from "~~/app/backoffice/organizations/_components/CreateChallengeModal";
 import FundTokenModal from "~~/app/backoffice/organizations/_components/FundTokenModal";
+import MintTokenModal from "~~/app/backoffice/organizations/_components/MintTokenModal";
 import Modal from "~~/components/Modal";
 import ChallengeList from "~~/components/common/ChallengeList";
 import { useChallengeForm } from "~~/hooks/backoffice/useChallengeForm";
-import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import {
+  useDeployedContractInfo,
+  useScaffoldReadContract,
+  useScaffoldWriteContract,
+  useTargetNetwork,
+} from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
-import { getBlockExplorerTxLink } from "~~/utils/scaffold-eth";
 
 interface OrganizationDetails {
   id: bigint;
@@ -39,27 +45,27 @@ type Params = {
 
 const OrganizationPage: React.FC = () => {
   const { organizationId } = useParams() as Params;
+  const { targetNetwork } = useTargetNetwork();
   const router = useRouter();
-  const orgIdBigInt = useMemo(() => BigInt(organizationId as string), [organizationId]);
+  const orgIdBigInt = useMemo(() => BigInt(organizationId), [organizationId]);
   const challengeFormHook = useChallengeForm(orgIdBigInt);
 
   const [organization, setOrganization] = useState<OrganizationDetails | null>(null);
   const [showCreateChallengeModal, setShowCreateChallengeModal] = useState(false);
   const [showAdminPanelModal, setShowAdminPanelModal] = useState(false);
   const [showFundTokenModal, setShowFundTokenModal] = useState(false);
+  const [showMintTokenModal, setShowMintTokenModal] = useState(false);
 
   const { data: organizationData, isLoading: isLoadingOrganization } = useScaffoldReadContract({
     contractName: "OrganizationManager",
     functionName: "getOrganizationDetails",
     args: [orgIdBigInt],
   });
-
   const { data: challengeIds, refetch: refetchChallengeIds } = useScaffoldReadContract({
     contractName: "ChallengeManager",
     functionName: "getChallengesByOrg",
     args: [orgIdBigInt],
   });
-
   const {
     data: availableTokens,
     isLoading: isLoadingTokens,
@@ -71,6 +77,25 @@ const OrganizationPage: React.FC = () => {
   });
 
   const { writeContractAsync: addAdmin } = useScaffoldWriteContract("OrganizationManager");
+
+  const { data: deployedContract } = useDeployedContractInfo("OrganizationToken");
+  const {
+    data: exchangeRateData,
+    refetch: refetchRate,
+    isLoading: isLoadingRate,
+    isError: isRateError,
+  } = useReadContract({
+    address: organization?.token as `0x${string}`,
+    abi: deployedContract?.abi,
+    functionName: "getCurrentExchangeRate",
+    chainId: targetNetwork.id,
+  });
+
+  useEffect(() => {
+    if (refetchRate) {
+      refetchRate();
+    }
+  }, [availableTokens]);
 
   useEffect(() => {
     if (organizationData) {
@@ -93,10 +118,14 @@ const OrganizationPage: React.FC = () => {
       </div>
     );
   }
-
+  const exchangeRate = (exchangeRateData as bigint) || 0n;
+  const tokensFloat =
+    availableTokens !== undefined ? parseFloat(formatUnits(availableTokens as bigint, DECIMALS_TOKEN)) : 0;
+  const valueInEth = exchangeRate > 0n ? (1 / Number(exchangeRate)).toFixed(6) : "0.000000";
+  const totalBacking = exchangeRate > 0n ? (tokensFloat * (1 / Number(exchangeRate))).toFixed(4) : "0.00";
   const formattedAvailableTokens =
     availableTokens !== undefined
-      ? parseFloat(formatUnits(availableTokens as bigint, DECIMALS_TOKEN)).toLocaleString(undefined, {
+      ? tokensFloat.toLocaleString(undefined, {
           minimumFractionDigits: 2,
           maximumFractionDigits: 4,
         })
@@ -105,48 +134,30 @@ const OrganizationPage: React.FC = () => {
   const displayTokenSymbol = organization.tokenSymbol ?? "Token";
 
   const handleFundSuccess = () => {
+    void refetchRate();
+  };
+
+  const handleMintSuccess = () => {
     void refetchAvailableTokens();
   };
 
   return (
     <div className="container mx-auto p-4 md:p-8">
-      <div className="text-center mb-8">
+      <div className="text-center mb-4">
         <h1 className="text-4xl md:text-5xl font-bold text-primary dark:text-primary-content flex items-center justify-center gap-3">
-          <BuildingOffice2Icon className="h-10 w-10" />
+          <SparklesIcon className="h-10 w-10" />
           {organization.name}
         </h1>
-        {organization.userIsAdmin && (
-          <p className="text-sm text-accent dark:text-accent-content mt-1">You are an admin of this organization.</p>
-        )}
+        <p className="text-sm text-accent dark:text-accent-content mt-1">Token: {displayTokenSymbol}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <div className="card bg-base-200 dark:bg-base-300 shadow-lg">
           <div className="card-body items-center text-center">
-            <CubeTransparentIcon className="h-12 w-12 text-secondary mb-2" />
-            <h2 className="card-title text-neutral-content dark:text-base-content">Token Symbol</h2>
-            <p className="text-3xl font-semibold text-secondary dark:text-secondary-content">{displayTokenSymbol}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 break-all">
-              Contract:{" "}
-              <a
-                href={getBlockExplorerTxLink(organization.id as unknown as number, organization.token)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="link link-hover"
-              >
-                {organization.token}
-              </a>
-            </p>
-          </div>
-        </div>
-
-        <div className="card bg-base-200 dark:bg-base-300 shadow-lg">
-          <div className="card-body items-center text-center">
-            <BanknotesIcon className="h-12 w-12 text-success mb-2" />
-            <h2 className="card-title text-neutral-content dark:text-base-content">Tokens Available</h2>
-            <p className="text-3xl font-semibold text-success dark:text-success-content">
-              {isLoadingTokens ? <span className="loading loading-dots loading-sm"></span> : formattedAvailableTokens}
-            </p>
+            <BanknotesIcon className="h-12 w-12 text-secondary mb-2" />
+            <h2 className="card-title text-neutral-content dark:text-base-content">ETH Backing</h2>
+            <p className="text-4xl font-bold text-success dark:text-success-content">{totalBacking} ETH</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{valueInEth} ETH per token</p>
             {organization.userIsAdmin && (
               <button className="btn btn-sm btn-outline btn-success mt-3" onClick={() => setShowFundTokenModal(true)}>
                 <PlusCircleIcon className="h-5 w-5 mr-1" />
@@ -155,6 +166,25 @@ const OrganizationPage: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* Tokens Available */}
+        <div className="card bg-base-200 dark:bg-base-300 shadow-lg">
+          <div className="card-body items-center text-center">
+            <CubeTransparentIcon className="h-12 w-12 text-success mb-2" />
+            <h2 className="card-title text-neutral-content dark:text-base-content">Tokens Available</h2>
+            <p className="text-3xl font-semibold text-success dark:text-success-content">
+              {isLoadingTokens ? <span className="loading loading-dots loading-sm"></span> : formattedAvailableTokens}
+            </p>
+            {organization.userIsAdmin && (
+              <button className="btn btn-sm btn-outline btn-success mt-3" onClick={() => setShowMintTokenModal(true)}>
+                <PlusCircleIcon className="h-5 w-5 mr-1" />
+                Mint Tokens
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Administrators */}
         <div className="card bg-base-200 dark:bg-base-300 shadow-lg">
           <div className="card-body items-center text-center">
             <UserGroupIcon className="h-12 w-12 text-info mb-2" />
@@ -230,6 +260,14 @@ const OrganizationPage: React.FC = () => {
           currentTokenSymbol={displayTokenSymbol}
           onClose={() => setShowFundTokenModal(false)}
           onFundSuccess={handleFundSuccess}
+        />
+      )}
+      {showMintTokenModal && organization && (
+        <MintTokenModal
+          organizationId={organization.id}
+          currentTokenSymbol={displayTokenSymbol}
+          onClose={() => setShowMintTokenModal(false)}
+          onMintSuccess={handleMintSuccess}
         />
       )}
     </div>

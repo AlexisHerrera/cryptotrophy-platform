@@ -11,7 +11,7 @@ import { Contract, ContractCodeStatus, ContractName, contracts } from "~~/utils/
 export const useDeployedContractInfo = <TContractName extends ContractName>(contractName: TContractName) => {
   const isMounted = useIsMounted();
   const { targetNetwork } = useTargetNetwork();
-  console.log("Network ID:", targetNetwork.id);
+  // console.log("Network ID:", targetNetwork.id);
   const deployedContract = contracts?.[targetNetwork.id]?.[contractName as ContractName] as Contract<TContractName>;
   const [status, setStatus] = useState<ContractCodeStatus>(ContractCodeStatus.LOADING);
   const publicClient = usePublicClient({ chainId: targetNetwork.id });
