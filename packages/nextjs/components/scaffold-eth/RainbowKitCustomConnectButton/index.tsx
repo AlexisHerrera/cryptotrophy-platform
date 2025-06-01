@@ -1,6 +1,7 @@
 "use client";
 
 // @refresh reset
+import React from "react";
 import { Balance } from "../Balance";
 import { AddressInfoDropdown } from "./AddressInfoDropdown";
 import { AddressQRCodeModal } from "./AddressQRCodeModal";
@@ -11,10 +12,16 @@ import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
 
+interface RainbowKitCustomConnectButtonProps {
+  showBalanceAndChainName?: boolean;
+}
+
 /**
  * Custom Wagmi Connect Button (watch balance + custom design)
  */
-export const RainbowKitCustomConnectButton = () => {
+export const RainbowKitCustomConnectButton: React.FC<RainbowKitCustomConnectButtonProps> = ({
+  showBalanceAndChainName = true,
+}) => {
   const networkColor = useNetworkColor();
   const { targetNetwork } = useTargetNetwork();
 
@@ -43,12 +50,14 @@ export const RainbowKitCustomConnectButton = () => {
 
               return (
                 <>
-                  <div className="flex flex-col items-center mr-1">
-                    <Balance address={account.address as Address} className="min-h-0 h-auto" />
-                    <span className="text-xs" style={{ color: networkColor }}>
-                      {chain.name}
-                    </span>
-                  </div>
+                  {showBalanceAndChainName && (
+                    <div className="flex flex-col items-center mr-1">
+                      <Balance address={account.address as Address} className="min-h-0 h-auto" />
+                      <span className="text-xs" style={{ color: networkColor }}>
+                        {chain.name}
+                      </span>
+                    </div>
+                  )}
                   <AddressInfoDropdown
                     address={account.address as Address}
                     displayName={account.displayName}
