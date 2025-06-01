@@ -3,8 +3,15 @@ import type { OrganizationData } from "./types";
 import type { GraphQLClient } from "graphql-request";
 
 const GET_ORGANIZATIONS_QUERY = `
-  query GetOrganizations($limit: Int!, $after: String, $before: String, $name: String) {
-    organizations(limit: $limit, after: $after, before: $before, where: {name_contains: $name}) {
+query GetOrganizations($limit: Int!, $after: String, $before: String, $name: String) {
+  organizations(
+    limit: $limit,
+    after: $after,
+    before: $before,
+    where: {
+      name_contains: $name
+    }
+  ) {
       totalCount
       items {
         id
@@ -27,14 +34,12 @@ export async function fetchOrganizations(
   limit: number,
   after?: string | null,
   before?: string | null,
-  orgId?: string,
   name?: string,
 ): Promise<OrganizationData> {
   return executeQuery<OrganizationData>(client, GET_ORGANIZATIONS_QUERY, {
     limit,
     after,
     before,
-    orgId,
     name,
   });
 }
