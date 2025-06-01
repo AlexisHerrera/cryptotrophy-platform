@@ -15,11 +15,11 @@ import {
 } from "@heroicons/react/24/outline";
 import { CubeTransparentIcon } from "@heroicons/react/24/solid";
 import AdminPanel from "~~/app/backoffice/organizations/_components/AdminPanel";
+import ChallengeList from "~~/app/backoffice/organizations/_components/ChallengeList";
 import CreateChallengeModal from "~~/app/backoffice/organizations/_components/CreateChallengeModal";
 import FundTokenModal from "~~/app/backoffice/organizations/_components/FundTokenModal";
 import MintTokenModal from "~~/app/backoffice/organizations/_components/MintTokenModal";
 import Modal from "~~/components/Modal";
-import ChallengeList from "~~/components/common/ChallengeList";
 import { useChallengeForm } from "~~/hooks/backoffice/useChallengeForm";
 import {
   useDeployedContractInfo,
