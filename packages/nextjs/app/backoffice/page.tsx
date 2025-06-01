@@ -2,8 +2,8 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import OrganizationTable from "~~/app/backoffice/organizations/_components/OrganizationTable";
 import { MotionDiv } from "~~/app/motions/use-motion";
-import OrganizationTable from "~~/app/trophy-app/organizations/_components/OrganizationTable";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 const Organizations: React.FC = () => {
