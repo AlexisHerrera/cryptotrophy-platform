@@ -8,7 +8,7 @@ export const ChallengeGrid: React.FC<{ orgId: string }> = ({ orgId }) => {
   const [beforeCursor, setBeforeCursor] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const { data, isLoading } = useChallenges(orgId, 4, afterCursor, beforeCursor, searchTerm);
+  const { data, isLoading } = useChallenges(orgId, 6, afterCursor, beforeCursor, searchTerm);
 
   const handlePageChange = (after: string | null, before: string | null) => {
     setAfterCursor(after);
@@ -29,7 +29,7 @@ export const ChallengeGrid: React.FC<{ orgId: string }> = ({ orgId }) => {
         pageInfo: data?.challenges.pageInfo || null,
       }}
       renderCard={(item, index) => <ChallengeCard key={index} item={item} />}
-      pageSize={4}
+      pageSize={6}
       title="Challenges"
       loading={isLoading}
       onPageChange={handlePageChange}

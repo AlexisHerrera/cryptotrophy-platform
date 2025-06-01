@@ -8,7 +8,7 @@ export const OrganizationsGrid = () => {
   const [beforeCursor, setBeforeCursor] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const { data, isLoading } = useOrganizations(4, afterCursor, beforeCursor, searchTerm);
+  const { data, isLoading } = useOrganizations(6, afterCursor, beforeCursor, searchTerm);
 
   const handlePageChange = (after: string | null, before: string | null) => {
     setAfterCursor(after);
@@ -29,7 +29,7 @@ export const OrganizationsGrid = () => {
         pageInfo: data?.organizations.pageInfo || null,
       }}
       renderCard={(item, index) => <OrganizationCard key={index} item={item} />}
-      pageSize={4}
+      pageSize={6}
       title="Organizations"
       loading={isLoading}
       onPageChange={handlePageChange}

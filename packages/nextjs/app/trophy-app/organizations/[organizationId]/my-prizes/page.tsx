@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { PrizeNFTCard } from "../../_components/PrizeNFTCard";
 import { useAccount } from "wagmi";
+import { MotionDiv } from "~~/app/motions/use-motion";
 import { useEthersSigner } from "~~/hooks/ethers/useEthersSigner";
 import { useDeployedContractInfo, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
@@ -178,9 +179,9 @@ const MyPrizesPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex justify-center bg-gradient-to-b from-gray-50 dark:from-gray-900 to-white dark:to-gray-950 py-4">
-      <div className="w-full max-w-4xl mx-auto px-4">
-        <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-xl p-8 space-y-8">
+    <div>
+      <div className="w-full flex justify-center">
+        <div className="w-full max-w-6xl p-4">
           {/* Header */}
           <div className="text-center">
             <h1 className="text-4xl font-extrabold tracking-tight text-gray-800 dark:text-gray-100 mb-2">
@@ -207,29 +208,35 @@ const MyPrizesPage: React.FC = () => {
               Back to Prize Center
             </Link>
           </div>
-
-          {/* Content */}
-          {userNFTs.length === 0 ? (
-            <div className="text-center p-8 bg-gray-100 dark:bg-gray-800 rounded-lg">
-              <p className="text-xl">You haven&apos;t collected any prize NFTs yet.</p>
-              <p className="mt-2">Head over to the Prize Center to claim some prizes!</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-              {userNFTs.map(nft => (
-                <PrizeNFTCard
-                  key={nft.id}
-                  prizeName={nft.prizeName}
-                  symbol={nft.symbol}
-                  tokenId={nft.tokenId}
-                  balance={nft.balance}
-                  imagePath={nft.imagePath}
-                />
-              ))}
-            </div>
-          )}
         </div>
       </div>
+      <MotionDiv
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 50 }}
+        transition={{ duration: 0.2 }}
+      >
+        {/* Content */}
+        {userNFTs.length === 0 ? (
+          <div className="text-center p-8 bg-gray-100 dark:bg-gray-800 rounded-lg">
+            <p className="text-xl">You haven&apos;t collected any prize NFTs yet.</p>
+            <p className="mt-2">Head over to the Prize Center to claim some prizes!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+            {userNFTs.map(nft => (
+              <PrizeNFTCard
+                key={nft.id}
+                prizeName={nft.prizeName}
+                symbol={nft.symbol}
+                tokenId={nft.tokenId}
+                balance={nft.balance}
+                imagePath={nft.imagePath}
+              />
+            ))}
+          </div>
+        )}
+      </MotionDiv>
     </div>
   );
 };

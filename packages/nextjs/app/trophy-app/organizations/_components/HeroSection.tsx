@@ -10,7 +10,7 @@ interface HeroSectionProps {
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ title, subtitle, imageUrl, buttonLabel, onButtonClick }) => {
   return (
-    <section className="w-full max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-between text-center md:text-center gap-8 py-16 px-6 mb-12 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-lg shadow-md">
+    <section className="w-full max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-between text-center md:text-center gap-8 py-16 px-6 mb-6 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-lg shadow-md">
       {/* Left side: Text */}
       <div className="flex flex-col items-center flex-1">
         <h1 className="text-4xl font-extrabold text-gray-800 dark:text-gray-200 mb-4">{title}</h1>

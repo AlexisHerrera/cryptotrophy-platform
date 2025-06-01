@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { PrizesGrid } from "../../_components/PrizesGrid";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
+import { MotionDiv } from "~~/app/motions/use-motion";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
 
@@ -24,9 +25,9 @@ const PrizeCenter: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex justify-center bg-gradient-to-b from-gray-50 dark:from-gray-900 to-white dark:to-gray-950 py-4">
-      <div className="w-full max-w-4xl mx-auto px-4">
-        <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-xl p-8 space-y-8">
+    <div>
+      <div className="w-full flex justify-center">
+        <div className="w-full max-w-6xl p-4">
           <div className="text-center">
             <h1 className="text-4xl font-extrabold tracking-tight text-gray-800 dark:text-gray-100 mb-2">
               🏆 Prize Center
@@ -60,10 +61,17 @@ const PrizeCenter: React.FC = () => {
               View My NFTs
             </Link>
           </div>
-
-          <PrizesGrid orgId={organizationId} />
         </div>
       </div>
+
+      <MotionDiv
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 50 }}
+        transition={{ duration: 0.2 }}
+      >
+        <PrizesGrid orgId={organizationId} />
+      </MotionDiv>
     </div>
   );
 };
