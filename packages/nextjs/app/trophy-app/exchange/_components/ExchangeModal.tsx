@@ -1,9 +1,15 @@
 import React, { useState } from "react";
 import { formatEther, parseEther } from "viem";
-import { TokenData } from "~~/app/trophy-app/exchange/page";
 import Modal from "~~/components/Modal";
 import { IntegerInput, IntegerVariant } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+
+export interface TokenData {
+  tokenAddress: string;
+  tokenSymbol: string;
+  balance: bigint;
+  exchangeRate: bigint;
+}
 
 interface ExchangeModalProps {
   onClose: () => void;
@@ -11,7 +17,7 @@ interface ExchangeModalProps {
   onSuccess: () => void;
 }
 
-const ExchangeModal = ({ onClose, tokenData, onSuccess }: ExchangeModalProps) => {
+export const ExchangeModal = ({ onClose, tokenData, onSuccess }: ExchangeModalProps) => {
   const { writeContractAsync: orgTokenContract } = useScaffoldWriteContract("OrganizationToken");
   const [tokensToExchange, setTokensToExchange] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -116,5 +122,3 @@ const ExchangeModal = ({ onClose, tokenData, onSuccess }: ExchangeModalProps) =>
     </Modal>
   );
 };
-
-export default ExchangeModal;

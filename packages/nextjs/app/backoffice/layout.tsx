@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import BackofficeNavbar from "~~/app/backoffice/_components/Navbar";
+import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -27,7 +28,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <span className="font-semibold leading-tight">CryptoTrophy</span>
             </div>
           </Link>
-          <BackofficeNavbar />
+          <div className="flex items-center space-x-4">
+            <RainbowKitCustomConnectButton showBalanceAndChainName={false} />
+            <BackofficeNavbar />
+          </div>
         </div>
       </header>
 

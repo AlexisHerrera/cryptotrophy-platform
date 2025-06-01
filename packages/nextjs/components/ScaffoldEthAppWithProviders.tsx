@@ -13,15 +13,20 @@ import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useInitializeNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
-const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
+interface ScaffoldEthAppProps {
+  children: React.ReactNode;
+  showHeaderAndFooter?: boolean;
+}
+
+const ScaffoldEthApp = ({ children, showHeaderAndFooter = true }: ScaffoldEthAppProps) => {
   useInitializeNativeCurrencyPrice();
 
   return (
     <>
       <div className="flex flex-col min-h-screen">
-        <Header />
+        {showHeaderAndFooter && <Header />}
         <main className="relative flex flex-col flex-1">{children}</main>
-        <Footer />
+        {showHeaderAndFooter && <Footer />}
       </div>
       <Toaster />
     </>
@@ -36,7 +41,15 @@ export const queryClient = new QueryClient({
   },
 });
 
-export const ScaffoldEthAppWithProviders = ({ children }: { children: React.ReactNode }) => {
+interface ScaffoldEthAppWithProvidersProps {
+  children: React.ReactNode;
+  showHeaderAndFooter?: boolean;
+}
+
+export const ScaffoldEthAppWithProviders = ({
+  children,
+  showHeaderAndFooter = true,
+}: ScaffoldEthAppWithProvidersProps) => {
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === "dark";
   const [mounted, setMounted] = useState(false);
@@ -53,7 +66,7 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
           avatar={BlockieAvatar}
           theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
         >
-          <ScaffoldEthApp>{children}</ScaffoldEthApp>
+          <ScaffoldEthApp showHeaderAndFooter={showHeaderAndFooter}>{children}</ScaffoldEthApp>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

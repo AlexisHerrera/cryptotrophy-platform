@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "~~/app/trophy-app/_components/Navbar";
+import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -30,9 +31,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <span className="font-semibold leading-tight">CryptoTrophy</span>
               </div>
             </Link>
-
-            <div className="flex items-center">
-              {" "}
+            <div className="flex items-center space-x-4">
+              <RainbowKitCustomConnectButton showBalanceAndChainName={false} />
               <Navbar />
             </div>
           </div>
