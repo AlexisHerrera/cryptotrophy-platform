@@ -1,80 +1,200 @@
-# 🏗 Scaffold-ETH 2
+# 🏆 CryptoTrophy Platform
 
 <h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
+  <a href="https://www.cryptotrophy-app.com/docs">Documentación</a> |
+  <a href="https://www.cryptotrophy-app.com">Sitio Web</a>
 </h4>
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+## 📑 Tabla de Contenidos
+- [Descripción del Proyecto](#-descripción-del-proyecto)
+- [Arquitectura](#-arquitectura)
+- [Flujo de Funcionamiento](#-flujo-de-funcionamiento)
+- [Tecnologías Utilizadas](#-tecnologías-utilizadas)
+- [Instalación y Uso](#-instalación-y-uso)
+- [Despliegue](#-despliegue)
 
-⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, and Typescript.
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+## 📋 Descripción del Proyecto
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+**CryptoTrophy Platform** es una plataforma descentralizada que puede ser desplegada sobre cualquier blockchain EVM compatible que permite a las organizaciones crear y gestionar sistemas de recompensas gamificados utilizando tokens ERC-20 personalizados, NFTs y pruebas criptográficas de conocimiento cero (ZK).
 
-## Requirements
+La plataforma facilita la creación de ecosistemas de incentivos donde las organizaciones pueden:
+- 🏢 Crear sus propios tokens organizacionales (estos pueden estar respaldados opcionalmente por ETH)
+- 🎯 Diseñar desafíos y competencias con validaciones personalizadas
+- 🎁 Ofrecer premios canjeables por NFTs
+- 🔐 Implementar sistemas de validación seguros usando pruebas de cero conocimiento y Chainlink
 
-Before you begin, you need to install the following tools:
+## 🏗 Arquitectura
 
-- [Node (>= v18.18)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+### 📁 Estructura de Monorepo
 
-## Quickstart
-
-To get started with Scaffold-ETH 2, follow the steps below:
-
-1. Install dependencies if it was skipped in CLI:
-
-```
-cd my-dapp-example
-yarn install
-```
-
-2. Run a local network in the first terminal:
+El proyecto está organizado como un monorepo con múltiples paquetes especializados:
 
 ```
-yarn chain
+crypto-trophy/
+├── packages/
+│   ├── hardhat/              # Contratos inteligentes y deployment
+│   │   └── contracts/        # Principales contratos con la logica de negocio
+│   ├── nextjs/               # Frontend web (Next.js)
+│   │   ├── backoffice        # Backoffice para los administradores de las organizaciones
+│   │   └── trophy-app        # App para los usuarios finales
+│   └── ponder/               # Indexador de eventos blockchain
+└── circuits/                 # Circuitos ZK-SNARK (Circom)
+└── docker-compose.yml        # Orquestación de servicios
 ```
 
-This command starts a local Ethereum network using Hardhat. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `packages/hardhat/hardhat.config.ts`.
+### 🔧 Componentes Principales
 
-3. On a second terminal, deploy the test contract:
+#### 1. **Smart Contracts** (`packages/hardhat/`)
+- **OrganizationManager**: Gestión central de organizaciones y sus tokens
+- **ChallengeManager**: Creación y validación de desafíos
+- **Prizes**: Sistema de premios con NFTs
+- **OrganizationToken**: Token ERC-20 personalizado por organización
+- **Validators**: Contratos de validación modulares
 
+#### 2. **Frontend Web** (`packages/nextjs/`)
+- **Aplicación Next.js** con TypeScript y Tailwind CSS
+- **Integración Web3** usando Wagmi y RainbowKit
+- **Páginas principales**:
+  - Panel de organizaciones
+  - Panel de desafíos
+  - Centro de premios
+  - Gestión de NFTs personales
+  - Backoffice administrativo
+
+#### 3. **Indexador de Eventos** (`packages/ponder/`)
+- **Ponder.sh**: Indexación en tiempo real de eventos blockchain
+- **GraphQL API**: Consultas optimizadas para el frontend
+- **Base de datos**: Almacenamiento persistente de eventos
+
+#### 4. **Circuitos ZK** (`circuits/`)
+- **Circom**: Circuitos de conocimiento cero
+- **Groth16**: Protocolo de pruebas
+
+#### 5. **Backend Organizacional** (`packages/organization-backend/`)
+- **API REST**: Servicios específicos para organizaciones
+- **Integración IPFS**: Almacenamiento de metadatos
+- **Gestión de archivos**: Subida de imágenes y contenido
+
+## 🔄 Flujo de Funcionamiento
+
+### Para Organizaciones:
+1. **Registro**: Crear organización con token personalizado respaldado por ETH
+2. **Configuración**: Definir administradores y metadatos (logo, descripción, etc.)
+3. **Creación de Desafíos**: Diseñar competencias con validadores personalizados
+4. **Gestión de Premios**: Configurar catálogo de recompensas NFT que pueden ser obtenidos a cambio de tokens de la organización
+
+### Para Usuarios:
+1. **Conexión**: Conectar wallet compatible (MetaMask, WalletConnect, etc.)
+2. **Participación**: Completar desafíos de organizaciones
+3. **Validación**: Demostrar cumplimiento usando validadores (códigos secretos a través de ZK proofs, validación a través de APIs externas mediante Chainlink)
+4. **Recompensas**: Recibir tokens organizacionales al cumplir desafíos
+5. **Canje**: Intercambiar tokens por NFTs en el centro de premios
+6. **Exchange**: Intercambiar tokens por ETH si el token de la organización está respaldado por ETH
+
+## 🛠 Tecnologías Utilizadas
+
+### Blockchain & Smart Contracts
+- **[Solidity](https://soliditylang.org/)** - Lenguaje de contratos inteligentes
+- **[Hardhat](https://hardhat.org/)** - Framework de desarrollo Ethereum
+- **[Scaffold-ETH](https://scaffoldeth.io/)** - Template y toolkit para desarrollo dApps
+- **[OpenZeppelin](https://openzeppelin.com/)** - Librerías de contratos seguros
+- **[Chainlink](https://chain.link/)** - Oráculos y servicios externos
+
+### Frontend
+- **[Next.js](https://nextjs.org/)** - Framework React con SSR
+- **[TypeScript](https://www.typescriptlang.org/)** - Tipado estático
+- **[Tailwind CSS](https://tailwindcss.com/)** - Framework de estilos
+- **[RainbowKit](https://www.rainbowkit.com/)** - Conexión de wallets
+- **[Wagmi](https://wagmi.sh/)** - Hooks React para Ethereum
+
+### Backend & Servicios
+- **[Ponder.sh](https://ponder.sh/)** - Indexación de blockchain
+- **[GraphQL](https://graphql.org/)** - API de consultas a ponder
+- **[IPFS](https://ipfs.tech/)/[Filebase](https://filebase.com/)** - Almacenamiento descentralizado
+- **[Docker](https://docker.com/)** - Containerización
+
+### Criptografía
+- **[Circom](https://docs.circom.io/)** - Lenguaje de circuitos ZK
+- **[SnarkJS](https://github.com/iden3/snarkjs)** - Librerías ZK-SNARK
+- **[Poseidon Hash](https://www.poseidon-hash.info/)** - Función hash criptográfica
+
+## 🚀 Instalación y Uso
+
+### Prerrequisitos
+- [Node.js](https://nodejs.org/) >= 18.18
+- [Yarn](https://yarnpkg.com/) >= 4.9.1
+- [Git](https://git-scm.com/)
+- [Docker](https://docker.com/) y Docker Compose
+
+### Configuración Rápida
+
+1. **Instalar dependencias y levantar servicios**:
+```bash
+yarn build
 ```
+
+2. **Desplegar contratos en red local**:
+```bash
 yarn deploy
 ```
 
-This command deploys a test smart contract to the local network. The contract is located in `packages/hardhat/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/hardhat/deploy` to deploy the contract to the network. You can also customize the deploy script.
-
-4. On a third terminal, start your NextJS app:
-
-```
+3. **Ejecutar frontend**:
+```bash
 yarn start
 ```
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+La aplicación estará disponible en `http://localhost:3000`
 
-Run smart contract test with `yarn hardhat:test`
+### 🐳 Docker Compose y Comandos Principales
 
-- Edit your smart contract `YourContract.sol` in `packages/hardhat/contracts`
-- Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
-- Edit your deployment scripts in `packages/hardhat/deploy`
+El proyecto utiliza **Docker Compose** para orquestar todos los servicios necesarios de manera sencilla. Los contenedores incluyen:
 
+- **`db`**: Base de datos PostgreSQL para el indexador Ponder
+- **`hardhat`**: Nodo blockchain local (puerto 8545)
+- **`app`**: Backend de organizaciones (puerto 80)
+- **`ponder`**: Indexador de eventos blockchain con API GraphQL
 
-## Documentation
+#### Comandos Esenciales
 
-Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
+**🚀 `yarn build`**
+```bash
+yarn build
+```
+- Construye e inicia todos los contenedores Docker en modo daemon (`-d`)
+- Reconstruye las imágenes si hay cambios (`--build`)
+- Levanta la blockchain local, base de datos, backend y indexador
+- Este es el **primer comando que debes ejecutar** para configurar el entorno completo
 
-To know more about its features, check out our [website](https://scaffoldeth.io).
+**⬇️ `yarn down`**
+```bash
+yarn down
+```
+- Detiene y elimina todos los contenedores Docker
+- Útil para limpiar el entorno o reiniciar completamente
+- No elimina los volúmenes de datos persistentes
 
-## Contributing to Scaffold-ETH 2
+**📋 `yarn deploy`**
+```bash
+yarn deploy
+```
+- Despliega los contratos inteligentes en la blockchain local
+- Ejecuta el script de deployment dentro del contenedor Hardhat
+- **Ejecutar después de `yarn build`** para tener los contratos disponibles
+- Genera las direcciones de contratos necesarias para el frontend
 
-We welcome contributions to Scaffold-ETH 2!
+### Comandos Útiles
 
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
+```bash
+# Compilar contratos
+yarn compile
+
+# Ejecutar tests
+yarn test
+
+# Ver logs de blockchain local
+yarn logs
+
+# Formatear código
+yarn format
+```
