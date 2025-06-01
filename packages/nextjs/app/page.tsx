@@ -23,9 +23,7 @@ const Home: NextPage = () => {
       exit={{ opacity: 0, y: 50 }}
       transition={{ duration: 0.5 }}
     >
-      <div
-        className={`min-h-screen flex flex-col ${isDarkMode ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"}`}
-      >
+      <div>
         <Header />
         <HeroSection />
         <ParticipantFeatures />
