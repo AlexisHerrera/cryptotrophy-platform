@@ -22,7 +22,7 @@ export const PrizeNFTCard = ({
   imagePath?: string;
 }) => (
   <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-5 flex flex-col hover:shadow-lg transition-shadow duration-200 w-full h-full">
-    <div className="relative">
+    <div className="relative mb-4">
       {balance && balance > 1 && (
         <div className="absolute top-4 right-4 z-10">
           <div className="inline-block bg-blue-600 dark:bg-blue-400 text-white text-xs px-3 py-1 rounded-full font-bold shadow">
@@ -31,17 +31,19 @@ export const PrizeNFTCard = ({
         </div>
       )}
       {imagePath ? (
-        <img
-          src={imagePath}
-          alt={`Prize ${prizeName}`}
-          className="w-full h-60 object-cover rounded-md mb-4"
-          onError={e => {
-            const target = e.target as HTMLImageElement;
-            target.src = "/placeholder-prize.svg";
-          }}
-        />
+        <div className="w-full aspect-[4/3] relative">
+          <img
+            src={imagePath}
+            alt={`Prize ${prizeName}`}
+            className="absolute inset-0 w-full h-full object-cover rounded-md"
+            onError={e => {
+              const target = e.target as HTMLImageElement;
+              target.src = "/placeholder-prize.svg";
+            }}
+          />
+        </div>
       ) : (
-        <div className="w-full h-60 bg-gray-200 dark:bg-gray-700 rounded-md mb-4 flex items-center justify-center text-gray-500 dark:text-gray-400">
+        <div className="w-full aspect-[4/3] bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center text-gray-500 dark:text-gray-400">
           No Image
         </div>
       )}

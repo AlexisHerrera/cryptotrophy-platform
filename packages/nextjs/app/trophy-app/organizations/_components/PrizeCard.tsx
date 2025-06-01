@@ -40,9 +40,15 @@ export const PrizeCard: React.FC<{ item: Prize; onClaimClick: (prize: Prize) => 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col hover:shadow-lg transition-shadow duration-200">
       {metadata.logo ? (
-        <img src={metadata.logo} alt={prize.name} className="w-full h-60 object-cover rounded-md mb-4" />
+        <div className="w-full aspect-[4/3] relative mb-4">
+          <img
+            src={metadata.logo}
+            alt={prize.name}
+            className="absolute inset-0 w-full h-full object-cover rounded-md"
+          />
+        </div>
       ) : (
-        <div className="w-full h-60 bg-gray-200 dark:bg-gray-700 rounded-md mb-4 flex items-center justify-center text-gray-500">
+        <div className="w-full aspect-[4/3] bg-gray-200 dark:bg-gray-700 rounded-md mb-4 flex items-center justify-center text-gray-500 dark:text-gray-400">
           {loading ? "Loading logo..." : "No logo available"}
         </div>
       )}
