@@ -66,14 +66,16 @@ const ExchangePage = () => {
             </h1>
             <div className="mx-auto w-16 h-1 bg-blue-500 rounded-full mb-4"></div>
           </div>
-          {address && (
-            <div className="flex justify-center items-center gap-2 mb-6">
-              <span className="text-lg font-bold text-gray-700 dark:text-gray-300">Account:</span>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-2 mb-6">
+            <span className="text-lg font-bold text-gray-700 dark:text-gray-300">Account:</span>
+            {address ? (
               <span className="text-sm font-mono px-3 py-1 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 shadow">
                 {address}
               </span>
-            </div>
-          )}
+            ) : (
+              <span className="text-sm italic text-gray-500 dark:text-gray-400">Please connect a wallet</span>
+            )}
+          </div>
           {/* Back button */}
           <div className="flex justify-center mb-4">
             <BackButton />

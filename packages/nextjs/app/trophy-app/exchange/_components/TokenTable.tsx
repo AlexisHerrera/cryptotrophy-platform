@@ -32,8 +32,8 @@ export const TokenTable: React.FC<TokenTableProps> = ({ tokens }) => {
           <tr>
             <th>Token Symbol</th>
             <th>Balance</th>
-            <th>Exchange Rate</th>
-            <th>Balance in ETH</th>
+            <th className="hidden md:table-cell">Exchange Rate</th>
+            <th className="hidden sm:table-cell">Balance in ETH</th>
             <th>Redeem</th>
           </tr>
         </thead>

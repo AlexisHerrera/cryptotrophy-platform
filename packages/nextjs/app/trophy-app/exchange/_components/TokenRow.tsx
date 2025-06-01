@@ -59,8 +59,8 @@ export const TokenRow = ({ tokenAddress, tokenSymbol, balance, setModalData }: T
     <tr>
       <td>{tokenSymbol}</td>
       <td>{balance === undefined ? "Loading..." : formatEther(balance)}</td>
-      <td>{exchangeRateDisplay()}</td>
-      <td>{isLoading || rateError ? "N/A" : balanceInETH}</td>
+      <td className="hidden md:table-cell">{exchangeRateDisplay()}</td>
+      <td className="hidden sm:table-cell">{isLoading || rateError ? "N/A" : balanceInETH}</td>
       <td>
         <button
           className="btn btn-primary"
