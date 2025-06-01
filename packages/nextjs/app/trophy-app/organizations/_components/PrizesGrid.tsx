@@ -12,7 +12,7 @@ export const PrizesGrid: React.FC<{ orgId: string }> = ({ orgId }) => {
 
   const [selectedPrize, setSelectedPrize] = useState<Prize | null>(null);
 
-  const { data, isLoading } = usePrizes(orgId, 4, afterCursor, beforeCursor, searchTerm);
+  const { data, isLoading } = usePrizes(orgId, 6, afterCursor, beforeCursor, searchTerm);
 
   const handlePageChange = (after: string | null, before: string | null) => {
     setAfterCursor(after);
@@ -36,7 +36,7 @@ export const PrizesGrid: React.FC<{ orgId: string }> = ({ orgId }) => {
         renderCard={(item, index) => (
           <PrizeCard key={index} item={item} onClaimClick={prize => setSelectedPrize(prize)} />
         )}
-        pageSize={4}
+        pageSize={6}
         title="Prizes"
         loading={isLoading}
         onPageChange={handlePageChange}

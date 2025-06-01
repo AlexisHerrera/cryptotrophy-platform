@@ -61,7 +61,7 @@ export const ChallengeCard: React.FC<{ item: Challenge }> = ({ item: challenge }
         {/* Info Section */}
         <div className="bg-gray-50 dark:bg-gray-700 rounded-md p-4 space-y-2 text-sm mb-4">
           <div className="flex items-center justify-between">
-            <span className="font-medium text-gray-700 dark:text-gray-300">Prize</span>
+            <span className="font-medium text-gray-700 dark:text-gray-300">Loot</span>
             <span className="text-gray-600 dark:text-gray-400">{formattedPrize} tokens</span>
           </div>
           <div className="flex items-center justify-between">

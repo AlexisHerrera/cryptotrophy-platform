@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ChallengeGrid } from "../_components/ChallengeGrid";
 import { HeroSection } from "../_components/HeroSection";
+import { MotionDiv } from "~~/app/motions/use-motion";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { loadMetadata } from "~~/utils/loadMetadata";
 
@@ -78,23 +79,27 @@ const OrganizationPage: React.FC = () => {
   }
 
   return (
-    <div className="w-full flex justify-center">
-      <div className="w-full max-w-6xl p-4">
-        {/* Hero Section */}
-        <HeroSection
-          title={organization.name}
-          subtitle={metadata.description || "Welcome to your organization's dashboard!"}
-          imageUrl={metadata.logo ? metadata.logo : undefined}
-          buttonLabel="Prize Center"
-          onButtonClick={() => router.push(`/trophy-app/organizations/${organization.id}/prizes`)}
-        />
-
-        {/* Challenges Section */}
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-4 text-center">Active Challenges</h2>
-          <ChallengeGrid orgId={organizationId} />
+    <div>
+      <div className="w-full flex justify-center">
+        <div className="w-full max-w-6xl p-4">
+          {/* Hero Section */}
+          <HeroSection
+            title={organization.name}
+            subtitle={metadata.description || "Welcome to your organization's dashboard!"}
+            imageUrl={metadata.logo ? metadata.logo : undefined}
+            buttonLabel="Prize Center"
+            onButtonClick={() => router.push(`/trophy-app/organizations/${organization.id}/prizes`)}
+          />
         </div>
       </div>
+      <MotionDiv
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 50 }}
+        transition={{ duration: 0.2 }}
+      >
+        <ChallengeGrid orgId={organizationId} />
+      </MotionDiv>
     </div>
   );
 };

@@ -7,23 +7,35 @@ interface ReviewChallengeDataProps {
 
 const ReviewChallengeData: React.FC<ReviewChallengeDataProps> = ({ formData }) => {
   return (
-    <div className="space-y-6">
-      <h3 className="text-xl font-semibold mb-4">Review Your Data</h3>
+    <div className="rounded-xl bg-white dark:bg-gray-900 shadow-lg p-6 space-y-6 font-sans max-w-xl mx-auto">
+      <div className="space-y-4">
+        <div>
+          <div className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400 tracking-wider mb-1">
+            Description
+          </div>
+          <div className="text-base text-gray-900 dark:text-gray-100">{formData.description}</div>
+        </div>
 
-      <div>
-        <strong>Description:</strong> {formData.description}
-      </div>
+        <div>
+          <div className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400 tracking-wider mb-1">
+            Number of tokens given to Winner
+          </div>
+          <div className="text-base text-gray-900 dark:text-gray-100">{formData.prizeAmount}</div>
+        </div>
 
-      <div>
-        <strong>Prize Amount:</strong> {formData.prizeAmount}
-      </div>
+        <div>
+          <div className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400 tracking-wider mb-1">
+            Maximum Number of Winners
+          </div>
+          <div className="text-base text-gray-900 dark:text-gray-100">{formData.maxWinners}</div>
+        </div>
 
-      <div>
-        <strong>Max Winners:</strong> {formData.maxWinners}
-      </div>
-
-      <div>
-        <strong>Validator UID:</strong> {formData.validatorUID}
+        <div>
+          <div className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400 tracking-wider mb-1">
+            Validator UID
+          </div>
+          <div className="text-base text-gray-900 dark:text-gray-100">{formData.validatorUID}</div>
+        </div>
       </div>
     </div>
   );

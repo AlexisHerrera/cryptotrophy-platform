@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useParams } from "next/navigation";
-import PrizePage from "~~/components/common/PrizePage";
+import PrizePage from "~~/app/backoffice/organizations/_components/PrizePage";
 
 const PrizeCenter: React.FC = () => {
   const { organizationId } = useParams() as { organizationId: string };

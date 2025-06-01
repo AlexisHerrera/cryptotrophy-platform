@@ -3,9 +3,9 @@
 import React, { useCallback, useState } from "react";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
+import CreatePrizeModal from "~~/app/backoffice/organizations/_components/CreatePrizeModal";
+import PrizeTable from "~~/app/backoffice/organizations/_components/PrizeTable";
 import { BackButton } from "~~/components/common/BackButton";
-import PrizeTable from "~~/components/common/PrizeTable";
-import CreatePrizeModal from "~~/components/common/_components/CreatePrizeModal";
 import { useEthersSigner } from "~~/hooks/ethers/useEthersSigner";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
