@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { PrizeNFTCard } from "../../_components/PrizeNFTCard";
 import { useAccount } from "wagmi";
-import { BackButton } from "~~/components/common/BackButton";
 import { useEthersSigner } from "~~/hooks/ethers/useEthersSigner";
 import { useDeployedContractInfo, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
@@ -22,7 +22,7 @@ interface NFTItem {
   symbol: string;
   contractAddress: string;
   balance?: number;
-  imageCID?: string;
+  imagePath?: string;
 }
 
 const MyPrizesPage: React.FC = () => {
@@ -73,14 +73,14 @@ const MyPrizesPage: React.FC = () => {
         // const prices = prizesResult[3] || [];
         // const stocks = prizesResult[4] || [];
         const nftContracts = prizesResult[5] || [];
-        const imageCIDs = prizesResult[6] || [];
+        const imagePaths = prizesResult[6] || [];
 
         // For each prize, check if user owns any NFTs
         for (let i = 0; i < ids.length; i++) {
           const prizeId = ids[i];
           const prizeName = names[i];
           const contractAddress = nftContracts[i];
-          const imageCID = imageCIDs[i];
+          const imagePath = imagePaths[i];
 
           try {
             // Get NFT contract instance using the Prize NFT ABI from artifacts
@@ -115,7 +115,7 @@ const MyPrizesPage: React.FC = () => {
                       symbol: nftSymbol,
                       contractAddress,
                       balance: Number(balance),
-                      imageCID,
+                      imagePath,
                     });
                   }
                 } else {
@@ -129,7 +129,7 @@ const MyPrizesPage: React.FC = () => {
                     symbol: nftSymbol,
                     contractAddress,
                     balance: Number(balance),
-                    imageCID,
+                    imagePath,
                   });
                 }
               } catch (error) {
@@ -144,7 +144,7 @@ const MyPrizesPage: React.FC = () => {
                   symbol: nftSymbol,
                   contractAddress,
                   balance: Number(balance),
-                  imageCID,
+                  imagePath,
                 });
               }
             }
@@ -178,65 +178,57 @@ const MyPrizesPage: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-between">
-      <BackButton />
-      <div className="container mx-auto p-4 max-w-4xl">
-        <h1 className="text-4xl text-gray-700 font-mono grayscale mb-4 dark:text-gray-300 text-center">
-          My Prize NFTs {orgName && `- ${orgName}`}
-        </h1>
+    <div className="min-h-screen flex justify-center bg-gradient-to-b from-gray-50 dark:from-gray-900 to-white dark:to-gray-950 py-4">
+      <div className="w-full max-w-4xl mx-auto px-4">
+        <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-xl p-8 space-y-8">
+          {/* Header */}
+          <div className="text-center">
+            <h1 className="text-4xl font-extrabold tracking-tight text-gray-800 dark:text-gray-100 mb-2">
+              My Prize NFTs
+            </h1>
+            <div className="mx-auto w-16 h-1 bg-blue-500 rounded-full mb-4"></div>
 
-        <div className="text-center mb-6">
-          <Link href={`/trophy-app/organizations/${organizationId}/prizes`} className="btn btn-secondary">
-            Back to Prize Center
-          </Link>
-        </div>
-
-        {userNFTs.length === 0 ? (
-          <div className="text-center p-8 bg-base-200 rounded-lg">
-            <p className="text-xl">You haven&apos;t collected any prize NFTs yet.</p>
-            <p className="mt-2">Head over to the Prize Center to claim some prizes!</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {userNFTs.map(nft => (
-              <div key={nft.id} className="card bg-base-100 shadow-xl">
-                <div className="card-body relative">
-                  {nft.balance && nft.balance > 1 && (
-                    <div className="absolute top-2 right-2">
-                      <div className="badge badge-accent font-bold">x{nft.balance}</div>
-                    </div>
-                  )}
-                  {nft.imageCID ? (
-                    <figure className="px-4 pt-4">
-                      <img
-                        src={`https://ipfs.filebase.io/ipfs/${nft.imageCID}`}
-                        alt={`Prize ${nft.prizeName}`}
-                        className="rounded-xl object-cover w-full h-48"
-                        onError={e => {
-                          console.error("Error loading image:", nft.imageCID);
-                          // Set a fallback image on error
-                          const target = e.target as HTMLImageElement;
-                          target.src = "/placeholder-prize.svg";
-                        }}
-                      />
-                    </figure>
-                  ) : (
-                    <div className="px-4 pt-4 flex justify-center">
-                      <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-xl flex items-center justify-center text-gray-500 dark:text-gray-400">
-                        No Image
-                      </div>
-                    </div>
-                  )}
-                  <h2 className="card-title">{nft.prizeName}</h2>
-                  <div className="badge badge-primary">
-                    {nft.symbol} {nft.tokenId >= 0 ? `#${nft.tokenId}` : ""}
-                  </div>
-                  <p className="mt-2">This NFT represents ownership of the prize: {nft.prizeName}</p>
-                </div>
+            {orgName && (
+              <div className="flex justify-center items-center gap-2 mb-6">
+                <span className="text-lg font-bold text-gray-700 dark:text-gray-300">Organization:</span>
+                <span className="text-xl font-mono px-3 py-1 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 shadow">
+                  {orgName}
+                </span>
               </div>
-            ))}
+            )}
           </div>
-        )}
+
+          {/* Back button */}
+          <div className="flex justify-center mb-4">
+            <Link
+              href={`/trophy-app/organizations/${organizationId}/prizes`}
+              className="inline-block px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-100 font-semibold shadow hover:bg-gray-300 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            >
+              Back to Prize Center
+            </Link>
+          </div>
+
+          {/* Content */}
+          {userNFTs.length === 0 ? (
+            <div className="text-center p-8 bg-gray-100 dark:bg-gray-800 rounded-lg">
+              <p className="text-xl">You haven&apos;t collected any prize NFTs yet.</p>
+              <p className="mt-2">Head over to the Prize Center to claim some prizes!</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+              {userNFTs.map(nft => (
+                <PrizeNFTCard
+                  key={nft.id}
+                  prizeName={nft.prizeName}
+                  symbol={nft.symbol}
+                  tokenId={nft.tokenId}
+                  balance={nft.balance}
+                  imagePath={nft.imagePath}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
