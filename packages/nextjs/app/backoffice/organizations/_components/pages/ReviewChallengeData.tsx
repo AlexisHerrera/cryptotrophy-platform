@@ -18,14 +18,14 @@ const ReviewChallengeData: React.FC<ReviewChallengeDataProps> = ({ formData }) =
 
         <div>
           <div className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400 tracking-wider mb-1">
-            Prize Amount
+            Number of tokens given to Winner
           </div>
           <div className="text-base text-gray-900 dark:text-gray-100">{formData.prizeAmount}</div>
         </div>
 
         <div>
           <div className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400 tracking-wider mb-1">
-            Max Winners
+            Maximum Number of Winners
           </div>
           <div className="text-base text-gray-900 dark:text-gray-100">{formData.maxWinners}</div>
         </div>
