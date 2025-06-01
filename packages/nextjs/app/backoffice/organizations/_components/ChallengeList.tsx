@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import AdminSetChallengeValidator from "../../app/backoffice/organizations/_components/AdminSetChallengeValidator";
-import ClaimChallengeBasicButton from "../../app/backoffice/organizations/_components/ClaimChallengeBasicButton";
-import ClaimChallengeOnChainModal from "../../app/backoffice/organizations/_components/ClaimChallengeOnChainModal";
-import ClaimChallengeSecretModal from "../../app/backoffice/organizations/_components/ClaimChallengeSecretModal";
-import ClaimChallengeTwoStepButton from "../../app/backoffice/organizations/_components/ClaimChallengeTwoStepButton";
-import MockExternalValidatorFulfill from "../../app/backoffice/organizations/_components/MockExternalValidatorFulfill";
+import AdminSetChallengeValidator from "./AdminSetChallengeValidator";
+import ClaimChallengeBasicButton from "./ClaimChallengeBasicButton";
+import ClaimChallengeOnChainModal from "./ClaimChallengeOnChainModal";
+import ClaimChallengeSecretModal from "./ClaimChallengeSecretModal";
+import ClaimChallengeTwoStepButton from "./ClaimChallengeTwoStepButton";
+import MockExternalValidatorFulfill from "./MockExternalValidatorFulfill";
 import { formatUnits } from "ethers";
 import { decodeBytes32String } from "ethers";
 import {
@@ -206,7 +206,7 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds, mode
           <tr>
             <th>ID</th>
             <th>Description</th>
-            <th>Prize</th>
+            <th>Loot</th>
             <th>Status</th>
             <th>Validator</th>
             <th>Max Winners</th>
