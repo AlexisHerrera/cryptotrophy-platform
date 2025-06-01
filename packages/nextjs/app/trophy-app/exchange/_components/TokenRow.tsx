@@ -1,18 +1,18 @@
 import React, { useEffect } from "react";
+import { TokenData } from "./ExchangeModal";
 import { formatEther } from "viem";
 import { useReadContract } from "wagmi";
-import { TokenData } from "~~/app/trophy-app/exchange/page";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 
-interface TokenRowProps {
+export interface TokenRowProps {
   tokenAddress: string;
   tokenSymbol: string;
   balance: bigint;
   setModalData: (tokenData: TokenData) => void;
 }
 
-const TokenRow = ({ tokenAddress, tokenSymbol, balance, setModalData }: TokenRowProps) => {
+export const TokenRow = ({ tokenAddress, tokenSymbol, balance, setModalData }: TokenRowProps) => {
   const { targetNetwork } = useTargetNetwork();
   const { data: deployedContract } = useDeployedContractInfo("OrganizationToken");
 
@@ -88,5 +88,3 @@ const TokenRow = ({ tokenAddress, tokenSymbol, balance, setModalData }: TokenRow
     </tr>
   );
 };
-
-export default TokenRow;

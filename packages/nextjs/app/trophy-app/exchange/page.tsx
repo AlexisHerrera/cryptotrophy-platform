@@ -1,23 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
-import TokenRow from "./TokenRow";
+import { TokenRowProps } from "./_components/TokenRow";
+import { TokenTable } from "./_components/TokenTable";
 import { ethers } from "ethers";
 import { useAccount, useReadContracts } from "wagmi";
-import ExchangeModal from "~~/app/trophy-app/exchange/ExchangeModal";
+import { ExchangeModal, TokenData } from "~~/app/trophy-app/exchange/_components/ExchangeModal";
 import { BackButton } from "~~/components/common/BackButton";
 import { useDeployedContractInfo, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 
-export interface TokenData {
-  tokenAddress: string;
-  tokenSymbol: string;
-  balance: bigint;
-  exchangeRate: bigint;
-}
-
 const ExchangePage = () => {
   const { address } = useAccount();
+  // tokenData is only used to show ExchangeModal
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
   const { data: organizationsData, isLoading: orgLoading } = useScaffoldReadContract({
     contractName: "OrganizationManager",
@@ -26,7 +21,6 @@ const ExchangePage = () => {
   const userAddress = address || ethers.ZeroAddress;
   const { targetNetwork } = useTargetNetwork();
   const { data: tokenContract } = useDeployedContractInfo("OrganizationToken");
-  const [showOnlyOwned, setShowOnlyOwned] = useState(true);
 
   const {
     data: balancesData,
@@ -54,71 +48,51 @@ const ExchangePage = () => {
 
   const [, , tokenSymbols, tokenAddresses] = organizationsData;
 
-  const combinedTokenData = tokenAddresses.map((tokenAddress, index) => ({
+  const combinedTokenData: TokenRowProps[] = tokenAddresses.map((tokenAddress, index) => ({
     tokenAddress,
     tokenSymbol: tokenSymbols[index],
     balance: balancesData ? balancesData[index] : 0n,
+    setModalData: setTokenData,
   }));
 
-  const filteredTokenData = showOnlyOwned ? combinedTokenData.filter(token => token.balance > 0n) : combinedTokenData;
-
   return (
-    <div className="flex justify-between p-4">
-      <BackButton />
-      <div className="container mx-auto p-4 max-w-4xl">
-        <div className="mb-4 flex justify-end items-center space-x-2">
-          <label htmlFor="filterOwned" className="label cursor-pointer">
-            <span className="label-text mr-2">Show only tokens with balance</span>
-            <input
-              type="checkbox"
-              id="filterOwned"
-              checked={showOnlyOwned}
-              onChange={e => setShowOnlyOwned(e.target.checked)}
-              className="checkbox checkbox-primary"
-            />
-          </label>
+    <div>
+      <div className="w-full flex justify-center">
+        <div className="w-full max-w-6xl p-4">
+          {/* Header */}
+          <div className="text-center">
+            <h1 className="text-4xl font-extrabold tracking-tight text-gray-800 dark:text-gray-100 mb-2">
+              Organization Tokens Exchange
+            </h1>
+            <div className="mx-auto w-16 h-1 bg-blue-500 rounded-full mb-4"></div>
+          </div>
+          {address && (
+            <div className="flex justify-center items-center gap-2 mb-6">
+              <span className="text-lg font-bold text-gray-700 dark:text-gray-300">Account:</span>
+              <span className="text-sm font-mono px-3 py-1 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 shadow">
+                {address}
+              </span>
+            </div>
+          )}
+          {/* Back button */}
+          <div className="flex justify-center mb-4">
+            <BackButton />
+          </div>
         </div>
-        <table className="table table-zebra border border-gray-200 shadow-lg">
-          <thead>
-            <tr>
-              <th>Token Symbol</th>
-              <th>Balance</th>
-              <th>Exchange Rate</th>
-              <th>Balance in ETH</th>
-              <th>Redeem</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredTokenData.length > 0 ? (
-              filteredTokenData.map(token => (
-                <TokenRow
-                  key={token.tokenAddress}
-                  tokenAddress={token.tokenAddress}
-                  tokenSymbol={token.tokenSymbol}
-                  balance={token.balance}
-                  setModalData={data => setTokenData(data)}
-                />
-              ))
-            ) : (
-              <tr>
-                <td colSpan={5} className="text-center">
-                  {showOnlyOwned ? "No tokens with balance found." : "No tokens available."}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-        {tokenData !== null && (
-          <ExchangeModal
-            tokenData={tokenData}
-            onClose={() => setTokenData(null)}
-            onSuccess={() => {
-              refetchBalances();
-              setTokenData(null);
-            }}
-          />
-        )}
       </div>
+      <div className="container mx-auto p-4 max-w-4xl">
+        <TokenTable tokens={combinedTokenData} />
+      </div>
+      {tokenData !== null && (
+        <ExchangeModal
+          tokenData={tokenData}
+          onClose={() => setTokenData(null)}
+          onSuccess={() => {
+            refetchBalances();
+            setTokenData(null);
+          }}
+        />
+      )}
     </div>
   );
 };
