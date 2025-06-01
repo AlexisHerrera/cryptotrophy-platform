@@ -68,64 +68,82 @@ const CreatePrizeModal: React.FC<CreatePrizeModalProps> = ({ orgId, isOpen, onCl
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-md w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Create a new Prize</h2>
+    <div className="fixed inset-0 z-50 bg-black/60 flex justify-center items-center">
+      <div className="rounded-xl bg-white dark:bg-gray-900 shadow-xl p-6 font-sans w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100 text-center">Create a new Prize</h2>
 
         <label className="block mb-4">
-          <span className="text-sm">Prize Image</span>
+          <span className="block text-xs font-medium uppercase text-gray-500 dark:text-gray-400 tracking-wider mb-2">
+            Prize Image
+          </span>
           <ExternalResourceInput externalResource={externalResource} setExternalResource={setExternalResource} />
         </label>
 
-        <label className="block mb-2">
-          <span className="text-sm">Name</span>
+        <label className="block mb-4">
+          <span className="block text-xs font-medium uppercase text-gray-500 dark:text-gray-400 tracking-wider mb-2">
+            Name
+          </span>
           <input
             type="text"
-            className="input input-bordered w-full"
+            className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 transition"
             value={name}
             onChange={e => setName(e.target.value)}
           />
         </label>
 
-        <label className="block mb-2">
-          <span className="text-sm">Description</span>
+        <label className="block mb-4">
+          <span className="block text-xs font-medium uppercase text-gray-500 dark:text-gray-400 tracking-wider mb-2">
+            Description
+          </span>
           <textarea
-            className="textarea textarea-bordered w-full"
+            className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 transition"
             value={description}
             onChange={e => setDescription(e.target.value)}
           />
         </label>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 mb-4">
           <label className="flex-1">
-            <span className="text-sm">Price (tokens)</span>
+            <span className="block text-xs font-medium uppercase text-gray-500 dark:text-gray-400 tracking-wider mb-2">
+              Price (tokens)
+            </span>
             <input
               type="number"
               min="0"
               step="any"
-              className="input input-bordered w-full"
+              className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 transition"
               value={price}
               onChange={e => setPrice(e.target.value)}
             />
           </label>
 
           <label className="flex-1">
-            <span className="text-sm">Stock</span>
+            <span className="block text-xs font-medium uppercase text-gray-500 dark:text-gray-400 tracking-wider mb-2">
+              Stock
+            </span>
             <input
               type="number"
               min="0"
-              className="input input-bordered w-full"
+              className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 transition"
               value={stock}
               onChange={e => setStock(e.target.value)}
             />
           </label>
         </div>
 
-        <div className="flex justify-end mt-4">
-          <button className="btn btn-secondary mr-2" onClick={onClose} disabled={isLoading}>
+        <div className="flex justify-end gap-2 mt-4">
+          <button
+            className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 font-semibold transition hover:bg-gray-300 dark:hover:bg-gray-600"
+            onClick={onClose}
+            disabled={isLoading}
+          >
             Cancel
           </button>
-          <button className="btn btn-primary" onClick={handleSubmit} disabled={isLoading}>
+          <button
+            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white font-semibold transition"
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
             {isLoading ? "Creating..." : "Create"}
           </button>
         </div>
