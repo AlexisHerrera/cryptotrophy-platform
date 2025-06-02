@@ -27,7 +27,6 @@ export const PaginatedGrid = <T,>({
   data,
   renderCard,
   pageSize = 4,
-  title = "Items",
   loading = false,
   onPageChange,
   onSearch,
@@ -38,8 +37,6 @@ export const PaginatedGrid = <T,>({
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4 dark:text-white">{title}</h1>
-
       <div className="flex mb-4 space-x-2">
         <input
           type="text"
@@ -71,7 +68,7 @@ export const PaginatedGrid = <T,>({
         >
           Previous
         </button>
-        <span className="dark:text-white">Total: {data.totalCount} items</span>
+        <span className="dark:text-white">{data.totalCount} items</span>
         <button
           onClick={() => onPageChange?.(data.pageInfo?.endCursor || null, null, searchTerm)}
           disabled={!data.pageInfo?.hasNextPage}
