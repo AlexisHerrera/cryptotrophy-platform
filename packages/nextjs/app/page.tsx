@@ -1,7 +1,6 @@
 "use client";
 
 import type { NextPage } from "next";
-import { useTheme } from "next-themes";
 import { useAccount } from "wagmi";
 import { MotionDiv } from "~~/app/motions/use-motion";
 import { Footer } from "~~/components/home/Footer";
