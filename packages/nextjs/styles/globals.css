@@ -7,8 +7,9 @@
   background: oklch(var(--b2));
 }
 
-body {
+html, body {
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 h1,

@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import type { NextPage } from "next";
 import { useTheme } from "next-themes";
 import { useAccount } from "wagmi";
@@ -12,8 +11,6 @@ import { OrganizationsInfo } from "~~/components/home/OrganizationsInfo";
 import { ParticipantFeatures } from "~~/components/home/ParticipantFeatures";
 
 const Home: NextPage = () => {
-  const { resolvedTheme } = useTheme();
-  const isDarkMode = resolvedTheme === "dark";
   const { address: connectedAddress } = useAccount();
 
   return (

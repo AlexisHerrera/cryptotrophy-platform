@@ -16,7 +16,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur sticky top-0 z-20 shadow">
+    <header className="w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur sticky top-0 z-10 shadow">
       <div className="max-w-7xl mx-auto flex justify-between items-center py-4 px-6 relative">
         {/* Logo and Brand */}
         <Link

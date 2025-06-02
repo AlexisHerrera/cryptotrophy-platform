@@ -13,7 +13,7 @@ export const HeroSection = () => {
   return (
     <section className="w-full relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 py-24 md:py-32 flex flex-col items-center justify-center shadow-md overflow-hidden">
       <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(circle_at_60%_30%,_rgba(255,255,255,0.14),_rgba(0,0,0,0)_70%)]" />
-      <div className="max-w-6xl flex flex-col md:flex-row items-center gap-16 px-6 relative z-10">
+      <div className="max-w-6xl flex flex-col md:flex-row items-center gap-16 px-6 relative z-5">
         {/* Hero Text */}
         <div className="flex-1 text-center md:text-left" data-aos="fade-right">
           <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight text-white drop-shadow-lg">
