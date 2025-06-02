@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { buildPoseidon } from "circomlibjs";
 import { ethers } from "ethers";

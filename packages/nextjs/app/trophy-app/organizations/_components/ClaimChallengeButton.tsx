@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import ClaimChallengeBasicButton from "~~/app/backoffice/organizations/_components/ClaimChallengeBasicButton";
 import ClaimChallengeSecretModal from "~~/app/backoffice/organizations/_components/ClaimChallengeSecretModal";

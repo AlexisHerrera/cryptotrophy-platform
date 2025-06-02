@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import { groth16 } from "snarkjs";
