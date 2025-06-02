@@ -8,12 +8,13 @@ export const usePrizes = (
   after?: string | null,
   before?: string | null,
   search?: string,
+  minStock?: number,
 ) => {
   const client = useGraphQLClient();
 
   return useQuery({
-    queryKey: ["prizes", pageSize, after, before, search],
-    queryFn: () => fetchPrizes(client, pageSize, after, before, orgId, search),
+    queryKey: ["prizes", pageSize, after, before, search, minStock],
+    queryFn: () => fetchPrizes(client, pageSize, after, before, orgId, search, minStock),
     refetchInterval: 10000, // auto-refresh every 10 seconds
     refetchIntervalInBackground: true,
   });

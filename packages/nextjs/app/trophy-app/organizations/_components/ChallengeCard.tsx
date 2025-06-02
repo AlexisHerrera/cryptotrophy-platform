@@ -71,21 +71,26 @@ export const ChallengeCard: React.FC<{ item: Challenge }> = ({ item: challenge }
         </div>
 
         {/* Duration Timeline */}
-        <div className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-md p-4 text-gray-700 dark:text-gray-300 text-xs">
-          <div className="flex flex-col items-center mb-4">
-            <span className="uppercase text-[10px] font-semibold tracking-widest text-gray-500 dark:text-gray-400 mb-1">
+        <div className="flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-md p-2 text-gray-700 dark:text-gray-300 text-xs gap-4">
+          {/* Start */}
+          <div className="flex flex-col items-center">
+            <span className="w-2 h-2 rounded-full bg-success mb-1" />
+            <span className="uppercase text-[10px] font-semibold tracking-widest text-gray-500 dark:text-gray-400">
               Start
             </span>
-            <span className="text-sm font-semibold">{startDate}</span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">{startTime}</span>
+            <span className="text-xs font-semibold">{startDate}</span>
+            <span className="text-[10px] text-gray-500 dark:text-gray-400">{startTime}</span>
           </div>
-          <div className="w-px h-2 bg-gray-300 dark:bg-gray-500" />
-          <div className="flex flex-col items-center mt-4">
-            <span className="uppercase text-[10px] font-semibold tracking-widest text-gray-500 dark:text-gray-400 mb-1">
+          {/* Timeline bar */}
+          <div className="w-8 h-px bg-gray-300 dark:bg-gray-500 mx-2" />
+          {/* End */}
+          <div className="flex flex-col items-center">
+            <span className="w-2 h-2 rounded-full bg-error mb-1" />
+            <span className="uppercase text-[10px] font-semibold tracking-widest text-gray-500 dark:text-gray-400">
               End
             </span>
-            <span className="text-sm font-semibold">{endDate}</span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">{endTime}</span>
+            <span className="text-xs font-semibold">{endDate}</span>
+            <span className="text-[10px] text-gray-500 dark:text-gray-400">{endTime}</span>
           </div>
         </div>
       </div>

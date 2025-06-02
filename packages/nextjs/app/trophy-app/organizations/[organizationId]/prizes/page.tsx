@@ -20,6 +20,14 @@ const PrizeCenter: React.FC = () => {
     args: [BigInt(organizationId), address || ethers.ZeroAddress],
   });
 
+  // Get organization details
+  const { data: organizationData, isLoading: isOrgLoading } = useScaffoldReadContract({
+    contractName: "OrganizationManager",
+    functionName: "getOrganizationDetails",
+    args: [BigInt(organizationId)],
+  });
+  const orgName = organizationData ? (organizationData[1] as string) : "";
+
   if (isBalanceLoading) {
     return <span className="loading loading-spinner loading-lg"></span>;
   }
@@ -34,7 +42,14 @@ const PrizeCenter: React.FC = () => {
             </h1>
             <div className="mx-auto w-16 h-1 bg-blue-500 rounded-full mb-4"></div>
           </div>
-
+          {orgName && (
+            <div className="flex justify-center items-center gap-2 mb-6">
+              <span className="text-lg font-bold text-gray-700 dark:text-gray-300">Organization:</span>
+              <span className="text-xl font-mono px-3 py-1 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 shadow">
+                {orgName}
+              </span>
+            </div>
+          )}
           <div className="mb-6">
             <div className="flex justify-center items-center gap-2">
               <span className="text-lg font-bold text-gray-700 dark:text-gray-300">Your Balance:</span>

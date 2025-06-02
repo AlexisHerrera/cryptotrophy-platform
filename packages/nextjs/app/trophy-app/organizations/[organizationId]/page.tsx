@@ -81,7 +81,7 @@ const OrganizationPage: React.FC = () => {
   return (
     <div>
       <div className="w-full flex justify-center">
-        <div className="w-full max-w-6xl p-4">
+        <div className="w-full max-w-4xl p-2">
           {/* Hero Section */}
           <HeroSection
             title={organization.name}
@@ -97,6 +97,7 @@ const OrganizationPage: React.FC = () => {
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 50 }}
         transition={{ duration: 0.2 }}
+        className="mt-2"
       >
         <ChallengeGrid orgId={organizationId} />
       </MotionDiv>

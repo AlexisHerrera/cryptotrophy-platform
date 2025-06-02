@@ -3,8 +3,8 @@ import type { ChallengeData } from "./types";
 import type { GraphQLClient } from "graphql-request";
 
 export const GET_CHALLENGES_QUERY = `
-  query GetChallenges($limit: Int!, $after: String, $before: String, $orgId: String, $description: String) {
-    challenges(limit: $limit, after: $after, before: $before, where: {description_contains: $description, orgId: $orgId}) {
+  query GetChallenges($limit: Int!, $after: String, $before: String, $orgId: String, $description: String, $activeStates: [Boolean]) {
+    challenges(limit: $limit, after: $after, before: $before, where: {description_contains: $description, orgId: $orgId, isActive_in: $activeStates}) {
       totalCount
       items {
         validatorUID
@@ -36,6 +36,7 @@ export async function fetchChallenges(
   before?: string | null,
   orgId?: string,
   description?: string,
+  activeStates?: boolean[],
 ): Promise<ChallengeData> {
   return executeQuery<ChallengeData>(client, GET_CHALLENGES_QUERY, {
     limit,
@@ -43,5 +44,6 @@ export async function fetchChallenges(
     before,
     orgId,
     description,
+    activeStates,
   });
 }

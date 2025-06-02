@@ -3,7 +3,7 @@ import type { PrizeData } from "./types";
 import type { GraphQLClient } from "graphql-request";
 
 const GET_PRIZES_QUERY = `
-query GetPrizes($limit: Int!, $after: String, $before: String, $orgId: String, $name: String) {
+query GetPrizes($limit: Int!, $after: String, $before: String, $orgId: String, $name: String, $minStock: BigInt) {
   prizes(
     limit: $limit,
     after: $after,
@@ -11,6 +11,7 @@ query GetPrizes($limit: Int!, $after: String, $before: String, $orgId: String, $
     where: {
       orgId: $orgId,
       name_contains: $name
+      stock_gte: $minStock
     }
   ) {
     totalCount
@@ -41,6 +42,7 @@ export async function fetchPrizes(
   before?: string | null,
   orgId?: string,
   name?: string,
+  minStock?: number,
 ): Promise<PrizeData> {
   return executeQuery<PrizeData>(client, GET_PRIZES_QUERY, {
     limit,
@@ -48,5 +50,6 @@ export async function fetchPrizes(
     before,
     orgId,
     name,
+    minStock,
   });
 }
