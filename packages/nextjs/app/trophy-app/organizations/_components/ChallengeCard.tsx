@@ -1,5 +1,6 @@
 import React from "react";
 import { formatUnits } from "ethers";
+import ReactMarkdown from "react-markdown";
 import { ClaimChallengeButton } from "~~/app/trophy-app/organizations/_components/ClaimChallengeButton";
 import { Challenge } from "~~/utils/cryptotrophyIndex/types";
 
@@ -48,13 +49,17 @@ export const ChallengeCard: React.FC<{ item: Challenge }> = ({ item: challenge }
         </h3>
 
         {/* Description */}
-        <div className="relative mb-4 h-16 overflow-hidden">
+        <div className="relative mb-4 max-h-32 overflow-hidden group-hover:max-h-none">
           {/* Normal text */}
-          <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3">{challenge.description}</p>
+          <div className="text-gray-600 dark:text-gray-300 text-sm">
+            <ReactMarkdown>{challenge.description}</ReactMarkdown>
+          </div>
 
           {/* On hover, full text absolutely positioned */}
           <div className="absolute inset-0 p-2 bg-white dark:bg-gray-800 rounded-md shadow-md hidden group-hover:flex flex-col justify-center z-10">
-            <p className="text-gray-600 dark:text-gray-300 text-sm">{challenge.description}</p>
+            <div className="text-gray-600 dark:text-gray-300 text-sm">
+              <ReactMarkdown>{challenge.description}</ReactMarkdown>
+            </div>
           </div>
         </div>
 
