@@ -1,0 +1,125 @@
+# Get Started
+
+Ready to create your own loyalty program?  
+Follow these steps to set up your organization and start delighting your users.
+
+---
+
+## 1. Register Your Organization
+
+To get started, open the **Organization Portal** from the project main page and click **Create organization**.
+
+1. **Fill in your company details**  
+   ![Organization registration form](/images/createorganizationprops.webp)
+
+   - **Name:** Your organization’s name as it will appear to users.
+   - **Resource:** This field connects your organization to its visual and informational assets (see below for details).
+   - **Administrators:** Add one or more admin accounts that will manage your organization.
+
+   > ⚠️ **Important:** Not even CryptoTrophy administrators can modify or access your organization's configuration or tokens. This guarantees full autonomy and ownership for your organization. **Be sure to securely store your admin account credentials. If you lose access, it cannot be recovered by CryptoTrophy.**
+
+2. **Set up your organization token**
+   - Define your token’s **name** and **symbol**.
+   - *(Optional)* Add ETH to your vault to give real value to your points.
+
+3. **Review and confirm**
+   - Double-check all information, then confirm to complete your organization’s registration.
+
+---
+
+### Understanding the "Resource" Field
+
+The **Resource** field determines how your organization’s images and public information are displayed to users. There are three supported options:
+
+1. **Upload an image**  
+   Upload an image file directly. This image will be stored on IPFS (InterPlanetary File System) and displayed when users view your organization.
+
+2. **Link to an image**  
+   Provide a direct link to an image hosted on your own backend. The image will be shown to users in the same way.
+
+3. **Link to an organization resource (recommended)**  
+   Provide a link to a folder (resource) containing a `metadata.json` file and any additional assets (e.g., logo). This is the recommended method, as it allows you to supply richer information about your organization. The `metadata.json` can include a description, logo, website, and social media links.
+
+   **Example `metadata.json`:**
+   ```json
+   {
+     "description": "We have the best burgers in the world.",
+     "logo": "https://yourcdn.com/orgs/bestburger/Logo.webp",
+     "website": "https://thebestburger.com",
+     "socials": {
+       "twitter": "https://twitter.com/thebestburger"
+     }
+   }
+
+
+---
+
+## 2. Administrate Your Organization
+
+Once your organization is created, you can manage it using the **Organization Console**.
+
+From the console, administrators can:
+
+- **Mint tokens**: Create new tokens for your organization.
+- **Fund tokens**: Add value (ETH) to back your tokens.
+- **Manage admin accounts**: Add or remove organization administrators.
+- Manage prizes and challenges (see the following sections for details).
+
+---
+
+### Manage Admin Accounts
+
+To add a new administrator to your organization:
+
+1. Go to the **Admin Panel** in the Organization Console.
+2. Enter the new administrator’s account address.
+3. Click **Add Administrator**.
+
+This grants the new account full admin privileges for your organization.
+
+---
+
+### Fund Tokens
+
+Funding tokens gives real value to your organization’s points by backing them with ETH.
+
+- Enter the amount you wish to fund **in ETH**.
+- Click the asterisk (`*`) button next to the field.  
+- The platform will automatically convert the ETH value to **wei** (the smallest unit of ETH, used by smart contracts).
+
+> 💡 **Tip:** Funding tokens increases user confidence, as points have a real, redeemable value.
+
+---
+
+### Mint Tokens
+
+Minting creates new tokens for your organization. These tokens can then be used to fund challenges or rewards.
+
+- Newly minted tokens become available in your organization’s treasury.
+- **Note:** If tokens are not backed by funding (ETH), their perceived value may decrease over time. For best results, mint tokens as needed and ensure there is sufficient funding.
+
+---
+
+You can also manage prizes and challenges from the console. See the following sections for more details.
+
+
+
+---
+
+## 3. Create Your First Challenge
+
+See the [Challenges](/docs/organizations/challenges) section.
+
+
+
+---
+
+## 4. Set Up Rewards
+
+See the [Prizes](/docs/organizations/prizes) section.
+
+
+
+
+
+---

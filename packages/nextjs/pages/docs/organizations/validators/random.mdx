@@ -1,0 +1,46 @@
+# Random Validator
+
+**Chainlink VRF (Verifiable Random Function)** delivers a secure, provably fair, and transparent source of randomness for your organization’s challenges and rewards.  
+This makes it ideal for scenarios like raffles, lucky draws, random prize distribution, or any campaign where unbiased randomness is key to building user trust.
+
+---
+
+## How to Configure a Random Validator
+
+1. **Choose "Random" as your validator:**  
+   When setting up a new challenge, select the “Random” validator to ensure that winners or outcomes are selected fairly and transparently.
+
+2. **Set the "success probability":**  
+   Define the probability (0–100%) that a user will win upon claiming the challenge.
+
+3. **Define required ETH for participation:**  
+   Specify the amount of ETH users must send to participate in the challenge.
+
+> ℹ️ **Note:** Your organization is responsible for funding the smart contract with LINK tokens, which are used to pay for each Chainlink VRF request. Consider this cost when setting the “success probability” and participation requirements.
+
+---
+
+## How Users Claim Rewards
+
+1. **User initiates a claim:**  
+   The user attempts to claim a reward or complete a challenge through the platform.
+
+2. **Randomness request and verification:**  
+   For each claim, Chainlink VRF generates a random value, along with a cryptographic proof. This proof is published and verified on-chain before the outcome is used, ensuring the process is tamper-proof and transparent.
+
+3. **Outcome determination:**  
+   The generated random value is compared against the “success probability” you defined. This determines whether the user wins or loses.
+
+4. **Reward distribution or rejection:**  
+   If the result indicates a win, the platform grants the reward tokens to the user. If not, the claim is rejected.
+
+---
+
+## Key Benefits
+
+- **Provably fair:** Every outcome is accompanied by a cryptographic proof, visible and verifiable by anyone on the blockchain.
+- **Tamper-proof:** No single party—including your organization or the oracle operator—can manipulate the result.
+- **Seamless smart contract integration:** Random values and proofs are delivered directly to your smart contracts for automated reward distribution.
+
+> 💡 **Tip:**  
+> Chainlink VRF is the trusted solution for promotions, raffles, random giveaways, and any use case where users expect fair and transparent selection.
