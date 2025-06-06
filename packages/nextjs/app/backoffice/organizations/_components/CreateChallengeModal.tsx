@@ -9,7 +9,7 @@ import Modal from "~~/components/Modal";
 import { useChallengeForm } from "~~/hooks/backoffice/useChallengeForm";
 import { useDeployedContractInfo, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
-import { getEncodedValidatorConfig } from "~~/utils/challenges/challengeParam";
+import { getEncodedValidatorConfig, getValidatorAddress, getValidatorUID } from "~~/utils/challenges/challengeParam";
 
 interface CreateChallengeModalProps {
   organizationId: bigint;
@@ -31,23 +31,16 @@ const CreateChallengeFlow: React.FC<CreateChallengeModalProps> = ({ organization
     }
     try {
       setLoading(true);
-      const {
-        organizationId,
-        description,
-        prizeAmount,
-        startTime,
-        endTime,
-        maxWinners,
-        validatorUID,
-        validatorAddress,
-        params,
-      } = challengeForm;
+      const { organizationId, description, prizeAmount, startTime, endTime, maxWinners, selectedValidator, params } =
+        challengeForm;
       const prizeAmountInBaseUnits = parseUnits(prizeAmount.toString(), DECIMALS_TOKEN);
       const startTimestamp = BigInt(Math.floor(new Date(startTime).getTime() / 1000));
       const endTimestamp = BigInt(Math.floor(new Date(endTime).getTime() / 1000));
       const maxWinnersInt = BigInt(maxWinners);
+      const validatorAddress = getValidatorAddress(selectedValidator, params);
+      const validatorUID = getValidatorUID(selectedValidator, params);
       const encodedValidatorUID = encodeBytes32String(validatorUID) as `0x${string}`;
-      const hexParams = await getEncodedValidatorConfig(validatorUID, params, challengeManagerAddress);
+      const hexParams = await getEncodedValidatorConfig(selectedValidator, params, challengeManagerAddress);
 
       await challengeManager({
         functionName: "createChallengeWithValidator",

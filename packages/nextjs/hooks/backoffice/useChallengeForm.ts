@@ -17,8 +17,7 @@ const getInitialChallengeData = (organizationId: bigint): ChallengeData => {
     startTime: defaultStartTime,
     endTime: defaultEndTime,
     maxWinners: 1,
-    validatorUID: "",
-    validatorAddress: "0x0000000000000000000000000000000000000000",
+    selectedValidator: "",
     params: {},
   };
 };
