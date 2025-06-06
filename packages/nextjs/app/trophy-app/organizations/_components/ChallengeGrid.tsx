@@ -36,6 +36,12 @@ export const ChallengeGrid: React.FC<{ orgId: string }> = ({ orgId }) => {
     setBeforeCursor(null);
   };
 
+  const handleShowClosedChallenges = (checked: boolean) => {
+    setShowClosedChallenges(checked);
+    setAfterCursor(null);
+    setBeforeCursor(null);
+  };
+
   return (
     <div>
       <div className="px-8 mb-2">
@@ -49,7 +55,7 @@ export const ChallengeGrid: React.FC<{ orgId: string }> = ({ orgId }) => {
               <input
                 type="checkbox"
                 checked={showClosedChallenges}
-                onChange={e => setShowClosedChallenges(e.target.checked)}
+                onChange={e => handleShowClosedChallenges(e.target.checked)}
                 className="toggle toggle-primary"
                 aria-label="Show closed challenges"
               />

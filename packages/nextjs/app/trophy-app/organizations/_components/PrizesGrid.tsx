@@ -40,6 +40,12 @@ export const PrizesGrid: React.FC<{ orgId: string }> = ({ orgId }) => {
     setBeforeCursor(null);
   };
 
+  const handleShowPrizesWithoutStock = (checked: boolean) => {
+    setShowPrizesWithoutStock(checked);
+    setAfterCursor(null);
+    setBeforeCursor(null);
+  };
+
   return (
     <div>
       <div className="px-8 mb-2">
@@ -53,7 +59,7 @@ export const PrizesGrid: React.FC<{ orgId: string }> = ({ orgId }) => {
               <input
                 type="checkbox"
                 checked={showPrizesWithoutStock}
-                onChange={e => setShowPrizesWithoutStock(e.target.checked)}
+                onChange={e => handleShowPrizesWithoutStock(e.target.checked)}
                 className="toggle toggle-primary"
                 aria-label="Show closed challenges"
               />

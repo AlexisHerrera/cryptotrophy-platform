@@ -32,9 +32,9 @@ const ReviewChallengeData: React.FC<ReviewChallengeDataProps> = ({ formData }) =
 
         <div>
           <div className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400 tracking-wider mb-1">
-            Validator UID
+            Selected Validator
           </div>
-          <div className="text-base text-gray-900 dark:text-gray-100">{formData.validatorUID}</div>
+          <div className="text-base text-gray-900 dark:text-gray-100">{formData.selectedValidator}</div>
         </div>
       </div>
     </div>
