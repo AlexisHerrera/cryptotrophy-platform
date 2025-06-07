@@ -88,6 +88,7 @@ function getContractDataFromDeployments() {
         fs.readFileSync(`${DEPLOYMENTS_DIR}/${chainName}/${contractName}.json`).toString(),
       );
       const inheritedFunctions = getInheritedFunctions(JSON.parse(metadata).sources, contractName);
+      // console.log("Receipt blockNumber:", receipt.blockNumber);
       const startBlock = chainName === "localhost" ? 0 : receipt.blockNumber;
       contracts[contractName] = { address, abi, inheritedFunctions, startBlock };
     }
@@ -114,8 +115,8 @@ const generateTsAbis: DeployFunction = async function () {
   fs.writeFileSync(
     `${TARGET_DIR}deployedContracts.ts`,
     await prettier.format(
-      `${generatedContractComment} import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract"; \n\n
- const deployedContracts = {${fileContent}} as const; \n\n export default deployedContracts satisfies GenericContractsDeclaration`,
+      `${generatedContractComment} \n\n
+ const deployedContracts = {${fileContent}} as const; \n\n`,
       {
         parser: "typescript",
       },

@@ -22,11 +22,12 @@ services:
       context: .
       dockerfile: packages/hardhat/Dockerfile
     container_name: hardhat-node
+    working_dir: /usr/src/app
     ports:
       - "8545:8545"
     volumes:
       - ./packages/config:/usr/src/config
-      # - ./packages/hardhat:/usr/src/
+      - ./packages/hardhat:/usr/src/app
     restart: unless-stopped
     healthcheck:
       test: [ "CMD-SHELL", "curl -s http://localhost:8545" ]
@@ -65,15 +66,13 @@ services:
       dockerfile: packages/ponder/Dockerfile
     ports:
       - "${PONDER_PORT}:42069"
-    command: [ "npm","run","dev" ]
+    command: sh -c "while sleep 3600; do :; done"
     environment:
       PONDER_RPC_URL_31337: "http://hardhat:8545"
       PONDER_PORT: ${PONDER_PORT}
       NODE_ENV: development
     depends_on:
       hardhat:
-        condition: service_healthy
-      db:
         condition: service_healthy
     restart: unless-stopped
     volumes:
