@@ -1,0 +1,44 @@
+# Smart Contracts
+
+Smart contracts are the foundation for building decentralized, robust, and trustless applications. They unlock new use cases and create value for users, but because they often manage significant amounts of value, security is a critical consideration for developers.
+
+## Key Blockchain Constraints
+
+Building smart contracts involves navigating several unique blockchain restrictions:
+
+- **Code Size Limit:** [EIP-170](https://eips.ethereum.org/EIPS/eip-170) sets a maximum contract size of 24.5 KB at deployment. This prevents certain vulnerabilities related to reading code from disk.
+- **Gas Costs:** Every contract operation requires *gas*, paid in cryptocurrency (such as ETH). Expensive contracts can become economically unfeasible, especially if they include operations whose cost grows with the number of entities involved.
+- **Transaction Throughput:** Blockchains have strict limits on how many transactions can be processed per second. In addition, transaction confirmation times may vary.
+- **Security:** Smart contract code is public, permanent, and (typically) immutable after deployment—unless using upgradable patterns such as proxies. Any vulnerability can be exploited, so careful design is essential.
+
+## Core Entities
+
+Below is a diagram showing the main entities managed by the deployed contracts:
+
+![Main contract entities](/images/entities.webp)
+
+
+## Extensibility and Modularity
+
+To ensure the platform remains extensible, several interfaces were created. The ability to add new *validators* without redeploying core contracts (such as the organization or challenge contracts) is crucial for organic growth. Otherwise, if, for example, the `ChallengeManager` contract needed to be redeployed, all existing challenges stored in the previous version would be lost.
+
+## Using Audited Libraries
+
+Due to the challenges of verifying custom smart contract code, it is highly recommended to rely on well-established libraries already vetted by the community. [OpenZeppelin](https://openzeppelin.com/) is an industry-standard library of secure, reusable smart contracts written in Solidity. OpenZeppelin offers audited implementations of important standards like ERC-20, ERC-721, as well as common access control mechanisms. This enables developers to build on top of secure foundations and reduces security risks.
+
+## About ERC Standards
+
+**ERC** stands for "Ethereum Request for Comments". These are technical proposals defining standards that smart contracts can follow to ensure compatibility within the Ethereum ecosystem. Using these standards provides several advantages:
+
+- Widely recognized by tools like MetaMask and Uniswap.
+- Easily integrated with other applications.
+- Reusable and easier to maintain.
+
+## Standards Used in CryptoTrophy
+
+CryptoTrophy relies on two major ERC standards:
+
+- **ERC-20:** Defines a standard interface for fungible tokens, which are interchangeable and have equal value. Examples include stablecoins like USDC and DAI.
+- **ERC-721:** Defines a standard interface for non-fungible tokens (NFTs), which are unique and not interchangeable. Each token has a distinct ID and can carry its own metadata (such as images, names, etc.).
+
+---

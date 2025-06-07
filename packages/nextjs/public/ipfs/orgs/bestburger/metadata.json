@@ -1,0 +1,8 @@
+{
+  "description": "We have the best burgers in the world.",
+  "logo": "http://localhost:3000/ipfs/orgs/bestburger/Logo.webp",
+  "website": "http://localhost:3000/thebestburger",
+  "socials": {
+    "twitter": "https://twitter.com/thebestburger"
+  }
+}

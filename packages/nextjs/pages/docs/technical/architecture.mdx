@@ -1,0 +1,81 @@
+# Architecture
+
+Our application architecture follows a robust, modular approach inspired by best practices in modern Web3 platforms. This design balances scalability, usability, and cost-efficiency for both organizations and end-users.
+
+## Main Components
+
+![Architecture](/images/architecture.webp)
+
+### 1. User Presentation Layer
+
+The user interface enables platform users to:
+
+- Browse and discover organizations and active challenges.
+- Claim tokens after completing challenges—either by submitting proof or marking challenges as complete, pending organization validation.
+- Redeem your tokens for prizes offered by the organization.
+
+### 2. Organization Presentation Layer
+
+This is the dedicated interface for organizations and administrators, providing features to:
+
+- Create and manage challenges and campaigns.
+- Configure reward tokens and validator logic (manual, automated, or random validation).
+- Manage the Prize Center for redeemable goods or services.
+
+### 3. Smart Contracts / dApp Logic
+
+Smart contracts are the backbone of the application and encapsulate core business logic, including:
+
+- Tracking organizations, challenges, tokens, and prizes.
+- Verifying challenge completion, both on-chain and off-chain.
+
+> **Note:** To minimize transaction costs and waiting times, all contracts are deployed on a Layer 2 (L2) blockchain.
+
+### 4. Oracles
+
+We leverage [Chainlink](https://chain.link/) oracles to power flexible and secure challenge validation:
+
+- **Off-chain Validators:** Communicate with organization systems to confirm user eligibility or challenge completion before distributing rewards.
+- **Random Validators:** Provide secure, provable randomness (e.g., for selecting random winners), which blockchains cannot natively generate due to their deterministic nature.
+
+### 5. Storage
+
+Storing data directly on-chain is expensive. To address this, we use decentralized storage solutions like [IPFS](https://ipfs.tech/) for non-critical data:
+
+- IPFS offers decentralized, scalable storage for assets such as images and challenge metadata.
+- Organizations upload metadata and images to IPFS, which enhances user experience without incurring high blockchain storage costs.
+
+### 6. Event Indexing
+
+Certain operations (e.g., full-text search) are not practical or efficient to perform directly on-chain or in the frontend.
+
+- We use an event indexing tool [Ponder](https://ponder.sh/) to listen to blockchain events and maintain an off-chain, searchable relational database.
+- The indexer configuration specifies which events to track and how to map blockchain data to database records.
+- This setup keeps the off-chain database synchronized with blockchain events in near real-time.
+
+### 7. Project Website
+
+Our project website is built as a:
+
+- Comprehensive documentation for all user roles.
+- Clean, intuitive UI for both end-users and developers.
+- Streamlined onboarding for third-party developers and integration partners.
+
+---
+
+## Why Two Independent Frontends?
+
+We intentionally built **separate frontends** for end-users and organizations. This architectural choice enables us to:
+
+- **Serve distinct audiences:** Organizations need powerful admin tools for challenge and reward management, while end-users benefit from a streamlined, discovery-focused interface.
+- **Optimize for specific requirements:** Each frontend addresses different scalability, usability, and interface needs.
+- **Accelerate development:** Specialized frontends allowed us to deliver targeted functionality faster and more efficiently than a unified, overly complex system.
+
+**Summary:**  
+- **User Frontend:** Prioritizes intuitive navigation, simplicity, and fast challenge discovery.
+- **Organization Backoffice:** Tailored for administrators, streamlining the creation and management of challenges, rewards, and tokens.
+
+---
+
+> Have questions about the architecture, or want to learn more about integration and deployment?  
+> This documentation is the right place to start!

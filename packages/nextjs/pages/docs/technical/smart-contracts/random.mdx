@@ -1,0 +1,15 @@
+## Random Validator
+
+Some challenges require randomness—for example, selecting winners among participants. For this, CryptoTrophy uses **Chainlink VRF (Verifiable Random Function)**.
+
+**Chainlink VRF** is a secure and verifiable random number generator (RNG) designed specifically for smart contracts. It allows blockchain applications to request random values in a way that is:
+
+- **Provably Fair:** Every random value comes with a cryptographic proof that demonstrates exactly how it was generated.
+- **Verifiable:** This proof is published and verified on-chain before any consuming application can use the random value.
+- **Tamper-Proof:** No one—including oracle operators, miners, users, or smart contract developers—can manipulate or predict the outcome.
+
+For each request, Chainlink VRF generates one or more random values together with a cryptographic proof. This process ensures the integrity and unpredictability of the results, providing strong security guarantees for applications that depend on randomness.
+
+> With Chainlink VRF, you can confidently implement lotteries, raffles, randomized prize selection, and more—knowing your randomness is secure and fully verifiable.
+
+For more information, see the [Chainlink VRF documentation](hhttps://docs.chain.link/vrf).

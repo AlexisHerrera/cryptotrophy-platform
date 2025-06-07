@@ -1,0 +1,40 @@
+## Ponder
+
+**Ponder** is an open-source framework designed for custom Ethereum indexing. It lets you write TypeScript code to transform and organize on-chain data into your own database schema, enabling fast, flexible queries in your Web3 applications.
+
+### Why Use Ponder?
+
+- **Custom Indexing:** Transform smart contract events into structured data tailored to your app.
+- **Flexible Queries:** Access your data using GraphQL, SQL over HTTP, or by querying Postgres directly.
+- **Full Control:** You define the schema and logic for how on-chain data maps to your application's needs.
+
+### How Ponder Works
+
+1. **Define your schema** in TypeScript using `onchainTable`.
+2. **Write event handlers** that listen for smart contract events, then process and store them in your database.
+3. **Query your data** using GraphQL, SQL, or direct Postgres connections.
+
+### Example: Indexing Organization Creation
+
+Below is an example that shows how to index organization creation events from the blockchain and store them in a Postgres table:
+
+```typescript
+// 1. Define your table schema
+export const organization = onchainTable("organization", (t) => ({
+  id: t.text().primaryKey(), // orgId as string
+  name: t.text(),
+  token: t.text(),           // token address as text
+  baseURI: t.text(),
+}));
+
+// 2. Handle contract events and insert data into Postgres
+ponder.on("OrganizationManager:OrganizationCreated", async ({ event, context }) => {
+  const { orgId, name, token, baseURI } = event.args;
+
+  await context.db.insert(organization).values({
+    id: orgId.toString(),
+    name,
+    token,
+    baseURI
+  });
+});

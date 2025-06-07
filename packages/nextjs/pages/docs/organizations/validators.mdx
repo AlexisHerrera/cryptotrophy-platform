@@ -1,0 +1,70 @@
+# Validators
+
+**Validators** make sure that only eligible users can win challenges and receive tokens.  
+Think of them as the digital referees for your competitions!
+
+---
+
+## What is a Validator and Why Does it Matter?
+
+A **validator** is a key part of your challenge: it checks whether a user has actually completed the requirements and is eligible for rewards. Validators ensure that only the right users receive loot, making the process fair and trustworthy.
+
+**Why are validators important?**
+- Ensure fairness and trust in your campaigns.
+- Make sure only qualified users can claim rewards.
+- Automate the entire process—no manual checking required!
+
+Validators make your challenges secure, efficient, and credible for both your organization and your users.
+
+
+---
+
+## Out of the box validators
+
+### 1. Secrets Codes Validator
+
+Winners must posses a unique code. See the [Secrets Codes](/docs/organizations/validators/secret-codes) section.
+
+### 2. Off-Chain Validator
+
+Winners are selected and validated in the organizations own systems. See the [Off-Chain](/docs/organizations/validators/off-chain) section.
+
+
+### 3. Random Validator
+
+Winners are picked randomly from all valid claims. See the [Random](/docs/organizations/validators/off-chain) section.
+
+
+---
+
+## Custom Validator
+
+The **Custom Validator** feature allows your organization to deploy its own smart contract and use it as a validator within the platform.
+
+**Why choose a Custom Validator?**
+- **Maximum flexibility:** Build any validation logic your business needs.
+- **Seamless integration:** Connect with your existing systems, data sources, or advanced on-chain workflows.
+- **Full control:** Tailor challenges to unique requirements beyond the standard options.
+
+To use a custom validator, your contract must follow the interface expected by the platform’s ChallengeManager.
+
+> ⚠️ **Note:**  
+> Setting up a custom validator requires smart contract development. This option is recommended for organizations with dedicated technical teams or specialized use cases.
+
+
+### Custom Validator Parameters
+
+When configuring your custom validator, you’ll need:
+- **Contract address:** Where your validator contract is deployed.
+- **validatorUID:** A unique identifier for your validator and its version.
+- **ABI Parameters:**  
+  A list of values passed to your contract during setup, in the order the contract expects. Supported types: `string`, `address`, and `uint256`.
+
+For more technical details, see the [Custom Validator Technical Guide](../technical/custom-validator).
+
+
+For example, you can configure the contract used by the random validator directly through the custom validator interface:
+
+![Custom validator configuration example](/images/customvalidatorconfig.webp)
+
+Once set up, your custom challenge is managed just like those created using the built-in validator UI options.

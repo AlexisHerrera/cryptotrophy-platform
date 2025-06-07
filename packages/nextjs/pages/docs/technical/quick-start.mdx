@@ -1,0 +1,54 @@
+
+# 🚀 Quickstart
+
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/AlexisHerrera/cryptotrophy-platform
+cd cryptotrophy-platform
+yarn install
+```
+
+Build and run the platform locally:
+
+```bash
+# Build project
+yarn build
+
+# Start a local Hardhat blockchain node
+yarn hardhat:chain
+
+# Deploy contracts to the local chain
+yarn hardhat:deploy
+
+# Start frontend and backoffice apps (Next.js)
+yarn start
+
+# Start the Ponder indexer in development mode
+yarn ponder:dev
+
+# Run tests
+yarn test
+```
+
+---
+
+## 🗂️ Monorepo Structure
+
+CryptoTrophy uses a monorepo architecture, with specialized packages for each domain:
+
+```
+crypto-trophy/
+│
+├── packages/
+│   ├── hardhat/            # Smart contracts & deployment scripts
+│   ├── contracts/          # Main contracts with business logic
+│   ├── nextjs/             # Web frontend (Next.js)
+│   ├── backoffice/         # Admin backoffice for organizations
+│   ├── trophy-app/         # End user application
+│   ├── ponder/             # Blockchain event indexer
+│
+├── circuits/               # ZK-SNARK circuits (Circom)
+├── docker-compose.yml      # Orchestrates local dev services
+```
+

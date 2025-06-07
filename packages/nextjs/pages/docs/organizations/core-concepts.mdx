@@ -1,0 +1,107 @@
+# Core Concepts
+
+Welcome to CryptoTrophy, where you can easily launch a branded points program to engage and reward your users. This section explains the building blocks of your organization’s program.
+
+---
+
+
+## Organization
+
+An **Organization** is any company, business, or community that participates in our platform. As an organization, you have full control over your loyalty program — including token issuance, challenges, and rewards.
+
+> ⚠️ **Important:** Not even CryptoTrophy administrators can modify or access your organization's configuration or tokens. This guarantees full autonomy and ownership, but also means that securing your admin account credentials is **critical**. If access is lost or compromised, it cannot be recovered by CryptoTrophy.
+
+
+
+---
+
+## Tokens (Points)
+
+Each organization creates their own custom **Token**. Tokens represent points that users can earn by participating in challenges and spend on rewards.
+
+- Your token can function as simple digital points or be **backed by ETH** to give it real-world value.
+- Tokens are issued as industry-standard **ERC20 tokens**.
+
+Organization tokens on our platform have the following characteristics:
+
+- **Mintable**: New tokens can be created (minted) even after the initial deployment.
+- **Backed (Optional)**: A backed token is guaranteed by a reserve of ETH. The backing establishes a fixed relationship between the amount of tokens minted and the ETH deposited.
+- **Transferable**: Tokens can be freely transferred between accounts. This standard ERC-20 feature allows users to move tokens within the network without restrictions.
+
+
+
+---
+
+## Challenges
+
+A **Challenge** is a fun competition or activity you design to engage your users. By completing challenges, users earn your organization's tokens.
+
+- Challenges can be as simple as “Make a purchase” or as creative as “Share a photo with our product.”
+- You define the rules, rewards, and expiration dates.
+
+A core part of the challenge system is **validation** — verifying whether a user has actually completed the challenge and is eligible for a reward.
+
+Every challenge must include a **validator**, which confirms the user’s eligibility. By default, we support two types of validators:
+
+- **Secret Code Validators**: The user must submit a specific code (e.g., shared in-store or during an event) to claim the reward.
+- **Off-chain Validators**: Connect to your external systems (such as your backend or CRM) to validate claims automatically.
+
+Optionally, your organization can develop its own **custom validator contract** for full flexibility and control over how challenges are validated.
+
+For more details, see the [Validators](../validators) section.
+
+
+---
+
+## Users
+
+A **User** is anyone who participates in your challenges and earns your organization's tokens — including your customers, fans, or community members.
+
+The process of earning tokens is straightforward:
+
+1. **Claim** – The user submits a claim to report they’ve completed a challenge.
+2. **Validation** – A validator checks if the user met the requirements.
+3. **Loot** – If the claim is approved, the user receives a reward (called **loot**), which is a bundle of your tokens.
+
+> ℹ️ To participate in challenges and receive loot, users must have a **valid blockchain account** with enough ETH to cover gas fees. For more information, see the [Get Started](/docs/users) section.
+
+Once users earn tokens, they can redeem them for rewards or exchange them for ETH — depending on how your organization has configured its program.
+
+
+---
+
+## Rewards & Prize Catalog
+
+The **Prize Catalog** is your organization's digital storefront for rewards—real-world products or services that users can obtain by exchanging their tokens.
+
+Organizations have full flexibility to decide **how tokens can be used**. You can offer access to services, discounts, merchandise, exclusive experiences, or anything else that fits your goals.
+
+To make things simple, our platform provides a built-in **Prize Center**. With it, you can:
+
+- List rewards with images, descriptions, and the required token amount.
+- Set and update the exchange rate for each reward at any time.
+- Manage available stock with just a few clicks.
+- Present all rewards to users in a clear, user-friendly interface.
+
+In the **Prize Center**, users can browse your available rewards and instantly see how many tokens they need to redeem each one.
+
+When a user redeems a reward, they receive a **Reward NFT**—a unique digital certificate proving their claim to the prize. The user can present this NFT at your store or service center to receive the real-world prod
+
+
+---
+
+## Exchange
+
+The **Exchange** is where users can swap their tokens for ETH or tokens from other organizations (optional feature).
+
+If a token is backed by ETH, users can **redeem their tokens** for a proportional amount of ETH held in the contract. The exchange rate is dynamically calculated based on the following:
+
+- **Total supply**: The total number of tokens currently in circulation.
+- **Remaining ETH backing**: The amount of ETH held in the token contract as collateral.
+
+Each time a user exchanges tokens for ETH, both the total token supply and the ETH balance decrease proportionally. This keeps the **exchange rate constant** over time.
+
+
+
+---
+

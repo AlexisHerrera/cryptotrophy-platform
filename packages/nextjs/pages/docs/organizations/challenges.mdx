@@ -1,0 +1,81 @@
+# Challenges
+
+Challenges are the heart of your program—they’re fun tasks, events, or competitions that get your users excited and engaged.
+
+---
+
+## Creating a Challenge
+
+Set up engaging challenges for your users and reward them for participation. Follow these steps to create a new challenge for your organization:
+
+---
+
+### Step 1: Challenge Details
+
+Fill out the fields on the first page:
+![Organization registration form](/images/createchallengepage1.webp)
+
+- **Challenge Description:**  
+  Clearly describe your challenge. You can use Markdown to enhance your description—add links, lists, or images for a richer user experience.  
+  *Tip:* We recommend including a link to a page with detailed challenge information and legal terms or conditions, so users know exactly what to expect.
+
+- **Number of Tokens per Winner:**  
+  Set the amount of tokens each winner receives.  
+  *Example:* If each winner gets `10` tokens and you allow a maximum of `3` winners, the contract will reserve `30` tokens.
+
+- **Maximum Number of Winners:**  
+  Define how many unique winners the challenge can have.  
+  *Note:* Each account can only win the challenge once.
+
+- **Start Date:**  
+  Set when the challenge becomes active.
+
+- **End Date:**  
+  Set when the challenge ends. After this date, no more claims will be accepted.
+
+---
+
+### Step 2: Validator Configuration
+
+Choose how winners will be validated. You can define custom validators, or use one of the following flexible options provided by the platform:
+![Organization registration form](/images/createchallengevalidators.webp)
+
+- **Secret Codes Validator (On-Chain with ZKP):**  
+  Use zero-knowledge proofs (ZKP) for on-chain validation. This is secure, private, and ideal for secret code challenges.
+
+- **Off-Chain API Validator:**  
+  Use oracles to connect with external systems or databases. This ensures that only eligible users (e.g., verified in your backend) can win.
+
+- **Randomized Validator:**  
+  Winners are selected randomly, perfect for raffles or sweepstakes.
+
+- **Custom Validator:**  
+  Build your own logic to fit special requirements.
+
+See the [Validator](/docs/organizations/validators) section.
+
+
+---
+
+### Step 3: Review and Confirm
+
+Carefully review all the information you’ve entered:
+
+- Double-check the challenge description and configuration.
+- Verify the number of tokens and winners.
+- Confirm the validator setup and challenge dates.
+
+When you are ready, confirm to create your challenge. The system will reserve the necessary tokens and configure the challenge as specified.
+
+
+---
+
+## Managing Challenges
+
+If you encounter an issue during a challenge or need to correct a mistake made during setup, you can edit the associated validator.
+
+To make changes, simply return to the challenge management page. The same interface used for creating a validator is also used for editing it.
+
+> ⚠️ **Note:** Changes to validators may affect how winners are selected or rewards are distributed. Always double-check updates before confirming your changes.
+
+

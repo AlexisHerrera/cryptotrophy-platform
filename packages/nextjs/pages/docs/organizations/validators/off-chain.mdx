@@ -1,0 +1,38 @@
+
+# Off-Chain Validator
+
+The **Off-Chain Validator** lets your organization connect your own systems directly to the rewards platform using secure Chainlink oracles and your REST API. This gives you the power to create challenges that reward users based on your unique business logic—for example, “Has this user bought a product?” or “Is this account registered with us?”
+
+## Business Benefits
+
+- **Verify participation:** Ensure that only registered users or qualified participants can claim rewards.
+- **Custom validation logic:** Define exactly what counts as a valid claim, tailored to your company’s requirements.
+- **Flexible use cases:** Perfect for loyalty programs, purchase-based campaigns, member-only events, and more.
+
+> ⚠️ **Note:** Using an off-chain validator requires your organization to provide and maintain an external API endpoint.
+
+---
+
+## How to Configure an Off-Chain Validator
+
+1. **Provide your validation API:**  
+   Set up and supply a REST API endpoint that Chainlink oracles will use to validate user claims.
+2. **Define the validation field:**  
+   Specify the field in your API’s response that confirms whether a user’s claim is valid (for example, a `success` or `isEligible` field).
+
+---
+
+## How Claims Are Processed
+
+1. **User initiates a claim:**  
+   When a user attempts to complete a challenge and claim the tokens, the system calls your organization’s API (using the challenge’s validation ID and the user’s account) through Chainlink oracles.
+2. **Chainlink handles validation:**  
+   Chainlink oracles securely fetch the result from your API and ensure all responses are consistent.
+3. **Result aggregation:**  
+   The aggregated result is sent back to the smart contract on-chain.
+4. **Claim approval or rejection:**  
+   If your API response indicates the user is eligible, the tokens are granted. If not, the claim is rejected.
+
+---
+
+> 💡 **Tip:** Off-chain validators offer maximum flexibility and security—letting you integrate the rewards platform directly with your business rules and customer records.
