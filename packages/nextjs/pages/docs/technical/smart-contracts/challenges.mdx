@@ -1,0 +1,55 @@
+## Challenges
+
+The process of creating a challenge in CryptoTrophy involves multiple contracts and data structures.
+
+![Architecture](/images/challengediagram.webp)
+
+### Challenge Lifecycle & Management
+
+All challenges are managed within a single smart contract called `ChallengeManager`. This contract controls the challenge lifecycle and provides the core functions—such as `claimReward`—that power user interactions.
+
+Key points:
+
+- **Every challenge belongs to exactly one organization** and is identified by a unique `uint256` ID (unique even across organizations).
+- When creating a challenge, the organization ID is passed as a parameter.  
+  Before creating the challenge, the `IOrganizationManager` interface checks that the sender is a registered admin of the relevant organization.
+
+### Challenge Properties
+
+When creating a challenge, several properties define its behavior:
+
+- **Reward Amount:** The number of tokens awarded to the user.
+- **Active Period:** The timeframe during which the challenge is open for claims.
+- **Max Claims:** The maximum number of users who can claim rewards from this challenge.
+
+### Assigning a Validator
+
+Each challenge must have an assigned *validator*. The validator ensures that users have met the criteria to claim a reward. Three key parameters define the validator:
+
+- `validatorUID`: A unique identifier for the contract that executes the validation logic. It indicates the validator type (on-chain, off-chain, etc.) and version.
+- `validatorAddress`: The contract address used for validation.
+- `validationId`: A `uint256` integer that uniquely identifies a validation instance. This is used to track the specific configuration associated with a challenge.
+
+#### Validator vs. Validation Instance
+
+It’s important to distinguish between a **validator** (`validatorUID`) and a **validation instance** (`validationId`):
+
+- **Validator (`validatorUID`):** Refers to the contract containing the validation logic (e.g., an on-chain validator running ZKP code or an off-chain validator calling an external API).
+- **Validation Instance (`validationId`):** Refers to a specific configuration for that validator. For example, two organizations may use the same off-chain validator contract but require different API endpoints. Instead of deploying multiple validator contracts, each organization assigns its own `validationId` and configuration (such as a URL) within the validator contract.
+
+This approach enables flexibility:  
+- Each validator contract can store multiple configurations indexed by `validationId`.  
+- When a challenge triggers validation, the contract uses the `validationId` to look up the correct settings (e.g., the right API URL).
+
+**Security Note:**  
+The `validationId` is defined and stored by the organization at challenge creation and cannot be modified by the user. This ensures users cannot tamper with validator configurations (such as changing the target URL).
+
+### Benefits of the `validationId` System
+
+- Makes the platform modular and extensible.
+- Allows organizations to add new validation logic without redeploying core contracts or duplicating validator contracts.
+- Keeps validator configuration secure and isolated to each organization and challenge.
+
+---
+
+> For further technical details, see the contract interfaces and implementation guides in our repository.

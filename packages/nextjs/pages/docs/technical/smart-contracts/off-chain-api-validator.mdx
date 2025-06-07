@@ -1,0 +1,49 @@
+## Off-chain Validators
+
+As previously mentioned, CryptoTrophy is a hybrid platform. To connect smart contracts with external data sources, we use [Chainlink](https://chain.link/), a leading decentralized oracle network.
+
+Chainlink acts as a **bridge between smart contracts and off-chain data**. When a contract needs information (for example, the result of an API call or the price of an asset), Chainlink sends the request to multiple independent oracle nodes. Each node queries the required API or data feed, returns its result, and a consensus mechanism (like taking the median) determines the final value, which is then delivered to the smart contract. Node operators are incentivized and paid in the LINK token, ensuring reliability and security.
+
+
+Oracles now play a central role in blockchain apps, providing both fast/reliable connectivity and off-chain computation through **Decentralized Oracle Networks (DONs)**. For our use case, the most relevant Chainlink product is **Chainlink Functions**.
+
+### How Chainlink Functions Work
+
+With Chainlink Functions, a smart contract can send JavaScript code to be executed off-chain by DON nodes. Each node runs the code, returns a result, and the DON aggregates all responses, sending the final result back on-chain.
+
+This enables secure, programmable connectivity to any external API or system—**without requiring users or contracts to hold LINK tokens** directly. Instead, a subscription account is funded to pay for requests, greatly simplifying user experience.
+
+### OffChainApiValidator: Our Off-chain Validator
+
+CryptoTrophy’s off-chain validator, `OffChainApiValidator`, is built on Chainlink’s `FunctionsClient` contract, which handles the complexity of communicating with Chainlink’s oracle network.
+
+#### Validation Flow
+
+1. **Claim Request:**  
+   The user initiates a claim by sending a transaction to the `OffChainApiValidator` and calling the `preValidation` function, passing in the `validationId` for the challenge.  
+   - The validator constructs a `FunctionsRequest.Request` using the API URL configured by the organization when creating the challenge (this URL is immutable from the user's perspective).
+   - The request includes the `validationId` and the user's address.
+
+2. **Oracle Processing:**  
+   Chainlink deploys a `FunctionsCoordinator` contract on-chain. Oracle nodes monitor for events from this contract, then:
+   - Each node executes the JavaScript function and calls the organization's API.
+   - The DON then aggregates all the independent return values from each execution and sends the final result back to your smart contract.
+
+3. **Aggregation and Callback:**  
+   The oracles use Chainlink's [Chainlink Functions](https://docs.chain.link/chainlink-functions) protocol to aggregate responses.
+   - The final result is delivered back to the consumer contract (`OffChainApiValidator`) using the `fulfillRequest` callback function.
+
+4. **Result Handling:**  
+   - If the API response meets the challenge conditions, the validator marks the claim as successful and executes the challenge claim logic.
+   - If not, the claim remains in a FAILED state.
+
+
+### Key Security & Usability Points
+
+- The **API endpoint is defined by the organization when the challenge is created** and cannot be changed by the user. This prevents tampering.
+- Users and contracts **do not need to hold LINK tokens**. All fees are paid from a pre-funded Chainlink subscription account.
+- The oracle network ensures that results are trustworthy and tamper-resistant, enabling reliable off-chain validation.
+
+---
+
+> For more technical details on integrating Chainlink Functions or building custom off-chain validators, refer to the [Chainlink Functions documentation](https://docs.chain.link/chainlink-functions) and our open-source contract examples.

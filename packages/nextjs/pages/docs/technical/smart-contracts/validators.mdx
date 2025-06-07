@@ -1,0 +1,41 @@
+## Validators
+
+Validators in CryptoTrophy are designed to be **completely independent** from both organizations and challenges. This modularity allows validators to be reused in other contexts and applications with minimal changes.
+
+### Decoupling Validators
+
+To achieve this high level of decoupling, two key interfaces were defined:
+
+- **`IValidator`:**  
+  Every validator contract must implement this interface. By adhering to a common standard, new types of validators can be introduced at any time—without requiring a redeployment of the `ChallengeManager` contract. This makes the platform highly extensible and adaptable to new validation mechanisms (on-chain, off-chain, ZKP, API-based, etc.).
+
+- **`IValidatorCallback`:**  
+  This interface defines the callback mechanism that is triggered only if validation succeeds. The `ChallengeManager` contract implements this interface, ensuring that:
+    - The challenge is claimed,
+    - The appropriate tokens are transferred to the user's account.
+
+This architecture ensures that validators remain generic and reusable, while the application logic (challenge claiming and token distribution) stays safely within the core platform contracts.
+
+---
+
+## Built-in Validator Mechanisms
+
+While organizations are free to implement their own custom validators, CryptoTrophy provides several **flexible, ready-to-use validators out of the box** that cover a wide range of use cases:
+
+- **Secret Codes (ZKP, On-chain):**  
+  Uses Zero-Knowledge Proofs (ZKP) to securely validate secret codes directly on-chain. This ensures the result is verifiable without exposing any sensitive information.
+
+- **Off-chain Validation:**  
+  Leverages oracles to connect the platform with external data sources (such as APIs or organizational systems). This enables verification of challenge completion based on off-chain events or criteria, while maintaining authenticity and integrity in the delivery of rewards.
+
+- **Randomized Validation:**  
+  Supports challenges where winners are selected at random. Uses secure randomness sources (such as Chainlink VRF) to ensure fairness and transparency.
+
+- **Custom Validation:**  
+  Organizations can develop and deploy their own validator contracts, enabling highly customized challenge conditions and validation logic tailored to specific business requirements.
+
+---
+
+> By providing a suite of flexible validators and interfaces, CryptoTrophy supports both rapid development and advanced customization—ensuring organizations can securely and efficiently validate any type of challenge.
+
+> For more details on implementing custom validators or integrating new validation mechanisms, see our interface documentation and example contracts.

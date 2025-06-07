@@ -1,0 +1,33 @@
+
+
+## Deployment
+
+Deploying CryptoTrophy involves several key components beyond just the smart contracts. 
+As outlined in the architecture section, the deployment includes contracts, an indexer (Ponder), the frontend.
+
+
+### Smart Contracts
+
+Contracts can be deployed to several chains: Base, Base Sepolia an local network
+
+For testing contracts were deployed to both **Base Sepolia** (emulating a production network) and to a local network using **Hardhat**.
+
+- When deploying, you must configure the **Off-chain** and **Random** validators with the correct Chainlink contract addresses.
+    - On Base Sepolia, use the addresses provided by Chainlink.
+    - On local networks, mock contracts were created to simulate the Chainlink callback process. These mock contracts are deployed only in local environments.
+
+
+### Frontend
+
+The frontend is built with **Next.js** and deployed using **Vercel** for seamless and automated deployments.
+
+
+### Indexer
+
+For the indexer (Ponder), we used **AWS EC2** instances.
+
+- Both services are managed with **Docker Compose**, which lists the backend, indexer, and a **Postgres** database service.
+
+---
+
+> This deployment setup ensures smooth, reliable operations across development, staging, and production environments—supporting scalability and rapid iteration for your Web3 platform.

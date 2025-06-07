@@ -1,9 +1,9 @@
 export default {
-  index: "Get Started",
+  "quick-start": "Quick Start",
   architecture: "Architecture",
   "smart-contracts": "Smart Contracts",
-  frontend: "FrontEnd",
   indexing: "Indexing",
-  "best-practices": "Best Practices",
+  "tech-stack": "Tech stack",
+  deployment: "Deployment",
   security: "Security",
 }
