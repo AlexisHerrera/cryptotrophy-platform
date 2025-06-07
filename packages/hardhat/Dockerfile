@@ -9,5 +9,3 @@ RUN npm install
 COPY packages/hardhat/ ./
 
 EXPOSE 8545
-
-CMD ["npm","run","chain"]
