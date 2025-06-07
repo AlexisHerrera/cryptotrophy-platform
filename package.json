@@ -71,5 +71,8 @@
     "circomlib": "^2.0.5",
     "circomlibjs": "^0.1.7",
     "lucide-react": "^0.485.0"
+  },
+  "resolutions": {
+    "@zksync/contracts": "git+https://github.com/matter-labs/era-contracts.git#446d391d34bdb48255d5f8fef8a8248925fc98b9"
   }
 }
