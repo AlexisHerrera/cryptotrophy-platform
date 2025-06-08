@@ -10,6 +10,7 @@ import {
   OrganizationManager__factory,
   Prizes__factory,
   PrizeNFT__factory,
+  OrganizationToken__factory,
 } from "../typechain-types";
 
 describe("Prizes contract", function () {
@@ -239,9 +240,9 @@ describe("Prizes contract", function () {
       // Pagó 5 * 10 = 50 tokens
       expect(userBalanceAfter).to.equal(ethers.parseUnits("150", 18));
 
-      // Contrato Prizes ahora tiene 50 tokens
+      // Contrato Prizes no debe tener nada, los debe tener la organizacion
       const prizesBalance = await orgToken.balanceOf(await prizes.getAddress());
-      expect(prizesBalance).to.equal(ethers.parseUnits("50", 18));
+      expect(prizesBalance).to.equal(0n);
     });
 
     it("Should give the user NFTs when claiming a prize", async function () {
@@ -313,6 +314,33 @@ describe("Prizes contract", function () {
 
       // Reclamamos
       await expect(prizes.connect(user1).claimPrize(orgId, 0, 5)).to.be.reverted; // "ERC20: transfer amount exceeds balance" o similar
+    });
+
+    it("Should return the prize tokens to the OrganizationManager contract", async function () {
+      const { prizes, orgManager, orgId, user1 } = await loadFixture(createPrizeAndApproveFixture);
+      const orgTokenAddress = await orgManager.getTokenOfOrg(orgId);
+      const orgToken = OrganizationToken__factory.connect(orgTokenAddress, user1);
+      const [prizeIds, , , prices] = await prizes.listPrizes(orgId);
+      const prizeId = prizeIds[0];
+      const prizePrice = prices[0];
+      const amountToClaim = 5n;
+      const totalCost = prizePrice * amountToClaim;
+
+      // Balance del OrganizationManager ANTES del reclamo
+      const orgManagerBalanceBefore = await orgToken.connect(user1).balanceOf(await orgManager.getAddress());
+
+      // user1 reclama 5 unidades del premio
+      await prizes.connect(user1).claimPrize(orgId, prizeId, amountToClaim);
+
+      // Balance del OrganizationManager DESPUÉS del reclamo
+      const orgManagerBalanceAfter = await orgToken.connect(user1).balanceOf(await orgManager.getAddress());
+
+      //El balance del OrganizationManager debe haber aumentado por el costo total.
+      expect(orgManagerBalanceAfter).to.equal(orgManagerBalanceBefore + totalCost);
+
+      // El contrato Prizes no debe retener ningún token. Su balance debe ser 0.
+      const prizesContractBalance = await orgToken.connect(user1).balanceOf(await prizes.getAddress());
+      expect(prizesContractBalance).to.equal(0n);
     });
   });
 });
