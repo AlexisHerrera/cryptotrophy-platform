@@ -4615,7 +4615,7 @@ const deployedContracts = {
       startBlock: 6,
     },
     RandomValidator: {
-      address: "0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690",
+      address: "0x9A676e781A523b5d0C0e43731313A708CB607508",
       abi: [
         {
           inputs: [
@@ -5073,7 +5073,7 @@ const deployedContracts = {
         transferOwnership:
           "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol",
       },
-      startBlock: 50,
+      startBlock: 21,
     },
     RewardSystem: {
       address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",

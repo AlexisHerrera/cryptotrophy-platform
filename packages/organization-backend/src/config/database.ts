@@ -24,6 +24,7 @@ export async function seedData() {
     await Campaign.findOrCreate({
         where: { id_campaign: 0 },
         defaults: {
+            id_campaign: 0,
             campaign_name: 'Initial Campaign',
             start_date: new Date(),
             end_date: new Date(Date.now() + 7 * 24*60*60*1000),
@@ -42,7 +43,7 @@ export async function seedData() {
 export const connectDB = async () => {
     try {
         await sequelize.authenticate();
-        console.log('PostgreSQL Connection has been established successfully.');
+        console.log('PostgresSQL Connection has been established successfully.');
         await sequelize.sync({ alter: true });
         console.log("All models were synchronized successfully.");
     } catch (error) {
@@ -50,5 +51,3 @@ export const connectDB = async () => {
         process.exit(1);
     }
 };
-
-export default sequelize;
