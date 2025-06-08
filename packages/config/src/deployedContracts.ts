@@ -4615,7 +4615,7 @@ const deployedContracts = {
       startBlock: 6,
     },
     RandomValidator: {
-      address: "0x9A676e781A523b5d0C0e43731313A708CB607508",
+      address: "0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690",
       abi: [
         {
           inputs: [
@@ -5073,7 +5073,7 @@ const deployedContracts = {
         transferOwnership:
           "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol",
       },
-      startBlock: 21,
+      startBlock: 50,
     },
     RewardSystem: {
       address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
@@ -5718,7 +5718,7 @@ const deployedContracts = {
   },
   84532: {
     ChallengeManager: {
-      address: "0x87ebAcEB6514C544cF8188A71785da7Ffab17b46",
+      address: "0x73C6A6c5B6302a97Ef51977484E09c674Fa33078",
       abi: [
         {
           inputs: [
@@ -6327,7 +6327,7 @@ const deployedContracts = {
         getOrganizationId: "contracts/Challenges/IChallengeManager.sol",
         setChallengeValidator: "contracts/Challenges/IChallengeManager.sol",
       },
-      startBlock: 25733617,
+      startBlock: 26814434,
     },
     Groth16Verifier: {
       address: "0x987cc9ed0A5b5CA52B004023628A39185454d1F9",
@@ -7492,7 +7492,7 @@ const deployedContracts = {
       startBlock: 25733632,
     },
     OrganizationManager: {
-      address: "0x9F1BaFcAf305F9DD8Ae7e409FAbe719c0905E4A6",
+      address: "0x44fbD88018fa0Ee4e45cCf1AD92eAFA4D695318F",
       abi: [
         {
           anonymous: false,
@@ -7542,6 +7542,44 @@ const deployedContracts = {
             },
           ],
           name: "OrganizationCreated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+          ],
+          name: "OrganizationFunded",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "orgId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+          ],
+          name: "OrganizationTokenMint",
           type: "event",
         },
         {
@@ -7603,6 +7641,19 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
+          stateMutability: "payable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+          ],
+          name: "fundOrganization",
+          outputs: [],
           stateMutability: "payable",
           type: "function",
         },
@@ -7678,6 +7729,11 @@ const deployedContracts = {
               internalType: "address",
               name: "token",
               type: "address",
+            },
+            {
+              internalType: "string",
+              name: "tokenSymbol",
+              type: "string",
             },
             {
               internalType: "address[]",
@@ -7818,6 +7874,24 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_orgId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_amount",
+              type: "uint256",
+            },
+          ],
+          name: "mintOrganizationToken",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -7963,10 +8037,10 @@ const deployedContracts = {
           "contracts/Organization/IOrganizationManager.sol",
         transferTokensTo: "contracts/Organization/IOrganizationManager.sol",
       },
-      startBlock: 25733609,
+      startBlock: 26814426,
     },
     OrganizationToken: {
-      address: "0x5AF83b01a8be807294C16E47251b2E41cE7042b7",
+      address: "0xD91B59F9D8325136046618562148677ad970c234",
       abi: [
         {
           inputs: [
@@ -8327,6 +8401,19 @@ const deployedContracts = {
         },
         {
           inputs: [],
+          name: "getBalance",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
           name: "getCurrentExchangeRate",
           outputs: [
             {
@@ -8537,10 +8624,10 @@ const deployedContracts = {
         burnFrom:
           "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol",
       },
-      startBlock: 25733613,
+      startBlock: 26814430,
     },
     Prizes: {
-      address: "0x597193232E2304583A8BfC6F8E20453ce43CDa27",
+      address: "0xACA0A67E9caE05b62dcFCe7B74A29c0Ea0b97901",
       abi: [
         {
           inputs: [
@@ -8859,7 +8946,7 @@ const deployedContracts = {
         renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
         transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
       },
-      startBlock: 25733620,
+      startBlock: 26814439,
     },
     RandomValidator: {
       address: "0x3259F5341fdf96f6430862D8e3c066bA8696afD3",
@@ -9474,7 +9561,7 @@ const deployedContracts = {
       startBlock: 25733605,
     },
     SecretValidator: {
-      address: "0x59501e9C0D4a5beB9e7FB51D38040Ba7818E9265",
+      address: "0xEd81fB756fb3A16b072732C17E30df2Bde107B15",
       abi: [
         {
           inputs: [
@@ -9706,12 +9793,12 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
-          name: "validHashes",
+          name: "usedHashes",
           outputs: [
             {
-              internalType: "uint256",
+              internalType: "bool",
               name: "",
-              type: "uint256",
+              type: "bool",
             },
           ],
           stateMutability: "view",
@@ -9738,7 +9825,7 @@ const deployedContracts = {
               type: "bool",
             },
           ],
-          stateMutability: "view",
+          stateMutability: "nonpayable",
           type: "function",
         },
       ],
@@ -9746,10 +9833,10 @@ const deployedContracts = {
         setConfigFromParams: "contracts/Challenges/IValidator.sol",
         validate: "contracts/Challenges/IValidator.sol",
       },
-      startBlock: 25733636,
+      startBlock: 26814447,
     },
     ValidatorRegistry: {
-      address: "0x50e23dfEA7D2c5bF480f3B4828B7197C1C8ce6c4",
+      address: "0x6d6EbA2b8477Ce978020FB435a5169D9bBdB5B5b",
       abi: [
         {
           inputs: [
@@ -9855,7 +9942,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      startBlock: 25733624,
+      startBlock: 26814443,
     },
   },
 } as const;

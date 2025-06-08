@@ -257,8 +257,9 @@ contract Prizes {
     /// @notice Reclama `amount` unidades de un premio (paga en tokens de la org).
     /// @dev El usuario debe haber aprobado previamente a este contrato (`Prizes`)
     ///      para gastar `amount * price` tokens de la organización.
+    ///      Los tokens pagados son transferidos a la tesorería de la organización (OrganizationManager).
     /// @param orgId ID de la organización
-    /// @param prizeId ID del premio 
+    /// @param prizeId ID del premio
     /// @param amount Cantidad de unidades que se reclaman
     function claimPrize(uint256 orgId, uint256 prizeId, uint256 amount)
     external
@@ -269,31 +270,20 @@ contract Prizes {
         require(p.orgId == orgId, "Prizes: prize not from this org");
         require(p.stock >= amount, "Prizes: not enough stock");
 
-        // Costo total en tokens
         uint256 cost = p.price * amount;
 
-        // Obtener la dirección del token de la organización
         address tokenAddress = orgManager.getTokenOfOrg(orgId);
         require(tokenAddress != address(0), "Prizes: invalid token for org");
 
-        // Transferir tokens desde el usuario a este contrato (requiere approve)
+        p.stock -= amount;
         IERC20(tokenAddress).transferFrom(msg.sender, address(this), cost);
+        IERC20(tokenAddress).transfer(address(orgManager), cost);
 
-        // Mint NFTs to the claimer
         uint256[] memory nftIds = new uint256[](amount);
         for (uint256 i = 0; i < amount; i++) {
             nftIds[i] = PrizeNFT(p.nftContract).mint(msg.sender);
         }
 
-        // Disminuir el stock
-        p.stock -= amount;
-
         emit PrizeClaimed(prizeId, orgId, amount, msg.sender, cost, nftIds);
-
-        // Opcionalmente: "quemar" tokens o lo que se desee hacer con esos tokens
-        // Si se pueden quemar:
-        // CompanyToken(tokenAddress).burn(cost);
-        // O transferir a una dirección sin clave:
-        // IERC20(tokenAddress).transfer(address(0xdead), cost);
     }
 }
