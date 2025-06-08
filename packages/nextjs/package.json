@@ -21,7 +21,7 @@
     "@uniswap/v2-sdk": "~4.6.1",
     "aos": "^2.3.4",
     "blo": "~1.2.0",
-    "burner-connector": "~0.0.8",
+    "burner-connector": "0.0.8",
     "daisyui": "4.12.10",
     "framer-motion": "^11.17.0",
     "graphql": "^16.11.0",

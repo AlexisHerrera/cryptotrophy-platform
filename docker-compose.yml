@@ -22,17 +22,34 @@ services:
       context: .
       dockerfile: packages/hardhat/Dockerfile
     container_name: hardhat-node
+    command: [ "npm", "run", "chain" ]
+    working_dir: /usr/src/app
     ports:
       - "8545:8545"
     volumes:
       - ./packages/config:/usr/src/config
-      # - ./packages/hardhat:/usr/src/
+      - ./packages/hardhat:/usr/src/app
     restart: unless-stopped
     healthcheck:
       test: [ "CMD-SHELL", "curl -s http://localhost:8545" ]
       interval: 5s
       timeout: 3s
       retries: 5
+
+  deployer:
+    build:
+      context: .
+      dockerfile: packages/hardhat/Dockerfile
+    working_dir: /usr/src/app
+    environment:
+      - HARDHAT_RPC_URL=http://hardhat:8545
+    volumes:
+      - ./packages/config:/usr/src/config
+      - ./packages/hardhat:/usr/src/app
+    depends_on:
+      hardhat:
+        condition: service_healthy
+    command: [ "npm", "run", "deploy" ]
 
   app:
     container_name: organization-backend
@@ -65,16 +82,14 @@ services:
       dockerfile: packages/ponder/Dockerfile
     ports:
       - "${PONDER_PORT}:42069"
-    command: [ "npm","run","dev" ]
+    command: ["npm", "run", "dev"]
     environment:
       PONDER_RPC_URL_31337: "http://hardhat:8545"
       PONDER_PORT: ${PONDER_PORT}
       NODE_ENV: development
     depends_on:
-      hardhat:
-        condition: service_healthy
-      db:
-        condition: service_healthy
+      deployer:
+        condition: service_completed_successfully
     restart: unless-stopped
     volumes:
       - ponder-cache:/.ponder
