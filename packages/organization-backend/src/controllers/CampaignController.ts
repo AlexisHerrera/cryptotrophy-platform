@@ -3,8 +3,9 @@ import { Campaign } from '../models/Campaign';
 
 export const createCampaign = async (req: Request, res: Response) => {
     try {
-        const { campaign_name, start_date, end_date } = req.body;
+        const { id_campaign, campaign_name, start_date, end_date } = req.body;
         const newCampaign = await Campaign.create({
+            id_campaign,
             campaign_name,
             start_date,
             end_date,

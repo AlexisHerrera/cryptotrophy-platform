@@ -8,7 +8,7 @@ export interface CampaignAttributes {
     end_date: Date;
     claims_limit: number | null;
 }
-export type CampaignCreation = Optional<CampaignAttributes, 'id_campaign' | 'claims_limit'>;
+export type CampaignCreation = Optional<CampaignAttributes, 'claims_limit'>;
 
 export class Campaign
     extends Model<CampaignAttributes, CampaignCreation>
@@ -25,8 +25,8 @@ Campaign.init(
     {
         id_campaign: {
             type: DataTypes.INTEGER.UNSIGNED,
-            autoIncrement: true,
             primaryKey: true,
+            allowNull: false,
         },
         campaign_name: {
             type: DataTypes.STRING,
