@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { ethers } from "ethers";
+import ReactMarkdown from "react-markdown";
+import { DECIMALS_TOKEN } from "~~/settings";
 import { Prize } from "~~/utils/cryptotrophyIndex/types";
 import { loadMetadata } from "~~/utils/loadMetadata";
 
@@ -16,6 +19,8 @@ export const PrizeCard: React.FC<{ item: Prize; onClaimClick: (prize: Prize) => 
 }) => {
   const [metadata, setMetadata] = useState<{ logo?: string; name?: string; description?: string }>({});
   const [loading, setLoading] = useState<boolean>(false);
+  const [descriptionState, setDescription] = useState<string>(prize.description);
+  const [priceState, setPrice] = useState<string>(ethers.formatUnits(prize.price ? prize.price : 0n, DECIMALS_TOKEN));
 
   useEffect(() => {
     const fetchMetadata = async () => {
@@ -27,6 +32,9 @@ export const PrizeCard: React.FC<{ item: Prize; onClaimClick: (prize: Prize) => 
             defaultField: "logo",
           });
           setMetadata(data);
+          if (metadata.description) {
+            setDescription(metadata.description);
+          }
         } catch (error) {
           console.error("Error fetching IPFS metadata:", error);
         } finally {
@@ -52,9 +60,34 @@ export const PrizeCard: React.FC<{ item: Prize; onClaimClick: (prize: Prize) => 
           {loading ? "Loading logo..." : "No logo available"}
         </div>
       )}
+
+      {/* ───────────── Name ───────────── */}
       <h2 className="text-xl font-semibold dark:text-white">{prize.name}</h2>
-      {metadata.description && <p className="text-gray-800 dark:text-gray-200 mt-2">{metadata.description}</p>}
-      <p className="text-gray-600 dark:text-gray-300">Stock: {prize.stock}</p>
+
+      {/* ───────────── Chip-tray: stock + price ───────────── */}
+      <div className="mt-1 flex gap-2 flex-wrap">
+        <span className={`badge ${prize.stock > 0n ? "badge-success" : "badge-error"}`}>
+          {prize.stock > 0n ? `${prize.stock} left` : "Out of stock"}
+        </span>
+
+        <span className="badge badge-outline">{priceState} tokens</span>
+      </div>
+
+      {/* Description */}
+      <div className="relative mb-4 max-h-32 overflow-hidden group-hover:max-h-none">
+        {/* Normal text */}
+        <div className="text-gray-600 dark:text-gray-300 text-sm">
+          <ReactMarkdown>{descriptionState}</ReactMarkdown>
+        </div>
+
+        {/* On hover, full text absolutely positioned */}
+        <div className="absolute inset-0 p-2 bg-white dark:bg-gray-800 rounded-md shadow-md hidden group-hover:flex flex-col justify-center z-10">
+          <div className="text-gray-600 dark:text-gray-300 text-sm">
+            <ReactMarkdown>{descriptionState}</ReactMarkdown>
+          </div>
+        </div>
+      </div>
+
       <button
         onClick={() => onClaimClick(prize)}
         disabled={prize.stock <= 0n}
