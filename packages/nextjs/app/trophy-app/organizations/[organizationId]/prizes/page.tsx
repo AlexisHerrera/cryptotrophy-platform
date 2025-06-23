@@ -8,6 +8,7 @@ import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 import { MotionDiv } from "~~/app/motions/use-motion";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useOrganizationWithFallback } from "~~/hooks/trophy-app/useOrganizationWithFallback";
 import { DECIMALS_TOKEN } from "~~/settings";
 
 const PrizeCenter: React.FC = () => {
@@ -20,17 +21,9 @@ const PrizeCenter: React.FC = () => {
     args: [BigInt(organizationId), address || ethers.ZeroAddress],
   });
 
-  // Get organization details
-  const { data: organizationData, isLoading: isOrgLoading } = useScaffoldReadContract({
-    contractName: "OrganizationManager",
-    functionName: "getOrganizationDetails",
-    args: [BigInt(organizationId)],
-  });
-  const orgName = organizationData ? (organizationData[1] as string) : "";
+  const { organization, isLoading, error, source } = useOrganizationWithFallback(organizationId);
 
-  if (isBalanceLoading) {
-    return <span className="loading loading-spinner loading-lg"></span>;
-  }
+  const orgName = organization?.name || "";
 
   return (
     <div>
