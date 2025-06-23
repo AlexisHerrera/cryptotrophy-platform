@@ -43,12 +43,21 @@ export interface PaginatedResult<T> {
   pageInfo: PageInfo;
 }
 
+export interface SingleResult<T> {
+  totalCount: number;
+  items: T[];
+}
+
 export interface ChallengeData {
   challenges: PaginatedResult<Challenge>;
 }
 
 export interface OrganizationData {
   organizations: PaginatedResult<Organization>;
+}
+
+export interface SingleOrganization {
+  organizations: SingleResult<Organization>;
 }
 
 export interface PrizeData {
