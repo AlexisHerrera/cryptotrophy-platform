@@ -14,15 +14,6 @@ type OrganizationMetadata = {
   description?: string;
 };
 
-interface OrganizationDetails {
-  id: bigint;
-  name: string;
-  token: string;
-  admins: string[];
-  userIsAdmin: boolean;
-  baseURI: string;
-}
-
 const OrganizationPage: React.FC = () => {
   const { organizationId } = useParams() as { organizationId: string };
   const router = useRouter();
