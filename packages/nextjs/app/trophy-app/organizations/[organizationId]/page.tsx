@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ChallengeGrid } from "../_components/ChallengeGrid";
 import { HeroSection } from "../_components/HeroSection";
 import { MotionDiv } from "~~/app/motions/use-motion";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useOrganizationWithFallback } from "~~/hooks/trophy-app/useOrganizationWithFallback";
 import { loadMetadata } from "~~/utils/loadMetadata";
 
 type OrganizationMetadata = {
@@ -14,46 +14,13 @@ type OrganizationMetadata = {
   description?: string;
 };
 
-interface OrganizationDetails {
-  id: bigint;
-  name: string;
-  token: string;
-  admins: string[];
-  userIsAdmin: boolean;
-  baseURI: string;
-}
-
 const OrganizationPage: React.FC = () => {
   const { organizationId } = useParams() as { organizationId: string };
   const router = useRouter();
 
   const [metadata, setMetadata] = useState<{ logo?: string; name?: string; description?: string }>({});
-  const [organization, setOrganization] = useState<OrganizationDetails | null>(null);
 
-  const { data: organizationData, isLoading: isLoadingOrganization } = useScaffoldReadContract({
-    contractName: "OrganizationManager",
-    functionName: "getOrganizationDetails",
-    args: [BigInt(organizationId as string)],
-  });
-
-  // Step 1: Setup organization data
-  useEffect(() => {
-    if (organizationData) {
-      // First cast to unknown to avoid readonly array issues, then to specific type
-      const orgData = organizationData as unknown as [bigint, string, string, string, string[], boolean, string];
-
-      const [id, name, token, , admins, userIsAdmin, baseURI] = orgData;
-
-      setOrganization({
-        id,
-        name,
-        token,
-        admins,
-        userIsAdmin,
-        baseURI,
-      });
-    }
-  }, [organizationData]);
+  const { organization, isLoading, error, source } = useOrganizationWithFallback(organizationId);
 
   // Step 2: Fetch metadata when organization is ready
   useEffect(() => {
@@ -72,9 +39,18 @@ const OrganizationPage: React.FC = () => {
     };
 
     fetchMetadata();
-  }, [organization]);
+  }, [organization?.baseURI]);
 
-  if (isLoadingOrganization || !organization) {
+  if (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return (
+      <div className="alert alert-error shadow-lg my-6">
+        <span>Error loading organization: {message}</span>
+      </div>
+    );
+  }
+
+  if (isLoading || !organization) {
     return <span className="loading loading-spinner loading-lg"></span>;
   }
 

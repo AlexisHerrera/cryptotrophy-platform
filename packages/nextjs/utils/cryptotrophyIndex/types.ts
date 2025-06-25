@@ -30,11 +30,21 @@ export type Prize = {
   baseURI: string;
 };
 
+export interface ChallengeClaim {
+  challengeId: string;
+  claimTime: bigint;
+}
+
 export interface PageInfo {
   endCursor: string;
   startCursor: string;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
+}
+
+export interface SimpleResult<T> {
+  totalCount: number;
+  items: T[];
 }
 
 export interface PaginatedResult<T> {
@@ -43,12 +53,25 @@ export interface PaginatedResult<T> {
   pageInfo: PageInfo;
 }
 
+export interface SingleResult<T> {
+  totalCount: number;
+  items: T[];
+}
+
 export interface ChallengeData {
   challenges: PaginatedResult<Challenge>;
 }
 
 export interface OrganizationData {
   organizations: PaginatedResult<Organization>;
+}
+
+export interface SingleOrganization {
+  organizations: SingleResult<Organization>;
+}
+
+export interface ChallengeClaimData {
+  rewardClaims: SimpleResult<ChallengeClaim>;
 }
 
 export interface PrizeData {

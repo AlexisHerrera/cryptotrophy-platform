@@ -69,7 +69,7 @@ const PrizeTable: React.FC<PrizeTableProps> = ({
                   {prize.baseURI ? (
                     <div className="w-16 h-16 rounded-md overflow-hidden">
                       <img
-                        src={`https://ipfs.filebase.io/ipfs/${prize.baseURI}`}
+                        src={`${prize.baseURI}`}
                         alt={`Prize ${prize.name}`}
                         className="w-full h-full object-cover"
                         onError={e => {

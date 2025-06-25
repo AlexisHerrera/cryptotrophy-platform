@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ChallengeCard } from "./ChallengeCard";
 import { PaginatedGrid } from "./PaginatedGrid";
+import { useAccount } from "wagmi";
+import { useChallengeClaims } from "~~/hooks/cryptotrophyIndex/useChallengeClaims";
 import { useChallenges } from "~~/hooks/cryptotrophyIndex/useChallenges";
 
 export const ChallengeGrid: React.FC<{ orgId: string }> = ({ orgId }) => {
@@ -9,8 +11,9 @@ export const ChallengeGrid: React.FC<{ orgId: string }> = ({ orgId }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [showClosedChallenges, setShowClosedChallenges] = useState(false);
   const [gridPageSize, setGridPageSize] = useState<number>(6);
+  const { address } = useAccount();
 
-  const { data, isLoading } = useChallenges(
+  const { data: challengesData, isLoading } = useChallenges(
     orgId,
     gridPageSize,
     afterCursor,
@@ -18,6 +21,10 @@ export const ChallengeGrid: React.FC<{ orgId: string }> = ({ orgId }) => {
     searchTerm,
     showClosedChallenges ? [true, false] : [true],
   );
+
+  /* ─────────────────── Check if challenges are loading ─────────────────── */
+  const challengeIds = useMemo(() => challengesData?.challenges.items.map(c => c.id) ?? [], [challengesData]);
+  const { data: claimsData, isLoading: isClaimsLoading } = useChallengeClaims(address ?? "", challengeIds);
 
   const handlePageChange = (after: string | null, before: string | null) => {
     setAfterCursor(after);
@@ -78,11 +85,17 @@ export const ChallengeGrid: React.FC<{ orgId: string }> = ({ orgId }) => {
 
       <PaginatedGrid
         data={{
-          items: data?.challenges.items || [],
-          totalCount: data?.challenges.totalCount || 0,
-          pageInfo: data?.challenges.pageInfo || null,
+          items: challengesData?.challenges.items || [],
+          totalCount: challengesData?.challenges.totalCount || 0,
+          pageInfo: challengesData?.challenges.pageInfo || null,
         }}
-        renderCard={(item, index) => <ChallengeCard key={index} item={item} />}
+        renderCard={(item, index) => (
+          <ChallengeCard
+            key={index}
+            item={item}
+            claimed={claimsData?.rewardClaims?.items.some(rc => rc.challengeId === item.id)}
+          />
+        )}
         pageSize={gridPageSize}
         loading={isLoading}
         onPageChange={handlePageChange}

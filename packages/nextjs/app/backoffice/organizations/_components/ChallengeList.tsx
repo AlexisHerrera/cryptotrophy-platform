@@ -219,7 +219,11 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds, mode
           {challenges.map((challenge, index) => (
             <tr key={index} className="hover">
               <td>{challenge.id.toString()}</td>
-              <td>{challenge.description}</td>
+              <td className="max-w-xs">
+                <div className="tooltip tooltip-left" data-tip={challenge.description}>
+                  <span className="line-clamp-4 whitespace-pre-line">{challenge.description}</span>
+                </div>
+              </td>
               <td>{challenge.prizeAmount} tokens</td>
               <td>{challenge.active ? "Active" : "Inactive"}</td>
               <td>

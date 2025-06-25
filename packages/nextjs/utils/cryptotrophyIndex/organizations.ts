@@ -1,5 +1,5 @@
 import { executeQuery } from "./indexClient";
-import type { OrganizationData } from "./types";
+import type { OrganizationData, SingleOrganization } from "./types";
 import type { GraphQLClient } from "graphql-request";
 
 const GET_ORGANIZATIONS_QUERY = `
@@ -41,5 +41,27 @@ export async function fetchOrganizations(
     after,
     before,
     name,
+  });
+}
+
+const GET_SINGLE_ORGANIZATION_QUERY = `
+query GetOrganization($id: String) {
+  organizations(
+    where: {id: $id}
+  ) {
+      totalCount
+      items {
+        id
+        name
+        token
+        baseURI
+      }
+    }
+  }
+`;
+
+export async function fetchOrganization(client: GraphQLClient, id: string): Promise<SingleOrganization> {
+  return executeQuery<SingleOrganization>(client, GET_SINGLE_ORGANIZATION_QUERY, {
+    id,
   });
 }

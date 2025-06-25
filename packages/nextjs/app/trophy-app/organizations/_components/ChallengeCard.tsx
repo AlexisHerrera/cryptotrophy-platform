@@ -1,10 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
+import clsx from "clsx";
 import { formatUnits } from "ethers";
 import ReactMarkdown from "react-markdown";
+import { useAccount } from "wagmi";
 import { ClaimChallengeButton } from "~~/app/trophy-app/organizations/_components/ClaimChallengeButton";
 import { Challenge } from "~~/utils/cryptotrophyIndex/types";
 
-export const ChallengeCard: React.FC<{ item: Challenge }> = ({ item: challenge }) => {
+export const ChallengeCard: React.FC<{ item: Challenge; claimed: boolean | undefined }> = ({
+  item: challenge,
+  claimed,
+}) => {
+  const [showFull, setShowFull] = useState(false);
+  const { isConnected } = useAccount();
+
   const formattedPrize = formatUnits(BigInt(challenge.prizeAmount), 18);
   const fullDate = new Date(Number(challenge.startTime) * 1000);
   const endDateFull = new Date(Number(challenge.endTime) * 1000);
@@ -32,11 +40,12 @@ export const ChallengeCard: React.FC<{ item: Challenge }> = ({ item: challenge }
         {/* Status Label */}
         <div className="flex justify-between items-center mb-2">
           <span
-            className={`px-3 py-1 text-xs font-bold uppercase tracking-wide rounded-full ${
+            className={clsx(
+              "px-3 py-1 text-xs font-bold uppercase tracking-wide rounded-full",
               challenge.isActive
                 ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-            }`}
+                : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+            )}
           >
             {challenge.isActive ? "Active" : "Closed"}
           </span>
@@ -44,22 +53,29 @@ export const ChallengeCard: React.FC<{ item: Challenge }> = ({ item: challenge }
 
         {/* Title */}
         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 flex flex-col items-center leading-tight">
-          Challenge
-          <span className="text-l font-normal text-gray-600 dark:text-gray-300 mt-1">#{challenge.id}</span>
+          <span className="text-l font-normal text-gray-600 dark:text-gray-300 mt-1">Challenge #{challenge.id}</span>
         </h3>
 
         {/* Description */}
-        <div className="relative mb-4 max-h-32 overflow-hidden group-hover:max-h-none">
-          {/* Normal text */}
-          <div className="text-gray-600 dark:text-gray-300 text-sm">
+        <div
+          className="relative h-32 overflow-hidden rounded-md group/desc cursor-pointer mb-4"
+          onClick={() => setShowFull(true)}
+        >
+          {/* ▼ 1 · Clamped preview */}
+          <div className="text-gray-600 dark:text-gray-300 text-sm line-clamp-5 pointer-events-none">
             <ReactMarkdown>{challenge.description}</ReactMarkdown>
           </div>
 
-          {/* On hover, full text absolutely positioned */}
-          <div className="absolute inset-0 p-2 bg-white dark:bg-gray-800 rounded-md shadow-md hidden group-hover:flex flex-col justify-center z-10">
-            <div className="text-gray-600 dark:text-gray-300 text-sm">
-              <ReactMarkdown>{challenge.description}</ReactMarkdown>
-            </div>
+          {/* ▼ 2 · Hover call-out */}
+          <div
+            className="
+                absolute inset-0 flex items-center justify-center
+                bg-black/60 text-white text-xs font-medium
+                opacity-0 transition-opacity duration-150 ease-out
+                pointer-events-none   /* let clicks reach wrapper */
+                group-hover/desc:opacity-100"
+          >
+            Click to see full description
           </div>
         </div>
 
@@ -103,15 +119,54 @@ export const ChallengeCard: React.FC<{ item: Challenge }> = ({ item: challenge }
       {/* Bottom Section (Button) */}
       <div className="mt-6 flex justify-center">
         {challenge.isActive ? (
-          <ClaimChallengeButton
-            orgId={BigInt(challenge.orgId)}
-            challengeId={BigInt(challenge.id)}
-            validatorUID={challenge.validatorUID}
-          />
+          isConnected ? (
+            !claimed ? (
+              <ClaimChallengeButton
+                orgId={BigInt(challenge.orgId)}
+                challengeId={BigInt(challenge.id)}
+                validatorUID={challenge.validatorUID}
+              />
+            ) : (
+              <span className="text-gray-400 italic text-center block">Claimed</span>
+            )
+          ) : (
+            <span className="text-gray-400 italic text-center block">Connect your wallet to claim</span>
+          )
         ) : (
           <span className="text-gray-400 italic text-center block">Closed</span>
         )}
       </div>
+
+      {/* ──────────── FULL DESCRIPTION MODAL (portal-style) ──────────── */}
+      {showFull && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowFull(false)} />
+
+          {/* Modal panel */}
+          <div
+            className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg
+                       w-[90%] max-w-xl max-h-[80vh] overflow-y-auto p-6"
+            onClick={e => e.stopPropagation()} /* prevent backdrop close */
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setShowFull(false)}
+              aria-label="Close"
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600
+                         dark:hover:text-gray-300 text-2xl leading-none"
+            >
+              &times;
+            </button>
+
+            <h4 className="text-lg font-semibold mb-4">Challenge&nbsp;#{challenge.id}</h4>
+
+            <div className="prose dark:prose-invert prose-sm">
+              <ReactMarkdown>{challenge.description}</ReactMarkdown>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

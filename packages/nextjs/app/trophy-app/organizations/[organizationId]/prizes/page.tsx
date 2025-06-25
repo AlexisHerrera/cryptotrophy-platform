@@ -8,29 +8,26 @@ import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 import { MotionDiv } from "~~/app/motions/use-motion";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useOrganizationWithFallback } from "~~/hooks/trophy-app/useOrganizationWithFallback";
 import { DECIMALS_TOKEN } from "~~/settings";
 
 const PrizeCenter: React.FC = () => {
   const { organizationId } = useParams() as { organizationId: string };
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const { data: balanceData, isLoading: isBalanceLoading } = useScaffoldReadContract({
     contractName: "OrganizationManager",
     functionName: "getBalanceOfUser",
-    args: [BigInt(organizationId), address || ethers.ZeroAddress],
+    args: [BigInt(organizationId), address],
+    query: {
+      // Only enable the query when isConnected
+      enabled: isConnected,
+    },
   });
 
-  // Get organization details
-  const { data: organizationData, isLoading: isOrgLoading } = useScaffoldReadContract({
-    contractName: "OrganizationManager",
-    functionName: "getOrganizationDetails",
-    args: [BigInt(organizationId)],
-  });
-  const orgName = organizationData ? (organizationData[1] as string) : "";
+  const { organization, isLoading, error, source } = useOrganizationWithFallback(organizationId);
 
-  if (isBalanceLoading) {
-    return <span className="loading loading-spinner loading-lg"></span>;
-  }
+  const orgName = organization?.name || "";
 
   return (
     <div>
@@ -69,12 +66,24 @@ const PrizeCenter: React.FC = () => {
             >
               Back to Organization
             </Link>
-            <Link
-              href={`/trophy-app/organizations/${organizationId}/my-prizes`}
-              className="inline-block px-6 py-2 rounded-full bg-blue-600 dark:bg-blue-700 text-white font-semibold shadow hover:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-            >
-              View My NFTs
-            </Link>
+            {isConnected ? (
+              <Link
+                href={`/trophy-app/organizations/${organizationId}/my-prizes`}
+                className="inline-block px-6 py-2 rounded-full bg-blue-600 dark:bg-blue-700
+                          text-white font-semibold shadow hover:bg-blue-700 dark:hover:bg-blue-800
+                          focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+              >
+                My prizes
+              </Link>
+            ) : (
+              <span
+                className="inline-block px-6 py-2 rounded-full bg-gray-300 dark:bg-gray-600
+                          text-gray-400 font-semibold shadow cursor-not-allowed pointer-events-none"
+                aria-disabled="true"
+              >
+                My prizes
+              </span>
+            )}
           </div>
         </div>
       </div>

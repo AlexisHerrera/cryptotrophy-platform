@@ -1,112 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>3-Place Day Challenge</title>
+  <meta charset="utf-8" />
+  <title>Challenge #0 – BestBurger Triple-Stop</title>
+
+  <!-- Inline styles for easy copy-paste -->
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      background: #f4f4f8;
-      color: #333;
-    }
+    /* ─── Base ─── */
+    html,body { margin:0; padding:0; background:#f9fafb; color:#333; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; line-height:1.6; }
+    main      { max-width:720px; margin:0 auto; padding:2rem 1.5rem; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+    h1,h2     { color:#222; margin:0 0 .5rem; line-height:1.25; }
+    h1        { font-size:2rem; }
+    h2        { font-size:1.25rem; margin-top:1.75rem; }
+    p         { margin:.75rem 0; }
+    ul,ol     { margin:.75rem 0 .75rem 1.25rem; }
+    li        { margin-bottom:.45rem; }
+    a         { color:#d7263d; text-decoration:none; }
+    a:hover   { text-decoration:underline; }
 
-    header {
-      background: linear-gradient(to right, #4facfe, #00f2fe);
-      color: white;
-      padding: 2rem;
-      text-align: center;
-    }
+    /* ─── Components ─── */
+    .callout  { background:#fff4dd; border-left:4px solid #ff9800; padding:1rem; margin:1.25rem 0; }
+    .locations{ list-style:none; padding-left:0; }
+    .locations li{ margin-bottom:.9rem; }
+    .locations span{ display:block; font-weight:600; }
+    footer    { margin-top:2rem; font-size:.875rem; color:#666; }
 
-    h1 {
-      margin: 0;
-      font-size: 2.5rem;
-    }
-
-    p.lead {
-      font-size: 1.2rem;
-      margin-top: 0.5rem;
-    }
-
-    section {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 2rem;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    h2 {
-      color: #007acc;
-    }
-
-    .place {
-      margin-bottom: 1.5rem;
-    }
-
-    .place h3 {
-      margin-bottom: 0.3rem;
-    }
-
-    .place p {
-      margin: 0.2rem 0 0;
-    }
-
-    footer {
-      text-align: center;
-      padding: 1.5rem;
-      font-size: 0.9rem;
-      color: #777;
-    }
-
-    .btn {
-      display: inline-block;
-      margin-top: 1rem;
-      padding: 0.7rem 1.2rem;
-      background-color: #00c6ff;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      font-weight: bold;
-      transition: background 0.3s ease;
-    }
-
-    .btn:hover {
-      background-color: #009ecd;
+    /* ─── Responsive tweak ─── */
+    @media (max-width:480px){
+      main { padding:1.5rem 1rem; }
+      h1   { font-size:1.5rem; }
     }
   </style>
 </head>
+
 <body>
-  <header>
-    <h1>🌍 3-Place Day Challenge</h1>
-    <p class="lead">Can you explore three amazing places in one epic day?</p>
-  </header>
 
-  <section>
-    <h2>The Challenge</h2>
-    <p>Ready for an unforgettable day? Your mission: visit three distinct locations that showcase nature, culture, and fun—all before the sun sets!</p>
+<main>
+  <!-- HEADER -->
+  <h1>Challenge #0 – BestBurger Triple-Stop</h1>
 
-    <div class="place">
-      <h3>1. Sunrise at Mountain Viewpoint</h3>
-      <p>Start your morning with a breathtaking view. Hike or drive to a scenic overlook and catch the sunrise. Bonus points for coffee with a view.</p>
-    </div>
+  <!-- OBJECTIVE -->
+  <div class="callout">
+    <strong>Objective:</strong> Visit any <strong>three different</strong> <em>BestBurger</em> restaurants, enjoy your favourite burger combo at each stop, and snap a proof photo!
+  </div>
 
-    <div class="place">
-      <h3>2. Lunch & Culture in the City</h3>
-      <p>Head into the heart of the city. Explore a museum or gallery, then grab a bite at a local café or food market. Capture the vibe!</p>
-    </div>
+  <!-- HOW-TO -->
+  <h2>How to Complete the Challenge</h2>
+  <ol>
+    <li>Select <strong>3</strong> restaurants from the “BestBurger Locations” list below.</li>
+    <li>Order any meal (classic, deluxe, or plant-based — your pick!).</li>
+    <li>Take a clear photo that shows:
+      <ul>
+        <li>you (or your group) inside/outside the BestBurger branch, and</li>
+        <li>your meal or the BestBurger logo in frame.</li>
+      </ul>
+    </li>
+    <li>Keep the receipt; the order number is required at submission.</li>
+    <li>After visiting all three spots, upload your photos & receipts via the <a href="#submission-form">submission form</a>.</li>
+    <li>Our validators will review within 48 h. Once approved, claim your reward!</li>
+  </ol>
 
-    <div class="place">
-      <h3>3. Sunset by the Water</h3>
-      <p>End the day with a walk by the beach, a lake, or a riverside park. Watch the sunset, relax, and reflect on your adventure.</p>
-    </div>
+  <!-- LOCATIONS -->
+  <h2>BestBurger Locations</h2>
+  <ul class="locations">
+    <li><span>Downtown Flagship</span>101 Main St, Central City</li>
+    <li><span>Riverside Drive-Thru</span>455 River Pkwy, North Bank</li>
+    <li><span>University District</span>33 Campus Ave, College Town</li>
+    <li><span>Seaside Boardwalk</span>890 Ocean Blvd, Bayview</li>
+    <li><span>Historic Market Square</span>12 Market Ln, Old Quarter</li>
+  </ul>
 
-  </section>
+  <!-- PHOTO TIPS -->
+  <h2>Photo Tips</h2>
+  <ul>
+    <li>Shoot in daylight near a window for the best burger glow.</li>
+    <li>Avoid motion blur — prop your phone or use a timer.</li>
+    <li>Include the BestBurger neon sign or counter for easy verification.</li>
+    <li>Landscape orientation shows more of the venue, but portrait works too.</li>
+  </ul>
 
+  <!-- REWARD -->
+  <h2>Your Reward</h2>
+  <p>
+    Successful challengers earn <strong>🍔 10 Loot Tokens</strong> airdropped to their wallets.<br/>
+    <em>Limited to the first 100 verified submissions.</em>
+  </p>
+
+  <!-- GOOD-TO-KNOW -->
+  <h2>Good to Know</h2>
+  <ul>
+    <li>You can visit all three locations in one day or spread them out — just submit within the challenge window.</li>
+    <li>Only one entry per wallet. Duplicate wallet or receipt numbers will be rejected.</li>
+    <li>Questions? Join <code>#bestburger-challenge</code> on Discord.</li>
+  </ul>
+
+  <!-- FOOTER -->
   <footer>
-    &copy; 2025 3-Place Day Challenge. Designed to inspire wanderlust in a single day.
+    <p><strong>Need help?</strong> Ping us in Discord or email <a href="mailto:challenges@bestburger.io">challenges@bestburger.io</a>.</p>
+    <p>Please enjoy responsibly and follow local health regulations.</p>
   </footer>
+</main>
+
 </body>
 </html>
