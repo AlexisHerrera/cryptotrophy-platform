@@ -155,14 +155,16 @@ const OrganizationPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <div className="card bg-base-200 dark:bg-base-300 shadow-lg">
+        {/* ETH Backing */}
+        <div className="card shadow-lg bg-base-200 dark:bg-base-300 text-base-content">
           <div className="card-body items-center text-center">
             <BanknotesIcon className="h-12 w-12 text-secondary mb-2" />
-            <h2 className="card-title text-neutral-content dark:text-base-content">ETH Backing</h2>
-            <p className="text-4xl font-bold text-success dark:text-success-content">{totalBacking} ETH</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{valueInEth} ETH per token</p>
+            <h2 className="card-title">ETH Backing</h2>
+            <p className="text-4xl font-bold text-success">{totalBacking} ETH</p>
+            <p className="text-sm opacity-70">{valueInEth} ETH&nbsp;per&nbsp;token</p>
+
             {organization.userIsAdmin && (
-              <button className="btn btn-sm btn-outline btn-success mt-3" onClick={() => setShowFundTokenModal(true)}>
+              <button onClick={() => setShowFundTokenModal(true)} className="btn btn-sm btn-outline btn-success mt-3">
                 <PlusCircleIcon className="h-5 w-5 mr-1" />
                 Fund Tokens
               </button>
@@ -171,13 +173,15 @@ const OrganizationPage: React.FC = () => {
         </div>
 
         {/* Tokens Available */}
-        <div className="card bg-base-200 dark:bg-base-300 shadow-lg">
+        <div className="card shadow-lg bg-base-200 dark:bg-base-300 text-base-content">
           <div className="card-body items-center text-center">
             <CubeTransparentIcon className="h-12 w-12 text-success mb-2" />
-            <h2 className="card-title text-neutral-content dark:text-base-content">Tokens Available</h2>
-            <p className="text-3xl font-semibold text-success dark:text-success-content">
+            <h2 className="card-title">Tokens Available</h2>
+
+            <p className="text-3xl font-semibold text-success">
               {isLoadingTokens ? <span className="loading loading-dots loading-sm"></span> : formattedAvailableTokens}
             </p>
+
             {organization.userIsAdmin && (
               <button className="btn btn-sm btn-outline btn-success mt-3" onClick={() => setShowMintTokenModal(true)}>
                 <PlusCircleIcon className="h-5 w-5 mr-1" />
