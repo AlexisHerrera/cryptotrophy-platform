@@ -2,11 +2,16 @@ import React, { useState } from "react";
 import clsx from "clsx";
 import { formatUnits } from "ethers";
 import ReactMarkdown from "react-markdown";
+import { useAccount } from "wagmi";
 import { ClaimChallengeButton } from "~~/app/trophy-app/organizations/_components/ClaimChallengeButton";
 import { Challenge } from "~~/utils/cryptotrophyIndex/types";
 
-export const ChallengeCard: React.FC<{ item: Challenge }> = ({ item: challenge }) => {
+export const ChallengeCard: React.FC<{ item: Challenge; claimed: boolean | undefined }> = ({
+  item: challenge,
+  claimed,
+}) => {
   const [showFull, setShowFull] = useState(false);
+  const { isConnected } = useAccount();
 
   const formattedPrize = formatUnits(BigInt(challenge.prizeAmount), 18);
   const fullDate = new Date(Number(challenge.startTime) * 1000);
@@ -114,11 +119,19 @@ export const ChallengeCard: React.FC<{ item: Challenge }> = ({ item: challenge }
       {/* Bottom Section (Button) */}
       <div className="mt-6 flex justify-center">
         {challenge.isActive ? (
-          <ClaimChallengeButton
-            orgId={BigInt(challenge.orgId)}
-            challengeId={BigInt(challenge.id)}
-            validatorUID={challenge.validatorUID}
-          />
+          isConnected ? (
+            !claimed ? (
+              <ClaimChallengeButton
+                orgId={BigInt(challenge.orgId)}
+                challengeId={BigInt(challenge.id)}
+                validatorUID={challenge.validatorUID}
+              />
+            ) : (
+              <span className="text-gray-400 italic text-center block">Claimed</span>
+            )
+          ) : (
+            <span className="text-gray-400 italic text-center block">Connect your wallet to claim</span>
+          )
         ) : (
           <span className="text-gray-400 italic text-center block">Closed</span>
         )}
