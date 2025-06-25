@@ -9,6 +9,7 @@ import ClaimChallengeTwoStepButton from "./ClaimChallengeTwoStepButton";
 import MockExternalValidatorFulfill from "./MockExternalValidatorFulfill";
 import { formatUnits } from "ethers";
 import { decodeBytes32String } from "ethers";
+import { useChainId } from "wagmi";
 import {
   ValidatorContractName,
   getContractName,
@@ -17,31 +18,36 @@ import {
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { DECIMALS_TOKEN } from "~~/settings";
 
-const AdditionalHeaders = ({ mode }: { mode: "user" | "admin" }) => {
+const LOCAL_CHAIN_ID = 31337; // Hardhat default
+
+const AdditionalHeaders = ({ mode, isLocal }: { mode: "user" | "admin"; isLocal: boolean }) => {
   if (mode === "admin") {
     return (
       <>
         <th>Admin</th>
-        <th>Local Network</th>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <th>Claim</th>
+        {isLocal && <th>Local&nbsp;Network</th>}
       </>
     );
   }
+
+  return <th>Claim</th>;
 };
 
 interface AdminColumnsCellsProps {
   challenge: any;
   onConfigureValidator: (challenge: any) => void;
   onMockValidator: (challenge: any) => void;
+  isLocal: boolean;
 }
 
-const AdminColumnsCells: React.FC<AdminColumnsCellsProps> = ({ challenge, onConfigureValidator, onMockValidator }) => (
+const AdminColumnsCells: React.FC<AdminColumnsCellsProps> = ({
+  challenge,
+  onConfigureValidator,
+  onMockValidator,
+  isLocal,
+}) => (
   <>
+    {/* Configure column – always shown */}
     <td>
       <ActiveChallengeWrapper challengeActive={challenge.active}>
         <button
@@ -58,27 +64,32 @@ const AdminColumnsCells: React.FC<AdminColumnsCellsProps> = ({ challenge, onConf
         </button>
       </ActiveChallengeWrapper>
     </td>
-    <td>
-      <ActiveChallengeWrapper challengeActive={challenge.active}>
-        {challenge.hasValidator ? (
-          <button
-            className="btn btn-primary btn-sm"
-            onClick={() =>
-              onMockValidator({
-                id: challenge.id,
-                validatorUID: challenge.validatorUID,
-              })
-            }
-          >
-            Mock Validator
-          </button>
-        ) : (
-          <span className="text-gray-500">Missing Validator</span>
-        )}
-      </ActiveChallengeWrapper>
-    </td>
+
+    {/* Mock column – only on Hardhat local network */}
+    {isLocal && (
+      <td>
+        <ActiveChallengeWrapper challengeActive={challenge.active}>
+          {challenge.hasValidator ? (
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={() =>
+                onMockValidator({
+                  id: challenge.id,
+                  validatorUID: challenge.validatorUID,
+                })
+              }
+            >
+              Mock Validator
+            </button>
+          ) : (
+            <span className="text-gray-500">Missing Validator</span>
+          )}
+        </ActiveChallengeWrapper>
+      </td>
+    )}
   </>
 );
+
 interface UserColumnsCellsProps {
   challenge: any;
   orgId: bigint;
@@ -139,6 +150,9 @@ interface ChallengeListProps {
 }
 
 const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds, mode }) => {
+  const chainId = useChainId();
+  const isLocal = chainId === LOCAL_CHAIN_ID;
+
   const [challenges, setChallenges] = useState<any[]>([]);
   const [selectedChallenge, setSelectedChallenge] = useState<{
     id: bigint;
@@ -207,12 +221,12 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds, mode
             <th>ID</th>
             <th>Description</th>
             <th>Loot</th>
-            <th>Status</th>
-            <th>Validator</th>
-            <th>Max Winners</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <AdditionalHeaders mode={mode} />
+            <th className="hidden md:table-cell">Status</th>
+            <th className="hidden lg:table-cell">Validator</th>
+            <th className="hidden lg:table-cell">Max Winners</th>
+            <th className="hidden xl:table-cell">Start Time</th>
+            <th className="hidden xl:table-cell">End Time</th>
+            <AdditionalHeaders mode={mode} isLocal={isLocal} />
           </tr>
         </thead>
         <tbody>
@@ -225,22 +239,23 @@ const ChallengeList: React.FC<ChallengeListProps> = ({ orgId, challengeIds, mode
                 </div>
               </td>
               <td>{challenge.prizeAmount} tokens</td>
-              <td>{challenge.active ? "Active" : "Inactive"}</td>
-              <td>
+              <td className="hidden md:table-cell">{challenge.active ? "Active" : "Inactive"}</td>
+              <td className="hidden lg:table-cell">
                 {challenge.hasValidator ? (
                   <span className="">{getValidatorDisplayName(challenge.validatorUID)}</span>
                 ) : (
                   <span className="badge badge-ghost">No Validator</span>
                 )}
               </td>
-              <td>{challenge.maxWinners.toString()}</td>
-              <td>{challenge.startTime}</td>
-              <td>{challenge.endTime}</td>
+              <td className="hidden lg:table-cell">{challenge.maxWinners.toString()}</td>
+              <td className="hidden xl:table-cell">{challenge.startTime}</td>
+              <td className="hidden xl:table-cell">{challenge.endTime}</td>
               {mode === "admin" ? (
                 <AdminColumnsCells
                   challenge={challenge}
                   onConfigureValidator={setChallengeValidator}
                   onMockValidator={setMockValidatorResponse}
+                  isLocal={isLocal}
                 />
               ) : (
                 <UserColumnCells
