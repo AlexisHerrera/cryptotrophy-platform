@@ -348,7 +348,7 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ c
 
   return (
     <Modal onClose={onClose}>
-      <div className="p-4">
+      <div className="p-4 bg-base-200 dark:bg-base-300 text-base-content rounded-box">
         <h2 className="text-xl font-bold mb-4 text-center text-info">Claim Reward with Secret Code</h2>
 
         <p className="mb-4 text-center">
@@ -363,24 +363,30 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ c
             value={secretValue}
             onChange={e => {
               setSecretValue(e.target.value);
-              setValidationMessage(null); // Clear validation message
-              setIsSecretValid(false); // Reset validation status
-              setCurrentHash(0n); // Reset hash
-              setValidationTriggered(false); // Reset trigger
+              setValidationMessage(null);
+              setIsSecretValid(false);
+              setCurrentHash(0n);
+              setValidationTriggered(false);
             }}
           />
 
           <button
             className="btn btn-sm btn-secondary mb-2"
             onClick={validateSecretCode}
-            disabled={isLoadingHash || !secretValue.trim()} // Disable while loading hash or if input is empty
+            disabled={isLoadingHash || !secretValue.trim()}
           >
             {isLoadingHash && validationTriggered ? "Validating..." : "Validate Code"}
           </button>
 
           {validationMessage && (
             <div
-              className={`text-sm mt-1 ${validationMessage.includes("✅") ? "text-success" : validationMessage.includes("❌") ? "text-error" : "text-info"}`}
+              className={`text-sm mt-1 ${
+                validationMessage.includes("✅")
+                  ? "text-success"
+                  : validationMessage.includes("❌")
+                    ? "text-error"
+                    : "text-info"
+              }`}
             >
               {validationMessage}
             </div>
@@ -396,10 +402,12 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ c
             {generatingProof ? "Generating Proof..." : "Generate ZK Proof"}
           </button>
 
-          {proofError && <div className="mt-2 p-2 bg-error/20 rounded text-error text-sm">{proofError}</div>}
+          {proofError && (
+            <div className="mt-2 p-2 rounded text-error text-sm bg-error/10 dark:bg-error/20">{proofError}</div>
+          )}
 
           {zkProof && (
-            <div className="mt-4 flex flex-col items-center bg-success/10 rounded-lg p-4 border border-success">
+            <div className="mt-4 flex flex-col items-center bg-success/10 dark:bg-success/20 rounded-lg p-4 border border-success/50">
               <div className="flex items-center gap-2 text-success font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path
@@ -424,18 +432,17 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ c
           <button
             className="btn btn-primary"
             onClick={handleClaim}
-            disabled={loading || isLoadingHash || !secretValue.trim() || !zkProof} // Also disable if hash is loading
+            disabled={loading || isLoadingHash || !secretValue.trim() || !zkProof}
           >
             {loading ? "Claiming..." : "Claim Reward"}
           </button>
         </div>
       </div>
 
-      {/* Proof Modal */}
       {showProofModal && zkProof && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-          <div className="bg-base-100 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
-            <div className="p-4 border-b bg-base-200 flex justify-between items-center">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-base-100 dark:bg-base-200 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+            <div className="p-4 border-b bg-base-200 dark:bg-base-300 flex justify-between items-center">
               <h3 className="text-lg font-bold">Zero-Knowledge Proof</h3>
               <button className="btn btn-sm btn-circle btn-ghost" onClick={() => setShowProofModal(false)}>
                 ✕
@@ -448,7 +455,7 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ c
                   <div className="badge badge-primary">pi_a</div>
                   <h4 className="font-medium">Proof Component A</h4>
                 </div>
-                <div className="bg-base-200 p-3 rounded-md overflow-x-auto text-xs font-mono">
+                <div className="bg-base-200 dark:bg-base-300 p-3 rounded-md overflow-x-auto text-xs font-mono">
                   {zkProof.proof.pi_a.map((value: string, index: number) => (
                     <div key={`pi_a_${index}`} className="mb-1 break-all">
                       {value}
@@ -462,7 +469,7 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ c
                   <div className="badge badge-secondary">pi_b</div>
                   <h4 className="font-medium">Proof Component B</h4>
                 </div>
-                <div className="bg-base-200 p-3 rounded-md overflow-x-auto text-xs font-mono">
+                <div className="bg-base-200 dark:bg-base-300 p-3 rounded-md overflow-x-auto text-xs font-mono">
                   {zkProof.proof.pi_b.map((row: string[], rowIndex: number) => (
                     <div key={`pi_b_row_${rowIndex}`} className="mb-2">
                       {row.map((value: string, colIndex: number) => (
@@ -480,7 +487,7 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ c
                   <div className="badge badge-accent">pi_c</div>
                   <h4 className="font-medium">Proof Component C</h4>
                 </div>
-                <div className="bg-base-200 p-3 rounded-md overflow-x-auto text-xs font-mono">
+                <div className="bg-base-200 dark:bg-base-300 p-3 rounded-md overflow-x-auto text-xs font-mono">
                   {zkProof.proof.pi_c.map((value: string, index: number) => (
                     <div key={`pi_c_${index}`} className="mb-1 break-all">
                       {value}
@@ -495,7 +502,7 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ c
                     <div className="badge badge-info">public</div>
                     <h4 className="font-medium">Public Signals</h4>
                   </div>
-                  <div className="bg-base-200 p-3 rounded-md overflow-x-auto text-xs font-mono">
+                  <div className="bg-base-200 dark:bg-base-300 p-3 rounded-md overflow-x-auto text-xs font-mono">
                     {Array.isArray(zkProof.publicSignals) ? (
                       zkProof.publicSignals.map((value: string, index: number) => (
                         <div key={`signal_${index}`} className="mb-1 break-all">
@@ -510,7 +517,7 @@ const ClaimChallengeSecretModal: React.FC<ClaimChallengeSecretModalProps> = ({ c
               )}
             </div>
 
-            <div className="p-4 border-t bg-base-200 flex justify-end">
+            <div className="p-4 border-t bg-base-200 dark:bg-base-300 flex justify-end">
               <button className="btn btn-primary" onClick={() => setShowProofModal(false)}>
                 Close
               </button>
