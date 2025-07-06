@@ -35,7 +35,9 @@ const StepReviewData: React.FC<StepReviewDataProps> = ({ formData }) => {
           <div className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400 mb-1 tracking-wider">
             Organization Resource
           </div>
-          <div className="text-base text-gray-800 dark:text-gray-200">{getDescription(formData.externalResource)}</div>
+          <div className="text-base text-gray-800 dark:text-gray-200 truncate">
+            {getDescription(formData.externalResource)}
+          </div>
         </div>
 
         <div>
