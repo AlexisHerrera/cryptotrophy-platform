@@ -3,7 +3,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { formatUnits } from "ethers";
-import { formatEther } from "viem";
 import { useReadContract } from "wagmi";
 import {
   BanknotesIcon,
@@ -14,6 +13,7 @@ import {
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { CubeTransparentIcon } from "@heroicons/react/24/solid";
+import StatCard from "~~/app/backoffice/organizations/[organizationId]/_components/StatCard";
 import AdminPanel from "~~/app/backoffice/organizations/_components/AdminPanel";
 import ChallengeList from "~~/app/backoffice/organizations/_components/ChallengeList";
 import CreateChallengeModal from "~~/app/backoffice/organizations/_components/CreateChallengeModal";
@@ -147,61 +147,51 @@ const OrganizationPage: React.FC = () => {
   return (
     <div className="container mx-auto p-4 md:p-8">
       <div className="text-center mb-4">
-        <h1 className="text-4xl md:text-5xl font-bold text-primary dark:text-primary-content flex items-center justify-center gap-3">
-          <SparklesIcon className="h-10 w-10" />
+        <h1 className="text-4xl md:text-5xl font-bold text-primary flex items-center justify-center gap-3">
           {organization.name}
         </h1>
         <p className="text-sm text-accent dark:text-accent-content mt-1">Token: {displayTokenSymbol}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <div className="card bg-base-200 dark:bg-base-300 shadow-lg">
-          <div className="card-body items-center text-center">
-            <BanknotesIcon className="h-12 w-12 text-secondary mb-2" />
-            <h2 className="card-title text-neutral-content dark:text-base-content">ETH Backing</h2>
-            <p className="text-4xl font-bold text-success dark:text-success-content">{totalBacking} ETH</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{valueInEth} ETH per token</p>
-            {organization.userIsAdmin && (
-              <button className="btn btn-sm btn-outline btn-success mt-3" onClick={() => setShowFundTokenModal(true)}>
-                <PlusCircleIcon className="h-5 w-5 mr-1" />
-                Fund Tokens
-              </button>
-            )}
-          </div>
-        </div>
+        <StatCard
+          icon={<BanknotesIcon />}
+          title="ETH Backing"
+          value={`${totalBacking} ETH`}
+          subValue={`${valueInEth} ETH per token`}
+          colorClass="primary"
+        >
+          {organization.userIsAdmin && (
+            <button className="btn btn-sm btn-outline" onClick={() => setShowFundTokenModal(true)}>
+              <PlusCircleIcon className="h-5 w-5 mr-1" />
+              Fund Tokens
+            </button>
+          )}
+        </StatCard>
 
-        {/* Tokens Available */}
-        <div className="card bg-base-200 dark:bg-base-300 shadow-lg">
-          <div className="card-body items-center text-center">
-            <CubeTransparentIcon className="h-12 w-12 text-success mb-2" />
-            <h2 className="card-title text-neutral-content dark:text-base-content">Tokens Available</h2>
-            <p className="text-3xl font-semibold text-success dark:text-success-content">
-              {isLoadingTokens ? <span className="loading loading-dots loading-sm"></span> : formattedAvailableTokens}
-            </p>
-            {organization.userIsAdmin && (
-              <button className="btn btn-sm btn-outline btn-success mt-3" onClick={() => setShowMintTokenModal(true)}>
-                <PlusCircleIcon className="h-5 w-5 mr-1" />
-                Mint Tokens
-              </button>
-            )}
-          </div>
-        </div>
+        <StatCard
+          icon={<CubeTransparentIcon />}
+          title="Tokens Available"
+          value={isLoadingTokens ? <span className="loading loading-dots loading-sm"></span> : formattedAvailableTokens}
+          colorClass="success"
+        >
+          {organization.userIsAdmin && (
+            <button className="btn btn-sm btn-outline btn-success" onClick={() => setShowMintTokenModal(true)}>
+              <PlusCircleIcon className="h-5 w-5 mr-1" />
+              Mint Tokens
+            </button>
+          )}
+        </StatCard>
 
-        {/* Administrators */}
-        <div className="card bg-base-200 dark:bg-base-300 shadow-lg">
-          <div className="card-body items-center text-center">
-            <UserGroupIcon className="h-12 w-12 text-info mb-2" />
-            <h2 className="card-title text-neutral-content dark:text-base-content">Administrators</h2>
-            <p className="text-3xl font-semibold text-info dark:text-info-content">{organization.admins.length}</p>
-            <div className="tooltip tooltip-bottom" data-tip={organization.admins.join(", ")}>
-              <button className="btn btn-xs btn-ghost mt-1">View Admins</button>
-            </div>
+        <StatCard icon={<UserGroupIcon />} title="Administrators" value={organization.admins.length} colorClass="info">
+          <div className="tooltip tooltip-bottom" data-tip={organization.admins.join(", ")}>
+            <button className="btn btn-xs btn-ghost mt-1">View Admins</button>
           </div>
-        </div>
+        </StatCard>
       </div>
 
       <div className="mb-10 p-6 bg-base-100 dark:bg-base-200 rounded-xl shadow-md">
-        <h2 className="text-2xl font-semibold mb-6 text-center text-neutral-focus dark:text-base-content">Actions</h2>
+        <h2 className="text-2xl font-semibold mb-6 text-center text-neutral-focus text-base-content">Actions</h2>
         <div className="flex flex-wrap justify-center gap-4">
           {organization.userIsAdmin && (
             <>
