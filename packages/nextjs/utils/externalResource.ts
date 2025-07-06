@@ -51,11 +51,15 @@ export async function generateContractBaseUri(resource: ExternalResource): Promi
 }
 
 export function getDescription(resource: ExternalResource): string {
-  if (resource.type === "url") {
-    return resource.value;
-  } else if (resource.type === "image") {
-    return "Image. It will be stored in IPFS.";
-  } else {
-    return "";
+  switch (resource.type) {
+    case "url":
+      return resource.value;
+    case "file":
+      return resource.value.name;
+    case "image":
+      return resource.value.name;
+    case "none":
+    default:
+      return "No resource was given";
   }
 }
