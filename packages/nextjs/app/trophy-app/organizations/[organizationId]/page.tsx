@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ChallengeGrid } from "../_components/ChallengeGrid";
 import { HeroSection } from "../_components/HeroSection";
@@ -18,7 +19,9 @@ const OrganizationPage: React.FC = () => {
   const { organizationId } = useParams() as { organizationId: string };
   const router = useRouter();
 
-  const [metadata, setMetadata] = useState<{ logo?: string; name?: string; description?: string }>({});
+  const [metadata, setMetadata] = useState<{ logo?: string; name?: string; description?: string; legalUrl?: string }>(
+    {},
+  );
 
   const { organization, isLoading, error, source } = useOrganizationWithFallback(organizationId);
 
@@ -77,6 +80,19 @@ const OrganizationPage: React.FC = () => {
       >
         <ChallengeGrid orgId={organizationId} />
       </MotionDiv>
+
+      {/* Legal section */}
+      <div className="w-full flex justify-center mt-8 px-2">
+        {metadata.legalUrl ? (
+          <Link href={metadata.legalUrl} target="_blank" rel="noopener" className="text-sm link link-primary">
+            View policy &amp; legal conditions
+          </Link>
+        ) : (
+          <p className="text-xs text-gray-500 dark:text-gray-400 text-center max-w-lg">
+            No legal conditions linked here. Please check the organization’s home page.
+          </p>
+        )}
+      </div>
     </div>
   );
 };

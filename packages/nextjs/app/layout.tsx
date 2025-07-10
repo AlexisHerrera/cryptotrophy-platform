@@ -13,7 +13,7 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
       <body>
         <ThemeProvider enableSystem>
           <AnimatePresence mode="wait">
-            <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
+            <ScaffoldEthAppWithProviders showHeaderAndFooter={false}>{children}</ScaffoldEthAppWithProviders>
           </AnimatePresence>
         </ThemeProvider>
       </body>

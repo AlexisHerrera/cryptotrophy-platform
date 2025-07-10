@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import ReactMarkdown from "react-markdown";
+import { useAccount } from "wagmi";
 import { DECIMALS_TOKEN } from "~~/settings";
 import { Prize } from "~~/utils/cryptotrophyIndex/types";
 import { loadMetadata } from "~~/utils/loadMetadata";
@@ -17,6 +18,7 @@ export const PrizeCard: React.FC<{ item: Prize; onClaimClick: (prize: Prize) => 
   item: prize,
   onClaimClick,
 }) => {
+  const { isConnected } = useAccount();
   const [metadata, setMetadata] = useState<{ logo?: string; name?: string; description?: string }>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [descriptionState, setDescription] = useState<string>(prize.description);
@@ -88,13 +90,22 @@ export const PrizeCard: React.FC<{ item: Prize; onClaimClick: (prize: Prize) => 
         </div>
       </div>
 
-      <button
-        onClick={() => onClaimClick(prize)}
-        disabled={prize.stock <= 0n}
-        className={`mt-4 px-4 py-2 rounded text-white ${prize.stock <= 0n ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
-      >
-        Claim
-      </button>
+      {isConnected ? (
+        <button
+          onClick={() => onClaimClick(prize)}
+          disabled={prize.stock <= 0n}
+          className={`mt-4 px-4 py-2 rounded text-white ${prize.stock <= 0n ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
+        >
+          Claim
+        </button>
+      ) : (
+        <span
+          className="mt-4 inline-block px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-400 italic cursor-not-allowed pointer-events-none text-center"
+          aria-disabled="true"
+        >
+          Connect your wallet to claim
+        </span>
+      )}
     </div>
   );
 };

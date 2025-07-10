@@ -178,15 +178,13 @@ const MockExternalValidatorFulfill: React.FC<MockExternalOffchainValidatorProps>
 
   return (
     <Modal onClose={onClose}>
-      <div className="p-4">
+      <div className="p-4 bg-base-200 dark:bg-base-300 text-base-content rounded-box">
         <h2 className="text-xl font-bold mb-4 text-center">Mock Validator Response</h2>
         <p className="mb-4 text-center">
           Challenge: <strong>{challengeId.toString()}</strong>
         </p>
         <p className="mb-4 text-center">Mocking external validator response.</p>
-
         <FulfillForm formData={formData} setFormData={setFormData} />
-
         <div className="flex justify-center gap-4">
           <button className="btn btn-secondary" onClick={onClose} disabled={loading}>
             Cancel
