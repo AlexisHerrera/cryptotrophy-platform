@@ -21,6 +21,9 @@ export const formatEthBacking = (value: string): string => {
 
 const StepReviewData: React.FC<StepReviewDataProps> = ({ formData }) => {
   const { address } = useAccount();
+  const resource = formData.externalResource;
+  const description = getDescription(resource);
+
   return (
     <div className="space-y-8 font-sans max-w-xl mx-auto">
       <div className="rounded-xl bg-white dark:bg-gray-900 shadow-lg p-6 space-y-5">
@@ -35,7 +38,26 @@ const StepReviewData: React.FC<StepReviewDataProps> = ({ formData }) => {
           <div className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400 mb-1 tracking-wider">
             Organization Resource
           </div>
-          <div className="text-base text-gray-800 dark:text-gray-200">{getDescription(formData.externalResource)}</div>
+          {resource.type === "url" ? (
+            <a
+              href={description}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={description}
+              className="block text-base text-blue-600 dark:text-blue-400 hover:underline truncate"
+            >
+              {description}
+            </a>
+          ) : (
+            <div>
+              <p title={description} className="text-base text-gray-800 dark:text-gray-200 truncate">
+                {description}
+              </p>
+              {(resource.type === "file" || resource.type === "image") && (
+                <p className="text-sm text-gray-500 dark:text-gray-400">It will be stored in IPFS</p>
+              )}
+            </div>
+          )}
         </div>
 
         <div>

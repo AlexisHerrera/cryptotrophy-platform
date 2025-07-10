@@ -2,9 +2,9 @@
 export default {
   logo: <span>CryptoTrophy</span>,
   project: {
-    link: 'https://github.com/your/repo', // update as needed
+    link: "https://github.com/AlexisHerrera/cryptotrophy-platform",
   },
-  docsRepositoryBase: 'https://github.com/your/repo/blob/main/pages',
+  docsRepositoryBase: "https://www.cryptotrophy-app.com/docs",
   feedback: false,
   editLink: false,
-}
+};
