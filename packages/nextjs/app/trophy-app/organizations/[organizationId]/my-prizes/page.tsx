@@ -6,8 +6,10 @@ import { useParams } from "next/navigation";
 import { PrizeNFTCard } from "../../_components/PrizeNFTCard";
 import { useAccount } from "wagmi";
 import { MotionDiv } from "~~/app/motions/use-motion";
+import { usePrizeTokens } from "~~/hooks/cryptotrophyIndex/usePrizeTokens";
 import { useEthersSigner } from "~~/hooks/ethers/useEthersSigner";
 import { useDeployedContractInfo, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { PrizeToken } from "~~/utils/cryptotrophyIndex/types";
 import { notification } from "~~/utils/scaffold-eth";
 import { getPrizeNFTContract } from "~~/utils/scaffold-eth/contract";
 
@@ -36,6 +38,8 @@ const MyPrizesPage: React.FC = () => {
   // Get deployed contract information
   const { data: prizesContractData } = useDeployedContractInfo("Prizes");
 
+  const { data: prizeTokens, isLoading: isTokensLoading } = usePrizeTokens(address ?? "");
+
   // Get list of prizes and their NFT contracts
   const { data: prizesData, isLoading: isPrizesLoading } = useScaffoldReadContract({
     contractName: "Prizes",
@@ -50,9 +54,37 @@ const MyPrizesPage: React.FC = () => {
     args: [BigInt(organizationId)],
   });
 
+  async function getOwnedPrizeNFTs(prizeTokens: any, prizeId: bigint, targetAddress: `0x${string}`, nftContract: any) {
+    if (!prizeTokens?.prizeTokens?.items?.length) return [];
+
+    /* 1 first, collect all items whose prizeId matches */
+    const indexPrizeToken = prizeTokens.prizeTokens.items as PrizeToken[];
+    const candidates = indexPrizeToken.filter(rc => BigInt(rc.prizeId) === prizeId);
+
+    if (!candidates.length) return [];
+
+    /* 2 check ownerOf() for every candidate in parallel */
+    const results = await Promise.all(
+      candidates.map(async rc => {
+        try {
+          const ownerAccount: string = await nftContract.ownerOf(BigInt(rc.nftId));
+          const isOwner = ownerAccount.toLowerCase() === targetAddress.toLowerCase();
+          return isOwner ? rc.nftId : null;
+        } catch (err) {
+          // token may be burned or the call may revert; ignore it
+          console.error(`ownerOf(${rc.nftId}) failed`, err);
+          return null;
+        }
+      }),
+    );
+
+    /* 3 strip out the nulls and you’re done */
+    return results.filter(Boolean) as string[];
+  }
+
   useEffect(() => {
     const fetchUserNFTs = async () => {
-      if (!address || !signer || !prizesData || isPrizesLoading || !prizesContractData) return;
+      if (!address || !signer || !prizesData || isPrizesLoading || !prizesContractData || isTokensLoading) return;
 
       try {
         setIsLoadingNFTs(true);
@@ -120,18 +152,21 @@ const MyPrizesPage: React.FC = () => {
                     });
                   }
                 } else {
-                  // Fallback implementation - add a placeholder NFT
-                  nfts.push({
-                    id: `${contractAddress}-placeholder`,
-                    tokenId: -1,
-                    prizeId: Number(prizeId),
-                    name: nftName,
-                    prizeName,
-                    symbol: nftSymbol,
-                    contractAddress,
-                    balance: Number(balance),
-                    imagePath,
-                  });
+                  // Fallback implementation - uses ponder
+                  const nftIds = await getOwnedPrizeNFTs(prizeTokens, prizeId, address as `0x${string}`, nftContract);
+                  if (nftIds.length > 0) {
+                    nfts.push({
+                      id: `${contractAddress}-placeholder`,
+                      tokenId: Number(nftIds[0]),
+                      prizeId: Number(prizeId),
+                      name: nftName,
+                      prizeName,
+                      symbol: nftSymbol,
+                      contractAddress,
+                      balance: Number(nftIds.length),
+                      imagePath,
+                    });
+                  }
                 }
               } catch (error) {
                 console.error("Error checking interface support:", error);
@@ -232,6 +267,7 @@ const MyPrizesPage: React.FC = () => {
                 tokenId={nft.tokenId}
                 balance={nft.balance}
                 imagePath={nft.imagePath}
+                contractAddress={nft.contractAddress}
               />
             ))}
           </div>
