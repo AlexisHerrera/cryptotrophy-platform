@@ -19,6 +19,13 @@ export type Organization = {
   baseURI: string;
 };
 
+export type PrizeToken = {
+  prizeId: string;
+  nftId: string;
+  claimer: string;
+  claimId: string;
+};
+
 export type Prize = {
   id: string;
   orgId: string;
@@ -76,4 +83,8 @@ export interface ChallengeClaimData {
 
 export interface PrizeData {
   prizes: PaginatedResult<Prize>;
+}
+
+export interface PrizeTokenData {
+  rewardClaims: SimpleResult<PrizeToken>;
 }
