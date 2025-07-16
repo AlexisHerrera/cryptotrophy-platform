@@ -18,6 +18,7 @@ export const PrizeCard: React.FC<{ item: Prize; onClaimClick: (prize: Prize) => 
   item: prize,
   onClaimClick,
 }) => {
+  const [showFull, setShowFull] = useState(false);
   const { isConnected } = useAccount();
   const [metadata, setMetadata] = useState<{ logo?: string; name?: string; description?: string }>({});
   const [loading, setLoading] = useState<boolean>(false);
@@ -48,7 +49,7 @@ export const PrizeCard: React.FC<{ item: Prize; onClaimClick: (prize: Prize) => 
   }, [prize.baseURI]);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col hover:shadow-lg transition-shadow duration-200">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col h-full hover:shadow-lg transition-shadow duration-200">
       {metadata.logo ? (
         <div className="w-full aspect-[4/3] relative mb-4">
           <img
@@ -76,17 +77,25 @@ export const PrizeCard: React.FC<{ item: Prize; onClaimClick: (prize: Prize) => 
       </div>
 
       {/* Description */}
-      <div className="relative mb-4 max-h-32 overflow-hidden group-hover:max-h-none">
-        {/* Normal text */}
-        <div className="text-gray-600 dark:text-gray-300 text-sm">
+      <div
+        className="relative h-32 overflow-hidden rounded-md group/desc cursor-pointer mb-4"
+        onClick={() => setShowFull(true)}
+      >
+        {/* ▼ 1 · Clamped preview */}
+        <div className="text-gray-600 dark:text-gray-300 text-sm line-clamp-5 pointer-events-none">
           <ReactMarkdown>{descriptionState}</ReactMarkdown>
         </div>
 
-        {/* On hover, full text absolutely positioned */}
-        <div className="absolute inset-0 p-2 bg-white dark:bg-gray-800 rounded-md shadow-md hidden group-hover:flex flex-col justify-center z-10">
-          <div className="text-gray-600 dark:text-gray-300 text-sm">
-            <ReactMarkdown>{descriptionState}</ReactMarkdown>
-          </div>
+        {/* ▼ 2 · Hover call-out */}
+        <div
+          className="
+              absolute inset-0 flex items-center justify-center
+              bg-black/60 text-white text-xs font-medium
+              opacity-0 transition-opacity duration-150 ease-out
+              pointer-events-none   /* let clicks reach wrapper */
+              group-hover/desc:opacity-100"
+        >
+          Click to see full description
         </div>
       </div>
 
@@ -94,17 +103,48 @@ export const PrizeCard: React.FC<{ item: Prize; onClaimClick: (prize: Prize) => 
         <button
           onClick={() => onClaimClick(prize)}
           disabled={prize.stock <= 0n}
-          className={`mt-4 px-4 py-2 rounded text-white ${prize.stock <= 0n ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
+          className={`mt-auto px-4 py-2 rounded text-white ${prize.stock <= 0n ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
         >
           Claim
         </button>
       ) : (
         <span
-          className="mt-4 inline-block px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-400 italic cursor-not-allowed pointer-events-none text-center"
+          className="mt-auto inline-block px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-400 italic cursor-not-allowed pointer-events-none text-center"
           aria-disabled="true"
         >
           Connect your wallet to claim
         </span>
+      )}
+
+      {/* ──────────── FULL DESCRIPTION MODAL (portal-style) ──────────── */}
+      {showFull && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowFull(false)} />
+
+          {/* Modal panel */}
+          <div
+            className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg
+                       w-[90%] max-w-xl max-h-[80vh] overflow-y-auto p-6"
+            onClick={e => e.stopPropagation()} /* prevent backdrop close */
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setShowFull(false)}
+              aria-label="Close"
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600
+                         dark:hover:text-gray-300 text-2xl leading-none"
+            >
+              &times;
+            </button>
+
+            <h4 className="text-lg font-semibold mb-4">Prize&nbsp;#{prize.name}</h4>
+
+            <div className="prose dark:prose-invert prose-sm">
+              <ReactMarkdown>{descriptionState}</ReactMarkdown>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
