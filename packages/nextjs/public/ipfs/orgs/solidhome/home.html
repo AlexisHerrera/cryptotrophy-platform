@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SolidHome – Appliances for Everyday Living</title>
+
+  <!-- Google Font (optional) -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #00695c;          /* SolidHome teal */
+      --primary-dark: #004d40;
+      --light: #fafafa;
+      --gray: #666;
+      --radius: 6px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Inter", Arial, sans-serif;
+      line-height: 1.6;
+      background: var(--light);
+      color: #222;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    /* ---------- Nav ---------- */
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header img { height: 42px; width: auto; }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1.25rem;
+      font-size: 0.95rem;
+      flex-wrap: wrap;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    nav a:hover { text-decoration: underline; }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 3.5rem 1rem;
+      background: #e0f2f1;
+    }
+    .hero h1 {
+      font-size: clamp(1.9rem, 4.5vw, 3rem);
+      margin-bottom: 0.75rem;
+      color: var(--primary-dark);
+    }
+    .hero p {
+      max-width: 600px;
+      margin-inline: auto;
+      font-size: 1.05rem;
+    }
+    .cta {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .cta a {
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      text-decoration: none;
+      transition: background 0.25s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    .btn-outline:hover { background: var(--primary); color: #fff; }
+
+    /* ---------- Sections ---------- */
+    .section {
+      padding: 3rem 1rem;
+      max-width: 1100px;
+      margin-inline: auto;
+    }
+    .section h2 {
+      color: var(--primary-dark);
+      margin-bottom: 1.5rem;
+      font-size: 1.6rem;
+      text-align: center;
+    }
+
+    /* ---------- Product Grid ---------- */
+    .grid {
+      display: grid;
+      gap: 1.25rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .card {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    .card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: var(--radius);
+      margin-bottom: 0.75rem;
+    }
+    .card h3 { margin-bottom: 0.4rem; font-size: 1.1rem; color: var(--primary); }
+    .card p { font-size: 0.9rem; color: var(--gray); }
+
+    /* ---------- Services List ---------- */
+    .list {
+      display: grid;
+      gap: 1.25rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+    .list-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    .list-item span {
+      font-size: 2rem;
+      color: var(--primary);
+    }
+
+    /* ---------- Footer ---------- */
+    footer {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      font-size: 0.9rem;
+      color: var(--gray);
+      background: #e0f2f1;
+    }
+    footer a {
+      color: var(--primary-dark);
+      text-decoration: none;
+    }
+    footer a:hover { text-decoration: underline; }
+
+    /* ---------- Responsive Nav Toggle (small screens) ---------- */
+    .menu-toggle { display: none; }
+    @media (max-width: 640px) {
+      nav ul { flex-direction: column; gap: 0; display: none; background: var(--primary); }
+      nav li { border-top: 1px solid rgba(255,255,255,0.15); }
+      .menu-toggle {
+        display: block;
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.75rem;
+        cursor: pointer;
+      }
+    }
+  </style>
+
+  <script>
+    /* Simple mobile nav toggle */
+    function toggleMenu() {
+      const navList = document.querySelector("nav ul");
+      navList.style.display = navList.style.display === "flex" ? "none" : "flex";
+    }
+  </script>
+</head>
+
+<body>
+  <!-- ---------- Top Navigation ---------- -->
+  <header>
+    <a href="#">
+      <img src="https://solidhome.com/ipfs/orgs/solidhome/SolidHomeLogo.webp" alt="SolidHome Logo" />
+    </a>
+
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+    <nav>
+      <ul>
+        <li><a href="#products">Products</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#offers">Offers</a></li>
+        <li><a href="#rewards">Web3&nbsp;Rewards</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ---------- Hero Section ---------- -->
+  <section class="hero">
+    <div>
+      <h1>Your Home, Perfectly Equipped.</h1>
+      <p>Discover reliable appliances, expert service, and unbeatable value at SolidHome—serving families since 1992.</p>
+
+      <div class="cta">
+        <a class="btn-primary" href="#products">Shop&nbsp;Now</a>
+        <a class="btn-outline" href="#offers">Current&nbsp;Deals</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- Featured Products ---------- -->
+  <section id="products" class="section">
+    <h2>Featured&nbsp;Products</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="https://source.unsplash.com/featured/800x600?washingmachine" alt="Front-Load Washer" />
+        <h3>Front-Load Washer</h3>
+        <p>Energy-efficient, 10&nbsp;kg capacity with steam clean.</p>
+      </div>
+      <div class="card">
+        <img src="https://source.unsplash.com/featured/800x600?refrigerator" alt="French-Door Fridge" />
+        <h3>French-Door Refrigerator</h3>
+        <p>Smart cooling &amp; spacious 560&nbsp;L interior.</p>
+      </div>
+      <div class="card">
+        <img src="https://source.unsplash.com/featured/800x600?oven" alt="Convection Oven" />
+        <h3>Convection Oven</h3>
+        <p>Even-bake technology with air-fry mode.</p>
+      </div>
+      <div class="card">
+        <img src="https://source.unsplash.com/featured/800x600?dishwasher" alt="Quiet Dishwasher" />
+        <h3>Quiet Dishwasher</h3>
+        <p>44&nbsp;dB wash cycles and auto-door dry.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- Services ---------- -->
+  <section id="services" class="section" style="background:#f1f1f1;">
+    <h2>Our&nbsp;Services</h2>
+    <div class="list">
+      <div class="list-item">
+        <span>🚚</span>
+        <div>
+          <h3>Fast Delivery</h3>
+          <p>Next-day delivery available in most metro areas.</p>
+        </div>
+      </div>
+      <div class="list-item">
+        <span>🔧</span>
+        <div>
+          <h3>Professional Installation</h3>
+          <p>Certified technicians ensure a perfect fit and safe hookup.</p>
+        </div>
+      </div>
+      <div class="list-item">
+        <span>💳</span>
+        <div>
+          <h3>Easy Financing</h3>
+          <p>0% interest plans up to 24&nbsp;months for qualifying purchases.</p>
+        </div>
+      </div>
+      <div class="list-item">
+        <span>🛡️</span>
+        <div>
+          <h3>Extended Warranties</h3>
+          <p>Protect your investment with up to 5&nbsp;years of additional coverage.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- Offers ---------- -->
+  <section id="offers" class="section">
+    <h2>Limited-Time&nbsp;Offers</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Kitchen Bundle</h3>
+        <p>Save 20% when you purchase a fridge, range, and dishwasher together.</p>
+      </div>
+      <div class="card">
+        <h3>Laundry Pair Deal</h3>
+        <p>Free stacking kit with any washer-dryer combo.</p>
+      </div>
+      <div class="card">
+        <h3>Trade-In Upgrade</h3>
+        <p>Recycle your old appliance and get up to $150 credit instantly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- Web3 Rewards (secondary focus) ---------- -->
+  <section id="rewards" class="section" style="background:#e8f5e9;">
+    <h2>Earn&nbsp;Rewards&nbsp;on&nbsp;the&nbsp;Blockchain</h2>
+    <p style="max-width:800px;margin-inline:auto;text-align:center;">
+      Love crypto? Opt in to our <strong>SolidHome Token (SOLID)</strong> challenges powered by CryptoTrophy.
+      Complete energy-saving quests or refer friends to collect SOLID and limited-edition NFTs.
+      Redeem them for discounts or extended warranties—totally optional, always fun.
+    </p>
+    <div class="cta" style="margin-top:1.5rem;">
+      <a class="btn-outline" href="terms.html">Read&nbsp;Terms</a>
+    </div>
+  </section>
+
+  <!-- ---------- Contact ---------- -->
+  <section id="contact" class="section">
+    <h2>Get&nbsp;in&nbsp;Touch</h2>
+    <div style="text-align:center;">
+      <p><strong>Customer Care:</strong> +598&nbsp;2901&nbsp;1234 · <a href="mailto:support@solidhome.example">support@solidhome.example</a></p>
+      <p>Visit us: 1234 Avenida Libertador, Montevideo, Uruguay</p>
+    </div>
+  </section>
+
+  <!-- ---------- Footer ---------- -->
+  <footer>
+    &copy; 2025 SolidHome · <a href="terms.html">Policy&nbsp;&amp;&nbsp;Legal&nbsp;Conditions</a>
+  </footer>
+</body>
+</html>
