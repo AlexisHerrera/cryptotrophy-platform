@@ -33,6 +33,9 @@ export const ChallengeCard: React.FC<{ item: Challenge; claimed: boolean | undef
   const endDate = dateFormatter.format(endDateFull);
   const endTime = timeFormatter.format(endDateFull);
 
+  const currentDate = new Date();
+  const isActive = challenge.isActive && fullDate < currentDate && endDateFull > currentDate;
+
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col justify-between h-full group">
       {/* Top Section */}
@@ -42,12 +45,12 @@ export const ChallengeCard: React.FC<{ item: Challenge; claimed: boolean | undef
           <span
             className={clsx(
               "px-3 py-1 text-xs font-bold uppercase tracking-wide rounded-full",
-              challenge.isActive
+              isActive
                 ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                 : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
             )}
           >
-            {challenge.isActive ? "Active" : "Closed"}
+            {isActive ? "Active" : "Closed"}
           </span>
         </div>
 
@@ -118,7 +121,7 @@ export const ChallengeCard: React.FC<{ item: Challenge; claimed: boolean | undef
 
       {/* Bottom Section (Button) */}
       <div className="mt-6 flex justify-center">
-        {challenge.isActive ? (
+        {isActive ? (
           isConnected ? (
             !claimed ? (
               <ClaimChallengeButton
